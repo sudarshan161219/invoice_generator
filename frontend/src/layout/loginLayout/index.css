@@ -1,0 +1,19 @@
+.login_bg_heading_container > h2 {
+  font-size: 1.4rem;
+}
+
+.login_bg_heading_container > p {
+  font-size: 0.9rem;
+}
+
+.mobile-btn-container {
+  text-align: center;
+  display: flex;
+  justify-content: center;
+}
+
+.btn-container,
+.mobile-btn-container > span,
+button {
+  font-size: 13px;
+}

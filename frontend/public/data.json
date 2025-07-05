@@ -1,0 +1,92 @@
+[
+  {
+    "id": "inv001",
+    "client": "Acme Corp",
+    "amount": 1250.00,
+    "status": "paid",
+    "issueDate": "2025-04-01",
+    "dueDate": "2025-04-15",
+    "paidDate": "2025-04-10"
+  },
+  {
+    "id": "inv002",
+    "client": "Beta LLC",
+    "amount": 980.50,
+    "status": "pending",
+    "issueDate": "2025-04-10",
+    "dueDate": "2025-05-10",
+    "paidDate": null
+  },
+  {
+    "id": "inv003",
+    "client": "Gamma Solutions",
+    "amount": 450.00,
+    "status": "overdue",
+    "issueDate": "2025-03-05",
+    "dueDate": "2025-04-05",
+    "paidDate": null
+  },
+  {
+    "id": "inv004",
+    "client": "Delta Services",
+    "amount": 300.00,
+    "status": "paid",
+    "issueDate": "2025-03-15",
+    "dueDate": "2025-04-15",
+    "paidDate": "2025-04-14"
+  },
+  {
+    "id": "inv005",
+    "client": "Zeta Group",
+    "amount": 1120.00,
+    "status": "pending",
+    "issueDate": "2025-05-01",
+    "dueDate": "2025-05-20",
+    "paidDate": null
+  },
+  {
+    "id": "inv006",
+    "client": "Theta Tech",
+    "amount": 2100.00,
+    "status": "paid",
+    "issueDate": "2025-02-28",
+    "dueDate": "2025-03-15",
+    "paidDate": "2025-03-10"
+  },
+  {
+    "id": "inv007",
+    "client": "Omega Inc",
+    "amount": 675.00,
+    "status": "overdue",
+    "issueDate": "2025-03-20",
+    "dueDate": "2025-04-10",
+    "paidDate": null
+  },
+  {
+    "id": "inv008",
+    "client": "Nova Partners",
+    "amount": 890.00,
+    "status": "paid",
+    "issueDate": "2025-04-05",
+    "dueDate": "2025-04-25",
+    "paidDate": "2025-04-24"
+  },
+  {
+    "id": "inv009",
+    "client": "Sigma Co.",
+    "amount": 1345.75,
+    "status": "pending",
+    "issueDate": "2025-05-10",
+    "dueDate": "2025-06-01",
+    "paidDate": null
+  },
+  {
+    "id": "inv010",
+    "client": "Epsilon Media",
+    "amount": 780.00,
+    "status": "paid",
+    "issueDate": "2025-03-01",
+    "dueDate": "2025-03-20",
+    "paidDate": "2025-03-18"
+  }
+]

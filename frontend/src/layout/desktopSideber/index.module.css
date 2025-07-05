@@ -1,0 +1,15 @@
+.sideBar {
+  position: relative;
+  height: 100vh;
+  font: var(--foreground);
+  background-color: var(--background);
+  transition: all 0.3s;
+}
+
+.sideBarOpen {
+  width: 256px;
+}
+
+.sideBarClose {
+  width: 0px;
+}

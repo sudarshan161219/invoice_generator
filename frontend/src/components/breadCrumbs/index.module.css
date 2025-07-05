@@ -1,0 +1,16 @@
+.nav {
+  font-size: small;
+  margin-bottom: 12px;
+}
+.link {
+  font-size: 13px;
+  color: var(--label);
+}
+
+.link:hover {
+  color: var(--primary);
+}
+
+.label {
+  color: var(--accent);
+}

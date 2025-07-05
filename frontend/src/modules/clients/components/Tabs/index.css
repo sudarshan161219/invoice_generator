@@ -1,0 +1,10 @@
+.tabs{
+    border-radius: 2px;
+    outline-offset: 0px;
+    padding-bottom: 4px;
+}
+
+.tab-span-text{
+    font-size: 11px;
+    margin-left: 2px;
+}

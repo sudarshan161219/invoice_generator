@@ -1,0 +1,150 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum InvoiceStatus {
+  pending
+  paid
+  overdue
+}
+
+
+model Invoice {
+  id         Int       @id @default(autoincrement())
+  invoiceNumber String? @unique
+  userId     Int
+  clientId   Int
+  clientName String
+  amount     Float
+  dueDate    DateTime
+  paid       Boolean   @default(false)
+  notes String?
+  support    String?
+  description String?
+  createdAt  DateTime  @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+
+  // Optional: add a status field for better filtering and clarity
+  status InvoiceStatus @default(pending)// values can be "pending", "paid", "overdue"
+
+  // Relations
+  client     Client    @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  payments   Payment[]
+
+  // Indexes
+  @@index([userId])
+  @@unique([id, userId])
+}
+
+
+model User {
+  id           Int       @id @default(autoincrement())
+  name         String
+  email        String    @unique
+  password     String?
+  profileImage String?   // Optional avatar
+  phone        String?   // Optional contact
+  companyName  String?   // Optional branding
+  role         String?   // Could be "user", "admin"
+  passwordResetToken     String?  // nullable
+  passwordResetExpires   DateTime?
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt @default(now())
+
+    // Relations
+  accounts     Account[]
+  sessions     Session[]
+  clients      Client[]
+  invoices     Invoice[]
+  ClientNotes ClientNote[]
+}
+
+model Account {
+  id                 Int       @id @default(autoincrement())
+  userId             Int
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?   @db.Text
+  access_token       String?   @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?   @db.Text
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           Int       @id @default(autoincrement())
+  sessionToken String    @unique
+  userId       Int
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+
+
+model ClientNote {
+  id        Int      @id @default(autoincrement())
+  content   String
+  createdAt DateTime @default(now())
+
+  // Relations
+  clientId  Int
+  client    Client   @relation(fields: [clientId], references: [id])
+
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([clientId])
+  @@index([userId])
+}
+
+
+model Client {
+  id        Int       @id @default(autoincrement())
+  name      String
+  email     String   
+  phone     String?
+  company    String?
+  address    String?
+  notes      ClientNote[]
+  imageUrl   String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  userId    Int
+  user      User      @relation(fields: [userId], references: [id])
+  invoices  Invoice[]
+  @@index([userId])
+  @@unique([email, userId]) 
+  @@unique([id, userId])
+}
+
+
+
+model Payment {
+  id        Int      @id @default(autoincrement())
+  amount    Float
+  paidAt    DateTime @default(now())
+  method    String   // e.g., "cash", "bank", "credit"
+  note      String?  // optional notes
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  invoice   Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  invoiceId Int
+}
+
+

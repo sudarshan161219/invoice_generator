@@ -1,0 +1,15 @@
+.not-found-img {
+  width: 200px;
+}
+
+@media screen and (min-width: 700px) {
+  .not-found-img {
+    width: 300px;
+  }
+}
+
+@media screen and (min-width: 1024px) {
+  .not-found-img {
+    width: 350px;
+  }
+}

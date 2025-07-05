@@ -1,0 +1,44 @@
+@baseUrl = http://localhost:3000/api
+@token = {{"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImp0aSI6IjkxNGZiMWZlLTBhYjMtNDNjZS1hNzUxLTU5NTY3ZWJlMDZjMCIsImlhdCI6MTc0ODkxMzQ1NSwiZXhwIjoxNzUxNTA1NDU1fQ.m0s4A18wX8Y7zsHJVgRAJ_YgJhP_SbIVBRClSZZWgMs"}}
+
+
+### Create a new client
+POST {{baseUrl}}/clients/create
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Acme Corp",
+  "email": "acme@example.com",
+  "phone": "9876543210",
+  "company": "Acme Inc.",
+  "address": "123 Startup Street, Bengaluru",
+  "notes": "Important client"
+}
+
+
+### Get all clients
+GET {{baseUrl}}/clients/
+Authorization: Bearer {{token}}
+
+
+### Get a client by ID
+GET {{baseUrl}}/clients/5
+Authorization: Bearer {{token}}
+
+
+
+### Update a client
+PUT {{baseUrl}}/clients/5
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "phone": "9999999999",
+  "notes": "Updated contact number"
+}
+
+
+### Delete a client
+PUT {{baseUrl}}/clients/delete/5
+Authorization: Bearer {{token}}

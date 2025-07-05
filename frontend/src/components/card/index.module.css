@@ -1,0 +1,41 @@
+.card_container {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+
+.card_content_container > h3 {
+  color: var(--primary);
+  font-size: 0.7rem;
+}
+
+.values {
+  font-size: 15px;
+  color: var(--color-foreground);
+}
+
+.description {
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+
+@media screen and (min-width: 1024px) {
+  .card_container {
+    padding: 14px;
+  }
+
+  .card_content_container > h3 {
+    color: var(--primary);
+    font-size: 0.8rem;
+  }
+
+  .values {
+    font-size: 1.1rem;
+    font-weight: bold;
+  }
+
+  .description {
+    font-size: 12px;
+  }
+}
