@@ -11,6 +11,7 @@ import { AuthLayoutProvider } from "./providers/AuthLayoutProvider";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { GitHubOAuthProvider } from "./providers/GitHubOAuthProvider";
 import { NotesModalProvider } from "./providers/NotesModalProvider";
+import { InvoiceClientProvider } from "./providers/InvoiceClientProvider";
 
 const rootEl = document.getElementById("root");
 if (!rootEl) throw new Error("Failed to find root element");
@@ -21,16 +22,18 @@ createRoot(rootEl).render(
       <ThemeProvider>
         <AuthProvider>
           <AuthLayoutProvider>
-            <NotesModalProvider>
-              <CollapseProvider>
-                <BrowserRouter>
-                  <GitHubOAuthProvider>
-                    <App />
-                  </GitHubOAuthProvider>
-                </BrowserRouter>
-                <Toaster richColors />
-              </CollapseProvider>
-            </NotesModalProvider>
+            <InvoiceClientProvider>
+              <NotesModalProvider>
+                <CollapseProvider>
+                  <BrowserRouter>
+                    <GitHubOAuthProvider>
+                      <App />
+                    </GitHubOAuthProvider>
+                  </BrowserRouter>
+                  <Toaster richColors />
+                </CollapseProvider>
+              </NotesModalProvider>
+            </InvoiceClientProvider>
           </AuthLayoutProvider>
         </AuthProvider>
       </ThemeProvider>

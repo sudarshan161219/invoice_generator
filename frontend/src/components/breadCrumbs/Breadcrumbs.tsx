@@ -1,5 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
+import { useInvoiceClient } from "@/hooks/useInvoiceClient";
 import styles from "./index.module.css";
 
 const breadcrumbNameMap: Record<string, string> = {
@@ -18,7 +19,7 @@ const breadcrumbNameMap: Record<string, string> = {
 
 export const Breadcrumbs = () => {
   const location = useLocation();
-
+  const { clientName } = useInvoiceClient();
   const pathnames = location.pathname.split("/").filter(Boolean);
 
   if (pathnames.length === 0) return null;
@@ -32,10 +33,19 @@ export const Breadcrumbs = () => {
           </Link>
         </li>
         {pathnames.map((segment, index) => {
-          const routeTo = "/" + pathnames.slice(0, index + 1).join("/");
           const isLast = index === pathnames.length - 1;
-          const label =
-            breadcrumbNameMap[segment] || decodeURIComponent(segment);
+          let label = breadcrumbNameMap[segment] || decodeURIComponent(segment);
+          let routeTo = "/" + pathnames.slice(0, index + 1).join("/");
+
+          if (/^\d+$/.test(segment) && pathnames[index - 1] === "client") {
+            label = clientName || "Client";
+          }
+
+          // ✅ Force `/client` to render as "Clients" and link to `/clients`
+          if (segment === "client" && pathnames.length === 2) {
+            label = "Clients";
+            routeTo = "/clients";
+          }
 
           return (
             <li key={routeTo} className="flex items-center space-x-2">
