@@ -7,6 +7,16 @@ export const MainHeading: FC = (): ReactElement => {
   const [heading, setHeading] = useState("Overview");
 
   useEffect(() => {
+    const path = location.pathname;
+
+    if (path.startsWith("/client/")) {
+      const id = path.split("/client/")[1]; // e.g., "123"
+      if (id && /^\d+$/.test(id)) {
+        setHeading(`Client details`);
+        return;
+      }
+    }
+
     const pathToHeadingMap: Record<string, string> = {
       "/": "Overview",
       "/clients": "Clients",

@@ -1,5 +1,4 @@
 export interface Client {
-  data(data: any): unknown;
   id: number;
   name: string;
   email: string;

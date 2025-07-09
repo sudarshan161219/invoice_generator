@@ -1,0 +1,33 @@
+.container {
+  display: flex;
+  gap: 12px;
+}
+
+.box {
+  /* height: 80px; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.box1 {
+  width: 40%;
+}
+
+.box2 {
+  width: 60%;
+}
+
+/* Mobile (small) screens: switch to grid */
+@media (max-width: 640px) {
+  .container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .box1,
+  .box2 {
+    width: 100%;
+  }
+}
