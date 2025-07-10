@@ -13,6 +13,9 @@
 
 .box1 {
   width: 40%;
+  /* overflow: scroll; */
+  border-right-style: var(--tw-border-style);
+  border-right-width: 1px;
 }
 
 .box2 {
