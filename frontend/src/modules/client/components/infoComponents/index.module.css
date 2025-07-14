@@ -148,6 +148,30 @@
   color: #6b7280;
 }
 
+.heading_actionsContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.containerHeading {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.actionsbtns {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.actionbtn {
+ font-size: 11px;
+}
+
 @media (max-width: 640px) {
   .actionsContainer {
     flex-direction: column;
@@ -175,10 +199,6 @@
   position: relative;
 }
 
-.noteContent {
-  margin: 0 0 0.5rem 0;
-  font-size: 0.85rem;
-}
 
 .noteDate {
   font-size: 0.7rem;
@@ -193,14 +213,7 @@
   font-style: italic;
 }
 
-.readMore {
-  background: none;
-  border: none;
-  color: #007bff;
-  padding: 0;
-  font-size: 0.85rem;
-  cursor: pointer;
-}
+
 
 .clamped {
   display: -webkit-box;

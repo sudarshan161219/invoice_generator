@@ -1,0 +1,17 @@
+.noteContent {
+  margin: 0 0 0.3rem 0;
+  font-size: 0.85rem;
+}
+
+.readMore {
+  background: none;
+  border: none;
+  color: #007bff;
+  padding: 0;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.readMore:hover {
+  text-decoration: underline;
+}

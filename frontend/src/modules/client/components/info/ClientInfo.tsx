@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getClient } from "../../api/get.client.api";
 import { useInvoiceClient } from "@/hooks/useInvoiceClient";
-import { useNotesModal } from "@/hooks/useNotesModal";
 import {
   ClientHeader,
   ClientNotes,
@@ -40,7 +39,6 @@ export const ClientInfo = () => {
   const { client, clientName, setClient, setClientName } = useInvoiceClient();
   const [loading, setLoading] = useState(false);
   const [bgGradient] = useState(getRandomGradient());
-  const { notesModal, toggleNotesModal } = useNotesModal();
   const note = dummyNotes[0];
 
   useEffect(() => {
@@ -62,8 +60,6 @@ export const ClientInfo = () => {
     fetchClient();
   }, [id, setClient, setClientName]);
 
-console.log(client)
-
   if (loading)
     return <div className="p-4 text-gray-600">Loading client data...</div>;
   if (!client) return <div className="p-4 text-red-500">Client not found.</div>;
@@ -76,11 +72,7 @@ console.log(client)
         bgGradient={bgGradient}
       />
       <div className={styles.clientDetails}>
-        <ClientNotes
-          note={note}
-          notesModal={notesModal}
-          toggleNotesModal={toggleNotesModal}
-        />
+        <ClientNotes note={note} />
         <ClientAddress address={client.address || ""} />
         <ClientAttachments attachments={dummyAttachments} />
       </div>

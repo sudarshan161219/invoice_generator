@@ -1,14 +1,14 @@
+import { Button } from "@/components/button/Button";
 import styles from "./index.module.css";
+import { ReadMore } from "../readMore/ReadMore";
+import { useNotesModal } from "@/hooks/useNotesModal";
 
 export const ClientNotes = ({
   note,
-  notesModal,
-  toggleNotesModal,
 }: {
   note: { content: string; createdAt: string };
-  notesModal: boolean;
-  toggleNotesModal: () => void;
 }) => {
+  const { openAddNote, openViewAll } = useNotesModal();
   if (!note) {
     return (
       <div className={styles.notesContainer}>
@@ -20,30 +20,30 @@ export const ClientNotes = ({
 
   return (
     <div className={styles.notesContainer}>
-      <h3 className={styles.containerHeading}>Notes</h3>
+      <div className={styles.heading_actionsContainer}>
+        <h3 className={styles.containerHeading}>Notes</h3>
 
-      <div className={styles.noteItem}>
-        <p
-          className={`${styles.noteContent} ${
-            !notesModal ? styles.clamped : ""
-          }`}
-        >
-          {note.content}
-        </p>
-        <span className={styles.noteDate}>
-          {new Date(note.createdAt).toLocaleDateString("en-IN", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-          })}
-        </span>
-
-        {note.content.length > 100 && (
-          <button className={styles.readMore} onClick={toggleNotesModal}>
-            {notesModal ? "Show less" : "Read more"}
-          </button>
-        )}
+        <div className={styles.actionsbtns}>
+          <Button
+            className={styles.actionbtn}
+            onClick={openAddNote}
+            variant="default"
+            size="sm"
+          >
+            + Add Note
+          </Button>
+          <Button
+            className={styles.actionbtn}
+            onClick={openViewAll}
+            variant="ghost"
+            size="sm"
+          >
+            View All
+          </Button>
+        </div>
       </div>
+
+      <ReadMore content={note.content} />
     </div>
   );
 };

@@ -9,8 +9,6 @@ import type { Column } from "@/types/table.types";
 import { MoreVertical, Copy } from "lucide-react";
 import type { Clients, ClientsApiResponse } from "../types/clients";
 import { NotebookPen } from "lucide-react";
-import { NotesModal } from "../components/notesModal/NotesModal";
-import { useNotesModal } from "@/hooks/useNotesModal";
 import { Link } from "react-router-dom";
 import {
   Pagination,
@@ -53,12 +51,6 @@ export const ClientsPage: FC = (): ReactElement => {
   const [loading, setLoading] = useState(true);
   const [clientResponse, setClientResponse] =
     useState<ClientsApiResponse | null>(null);
-  const { toggleNotesModal, setNotes, notesModal } = useNotesModal();
-
-  const handleNotesClick = (note: string | null | undefined) => {
-    toggleNotesModal();
-    setNotes(note || "");
-  };
 
   const clientColumns: Column<Clients>[] = [
     {
@@ -99,23 +91,19 @@ export const ClientsPage: FC = (): ReactElement => {
       ),
     },
 
-    {
-      key: "notes",
-      title: "Notes",
-      render: (client) => {
-        return (
-          <div className=" cursor-pointer">
-            {client.notes && (
-              <NotebookPen
-                onClick={() => handleNotesClick(client.notes)}
-                className="text-(--label)"
-                size={16}
-              />
-            )}
-          </div>
-        );
-      },
-    },
+    // {
+    //   key: "notes",
+    //   title: "Notes",
+    //   render: (client) => {
+    //     return (
+    //       <div className=" cursor-pointer">
+    //         {client.notes && (
+    //           <NotebookPen className="text-(--label)" size={16} />
+    //         )}
+    //       </div>
+    //     );
+    //   },
+    // },
     {
       key: "createdAt",
       title: "Created",
@@ -161,8 +149,6 @@ export const ClientsPage: FC = (): ReactElement => {
 
   return (
     <div className="space-y-6">
-      {notesModal && <NotesModal />}
-
       <div className="w-full flex flex-row justify-between">
         {/* <Tabs /> */}
         <SearchInput
