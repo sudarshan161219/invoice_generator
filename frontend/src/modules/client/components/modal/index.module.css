@@ -22,7 +22,7 @@
   border-radius: 8px;
   width: 90%;
   max-width: 500px;
-  padding: 1.5rem;
+  padding: 0.7rem;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
 }
 
@@ -30,6 +30,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 1.2rem;
 }
 
 .icon {
@@ -62,19 +63,177 @@
   flex-direction: column;
   gap: 0.5rem;
 }
-
-textarea {
+.textArea {
+  margin: 1rem 0;
   resize: none;
   padding: 0.5rem;
-  font-size: 1rem;
+  font-size: 0.9rem;
+  outline: 1px groove var(--label);
+  border-radius: 3px;
 }
 
-button[type="submit"] {
-  align-self: flex-end;
+/* uploadFileButton */
+
+/* .attachmentContainer {
+  border: 1px dotted var(--label);
+  border-radius: 5px;
+  padding: 0.5rem;
+}
+
+.uploadLabel {
+  padding: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  cursor: pointer;
+}
+
+.Uploadicon {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-self: center;
+}
+
+.textContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
+.textContainer > p {
+  font-size: 0.85rem;
+  color: var(--label);
+}
+
+.textContainer > span {
+  font-size: 0.75rem;
+  color: var(--label);
+} */
+
+/* /// */
+.uploadLabel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  border: 2px dashed #aaa;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+  margin-bottom: 1rem;
+}
+
+.dragOver {
+  border-color: #3b82f6;
+  background-color: rgba(59, 130, 246, 0.05);
+}
+
+.textContainer p {
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.textContainer span {
+  font-size: 0.875rem;
+  color: #777;
+}
+
+.uploadList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 1rem;
+}
+
+.uploadItem {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.875rem;
+  gap: 4px;
+}
+
+.progressBar {
+  width: 100%;
+  height: 6px;
+  background-color: #e5e5e5;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background-color: #3b82f6;
+  transition: width 0.2s ease;
+}
+
+.previewGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 1rem;
+}
+
+.previewItem {
+  border: 1px solid #ddd;
+  padding: 8px;
+  border-radius: 6px;
+  width: 100px;
+  text-align: center;
+  font-size: 12px;
+  word-break: break-word;
+  position: relative;
+}
+
+.previewItem img {
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
+}
+
+.fileText {
+  display: block;
+  font-size: 12px;
+  padding-top: 4px;
+}
+
+.actions {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  margin-top: 6px;
+}
+
+.actions button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px;
+}
+
+.actionsFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 1rem;
+}
+
+.cancelBtn {
   padding: 0.5rem 1rem;
-  background: #2563eb;
+  background-color: #eee;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.attachBtn {
+  padding: 0.5rem 1rem;
+  background-color: #3b82f6;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
 }

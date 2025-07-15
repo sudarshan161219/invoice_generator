@@ -43,67 +43,12 @@ export const ClientPage = () => {
         <ClientInvoice />
       </div>
 
-      {/* {isOpen && (
-        <NotesModal
-          notes={[
-            {
-              id: 1,
-              content: "Send invoice after project completion",
-              createdAt: "2025-07-10T14:00:00Z",
-            },
-            {
-              id: 2,
-              content: "Client prefers communication via WhatsApp.",
-              createdAt: "2025-07-09T11:30:00Z",
-            },
-          ]}
-          // notes={notes}
-          onAddNote={(noteContent) => {
-            // Save note to DB or state here
-            console.log("Add note:", noteContent);
-          }}
-          onDeleteNote={(id) => {
-            console.log(id);
-            // Call API or update state
-            // setNotes(notes.filter((note) => note.id !== id));
-          }}
-          onEditNote={(id, newContent) => {
-            console.log(id, newContent);
-            // Call API or update state
-            // setNotes(
-            //   notes.map((n) =>
-            //     n.id === id ? { ...n, content: newContent } : n
-            //   )
-            // );
-          }}
-        />
-      )} */}
-{/* 
-      {isOpen && (
-        <Modal
-          notes={clientNotes}
-          files={clientFiles}
-          onEditNote={(id, content) => {
-            console.log(id, content);
-            // update note logic
-          }}
-          onAddFile={(file) => {
-            console.log(file);
-            // upload file logic
-          }}
-        />
-      )} */}
-
       <Modal
         notes={clientNotes}
         files={clientFiles}
         onEditNote={(id, content) => {
           console.log(id, content);
           // update note logic
-        }}
-        onAddFile={(file) => {
-          console.log(file);
-          // upload file logic
         }}
       />
     </div>

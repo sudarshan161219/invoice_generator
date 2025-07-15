@@ -170,6 +170,9 @@
 
 .actionbtn {
  font-size: 11px;
+ display: flex;
+ align-items: center;
+ gap: 2px;
 }
 
 @media (max-width: 640px) {
