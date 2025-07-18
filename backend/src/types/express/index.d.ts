@@ -1,6 +1,5 @@
 import { JwtUserPayload } from "../auth.types";
 
-
 import { Request } from "express";
 
 declare global {
@@ -13,4 +12,14 @@ declare global {
 
 export interface AuthRequest extends Request {
   user?: JwtUserPayload;
+}
+
+export interface AuthFileRequest extends Request {
+  user?: JwtUserPayload;
+  file?: Express.Multer.File;
+  body: {
+    clientId?: string;
+    invoiceId?: string;
+    type?: string;
+  };
 }

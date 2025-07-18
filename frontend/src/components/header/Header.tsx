@@ -16,7 +16,7 @@ export const Header = () => {
   }, []);
 
   return (
-    <header className="h-16 border-b px-6 sticky top-0 z-30 flex items-center justify-between md:justify-between">
+    <header className="h-16 border-b px-6 sticky top-0  flex items-center justify-between md:justify-between">
       <div className="flex flex-row gap-3  items-center">
         <button
           className={`cursor-pointer mb-0.5 z-10 ${

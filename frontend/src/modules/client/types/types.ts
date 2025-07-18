@@ -16,3 +16,22 @@ export type Props = {
   onEditNote: (id: number, newContent: string) => void;
   // onAddFile: (file: File) => void;
 };
+
+
+
+export type UploadAttachmentResponse = {
+  message: string;
+  attachment: {
+    id: number;
+    filename: string;
+    url: string;
+    size: number;
+    mimeType: string;
+    type: string;
+    userId: number;
+    clientId?: number;
+    invoiceId?: number;
+    createdAt: string;
+    updatedAt: string;
+  };
+};

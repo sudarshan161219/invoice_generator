@@ -17,12 +17,12 @@
 }
 
 .modalCard {
-  z-index: 100;
+  z-index: 150;
   background: var(--card);
   border-radius: 8px;
   width: 90%;
   max-width: 500px;
-  padding: 0.7rem;
+  padding: 0.9rem;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
 }
 
@@ -119,8 +119,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 2rem;
-  border: 2px dashed #aaa;
+  padding: 1.1rem;
+  border: 2px dashed var(--label);
   border-radius: 8px;
   cursor: pointer;
   transition: border-color 0.2s ease;
@@ -132,14 +132,22 @@
   background-color: rgba(59, 130, 246, 0.05);
 }
 
+.textContainer {
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
 .textContainer p {
+  font-size: 1rem;
   font-weight: 500;
-  margin-bottom: 0.25rem;
+  color: var(--primary);
+  text-align: center;
 }
 
 .textContainer span {
-  font-size: 0.875rem;
-  color: #777;
+  font-size: 0.8rem;
+  color: var(--label);
+  text-align: center;
 }
 
 .uploadList {
@@ -172,20 +180,26 @@
 
 .previewGrid {
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 1rem;
+  flex-direction: column;
+  gap: 8px;
+  /* height: 150px;
+  overflow-y: scroll; */
 }
 
 .previewItem {
-  border: 1px solid #ddd;
+  border: 1px solid var(--label);
   padding: 8px;
   border-radius: 6px;
-  width: 100px;
-  text-align: center;
-  font-size: 12px;
-  word-break: break-word;
-  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.fileInfoContainer {
+  display: flex;
+  gap: 5px;
+  align-items: center;
 }
 
 .previewItem img {
@@ -197,7 +211,22 @@
 .fileText {
   display: block;
   font-size: 12px;
-  padding-top: 4px;
+  font-weight: bold;
+}
+
+.fileSize {
+  display: block;
+  font-size: 10px;
+  font-weight: bold;
+  color: var(--label);
+}
+
+.uploadStatusText {
+  display: block;
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: var(--label);
 }
 
 .actions {
@@ -217,7 +246,7 @@
 .actionsFooter {
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
+  gap: 8px;
   margin-top: 1rem;
 }
 

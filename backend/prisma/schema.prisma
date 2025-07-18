@@ -41,6 +41,7 @@ model Invoice {
   // Indexes
   @@index([userId])
   @@unique([id, userId])
+  Attachment Attachment[]
 }
 
 
@@ -65,6 +66,8 @@ model User {
   clients      Client[]
   invoices     Invoice[]
   ClientNotes ClientNote[]
+
+  Attachment Attachment[]
 }
 
 model Account {
@@ -131,6 +134,7 @@ model Client {
   @@index([userId])
   @@unique([email, userId]) 
   @@unique([id, userId])
+  Attachment Attachment[]
 }
 
 
@@ -148,3 +152,25 @@ model Payment {
 }
 
 
+model Attachment {
+  id          Int       @id @default(autoincrement())
+  filename        String
+  type        String         // e.g., "image/png", "application/pdf"
+  size        Int            // in bytes
+  url         String         // URL or path to the uploaded file
+  uploadedAt  DateTime  @default(now())
+  mimeType   String
+  // Relations
+  userId      Int
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  invoiceId   Int?      // Optional relation to an invoice
+  invoice     Invoice?  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  clientId    Int?      // Optional relation to a client
+  client      Client?   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([invoiceId])
+  @@index([clientId])
+}

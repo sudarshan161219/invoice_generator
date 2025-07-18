@@ -26,8 +26,6 @@ export const authenticate = asyncHandler<AuthRequest>(
     ) as JwtUserPayload;
 
     const isBlacklisted = await redisClient.get(`blacklist:${decoded.jti}`);
-    // console.debug("Decoded JWT:", decoded);
-    // console.debug("Token blacklisted?", isBlacklisted);
 
     if (isBlacklisted) {
       return next(

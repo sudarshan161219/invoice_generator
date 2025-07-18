@@ -1,15 +1,22 @@
 import { useState } from "react";
-import { UploadCloud, X, Trash2, Pencil } from "lucide-react";
+import { UploadCloud, Trash2, Pencil, File, Image } from "lucide-react";
 import styles from "./index.module.css";
+import { Button } from "@/components/button/Button";
+import { uploadMultipleAttachments } from "../../api/uploadFile.client";
+import { useInvoiceClient } from "@/hooks/useInvoiceClient";
+import { toast } from "sonner";
 
 type FileType = {
   id: number;
   name: string;
   url: string;
   type: string;
+  size: number;
+  file: File;
 };
 
 const MAX_SIZE_MB = 25;
+const MAX_FILES = 5;
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "application/pdf"];
 
 export const UploadFileButton = () => {
@@ -18,15 +25,16 @@ export const UploadFileButton = () => {
     { id: number; name: string; progress: number }[]
   >([]);
   const [uploadedFiles, setUploadedFiles] = useState<FileType[]>([]);
+  const { client } = useInvoiceClient();
 
   const validateFile = (file: File) => {
     if (!ALLOWED_TYPES.includes(file.type)) {
-      alert(`Unsupported file: ${file.name}`);
+      toast.warning(`Unsupported file: ${file.name}`);
       return false;
     }
     const sizeMB = file.size / (1024 * 1024);
     if (sizeMB > MAX_SIZE_MB) {
-      alert(`File too large: ${file.name}`);
+      toast.warning(`File too large: ${file.name}`);
       return false;
     }
     return true;
@@ -51,6 +59,8 @@ export const UploadFileButton = () => {
         name: file.name,
         url: URL.createObjectURL(file),
         type: file.type,
+        size: file.size,
+        file,
       };
       setUploadedFiles((prev) => [...prev, newFile]);
       setUploadQueue((prev) => prev.filter((f) => f.id !== id));
@@ -59,7 +69,13 @@ export const UploadFileButton = () => {
 
   const handleFiles = (files: FileList | null) => {
     if (!files) return;
-    Array.from(files).forEach((file) => {
+    const currentCount = uploadedFiles.length + uploadQueue.length;
+    Array.from(files).forEach((file, index) => {
+      if (currentCount + index >= MAX_FILES) {
+        toast.warning(`You can only upload up to ${MAX_FILES} files.`);
+        return;
+      }
+
       if (validateFile(file)) simulateUpload(file);
     });
   };
@@ -91,9 +107,19 @@ export const UploadFileButton = () => {
     setUploadQueue([]);
   };
 
-  const handleAttach = () => {
-    console.log("Final attached files:", uploadedFiles);
-    // You can send `uploadedFiles` to parent or backend
+  const handleAttach = async () => {
+    const formData = new FormData();
+    uploadedFiles.forEach((file) => {
+      formData.append("files", file.file);
+      formData.append("type", file.type);
+    });
+    if (client?.id) formData.append("clientId", client?.id.toString());
+    try {
+      const response = await uploadMultipleAttachments(formData);
+      console.log("Uploaded:", response);
+    } catch (error) {
+      console.error("Upload failed:", error);
+    }
   };
 
   return (
@@ -107,7 +133,7 @@ export const UploadFileButton = () => {
         onDrop={handleDrop}
         className={`${styles.uploadLabel} ${dragOver ? styles.dragOver : ""}`}
       >
-        <UploadCloud size={85} className={styles.Uploadicon} />
+        <UploadCloud size={70} className={styles.Uploadicon} />
         <div className={styles.textContainer}>
           <p>
             {dragOver ? "Drop files here" : "Click to Upload or drag and drop"}
@@ -119,6 +145,7 @@ export const UploadFileButton = () => {
           className="hidden"
           onChange={handleChange}
           multiple
+          disabled={uploadedFiles.length + uploadQueue.length >= MAX_FILES}
           accept=".jpg,.jpeg,.png,.pdf"
         />
       </label>
@@ -140,15 +167,42 @@ export const UploadFileButton = () => {
         </div>
       )}
 
+      {uploadedFiles.length > 0 && (
+        <p className={styles.uploadStatusText}>
+          {`Uploaded ${
+            uploadedFiles.length + uploadQueue.length
+          } of ${MAX_FILES} files`}
+        </p>
+      )}
+
       {/* Uploaded previews */}
       {uploadedFiles.length > 0 && (
         <div className={styles.previewGrid}>
           {uploadedFiles.map((file) => (
             <div key={file.id} className={styles.previewItem}>
               {file.type.startsWith("image/") ? (
-                <img src={file.url} alt={file.name} />
+                // <img src={file.url} alt={file.name} />
+                <div className={styles.fileInfoContainer}>
+                  <Image className="text-[var(--label)]" />
+                  <div>
+                    <span className={styles.fileText}>{file.name}</span>
+                    <span className={styles.fileSize}>{`${(
+                      file.size /
+                      (1024 * 1024)
+                    ).toFixed(2)} MB`}</span>
+                  </div>
+                </div>
               ) : (
-                <span className={styles.fileText}>{file.name}</span>
+                <div className={styles.fileInfoContainer}>
+                  <File className="text-[var(--label)]" />
+                  <div>
+                    <span className={styles.fileText}>{file.name}</span>
+                    <span className={styles.fileSize}>{`${(
+                      file.size /
+                      (1024 * 1024)
+                    ).toFixed(2)} MB`}</span>
+                  </div>
+                </div>
               )}
               <div className={styles.actions}>
                 <button onClick={() => handleRename(file.id)} title="Rename">
@@ -166,12 +220,12 @@ export const UploadFileButton = () => {
       {/* Action buttons */}
       {uploadedFiles.length > 0 && (
         <div className={styles.actionsFooter}>
-          <button onClick={handleCancel} className={styles.cancelBtn}>
+          <Button variant="outline" size="md" onClick={handleCancel}>
             Cancel
-          </button>
-          <button onClick={handleAttach} className={styles.attachBtn}>
+          </Button>
+          <Button size="md" onClick={handleAttach}>
             Attach Files
-          </button>
+          </Button>
         </div>
       )}
     </div>
