@@ -4,10 +4,12 @@ import styles from "./index.module.css";
 import { Button } from "@/components/button/Button";
 import { uploadMultipleAttachments } from "../../api/uploadFile.client";
 import { useInvoiceClient } from "@/hooks/useInvoiceClient";
+import { EditFileModal } from "./editFileModal";
 import { toast } from "sonner";
+import { useNotesModal } from "@/hooks/useNotesModal";
 
 type FileType = {
-  id: number;
+  id: string;
   name: string;
   url: string;
   type: string;
@@ -20,9 +22,24 @@ const MAX_FILES = 5;
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "application/pdf"];
 
 export const UploadFileButton = () => {
+  const {
+    toggleEditFileNameModal,
+    isEditOpen,
+    setEditFileName,
+    editedName,
+    setEditingFileId,
+  } = useNotesModal();
+  // const [editingFileId, setEditingFileId] = useState<string | null>(null);
+
   const [dragOver, setDragOver] = useState(false);
   const [uploadQueue, setUploadQueue] = useState<
-    { id: number; name: string; progress: number }[]
+    {
+      id: string;
+      name: string;
+      progress: number;
+      loaded: number;
+      total: number;
+    }[]
   >([]);
   const [uploadedFiles, setUploadedFiles] = useState<FileType[]>([]);
   const { client } = useInvoiceClient();
@@ -40,46 +57,6 @@ export const UploadFileButton = () => {
     return true;
   };
 
-  const simulateUpload = (file: File) => {
-    const id = Date.now() + Math.random();
-    setUploadQueue((prev) => [...prev, { id, name: file.name, progress: 0 }]);
-
-    const interval = setInterval(() => {
-      setUploadQueue((prev) =>
-        prev.map((f) =>
-          f.id === id ? { ...f, progress: Math.min(f.progress + 10, 100) } : f
-        )
-      );
-    }, 100);
-
-    setTimeout(() => {
-      clearInterval(interval);
-      const newFile: FileType = {
-        id,
-        name: file.name,
-        url: URL.createObjectURL(file),
-        type: file.type,
-        size: file.size,
-        file,
-      };
-      setUploadedFiles((prev) => [...prev, newFile]);
-      setUploadQueue((prev) => prev.filter((f) => f.id !== id));
-    }, 1100);
-  };
-
-  const handleFiles = (files: FileList | null) => {
-    if (!files) return;
-    const currentCount = uploadedFiles.length + uploadQueue.length;
-    Array.from(files).forEach((file, index) => {
-      if (currentCount + index >= MAX_FILES) {
-        toast.warning(`You can only upload up to ${MAX_FILES} files.`);
-        return;
-      }
-
-      if (validateFile(file)) simulateUpload(file);
-    });
-  };
-
   const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
     e.preventDefault();
     setDragOver(false);
@@ -90,36 +67,91 @@ export const UploadFileButton = () => {
     handleFiles(e.target.files);
   };
 
-  const handleDelete = (id: number) => {
+  const handleFiles = (files: FileList | null) => {
+    if (!files) return;
+    const currentCount = uploadedFiles.length + uploadQueue.length;
+    Array.from(files).forEach((file, index) => {
+      if (currentCount + index >= MAX_FILES) {
+        toast.warning(`You can only upload up to ${MAX_FILES} files.`);
+        return;
+      }
+      if (!validateFile(file)) return;
+      const id = crypto.randomUUID();
+      const newFile: FileType = {
+        id,
+        name: file.name,
+        url: URL.createObjectURL(file),
+        type: file.type,
+        size: file.size,
+        file,
+      };
+      setUploadedFiles((prev) => [...prev, newFile]);
+    });
+  };
+
+  const handleAttach = async () => {
+    for (const file of uploadedFiles) {
+      setUploadQueue((prev) => [
+        ...prev,
+        {
+          id: file.id,
+          name: file.name,
+          progress: 0,
+          loaded: 0,
+          total: file.size,
+        },
+      ]);
+
+      const formData = new FormData();
+      formData.append("files", file.file);
+      formData.append("type", file.type);
+      if (client?.id) formData.append("clientId", client.id.toString());
+
+      try {
+        await uploadMultipleAttachments(
+          formData,
+          ({ percent, loaded, total }) => {
+            setUploadQueue((prev) =>
+              prev.map((f) =>
+                f.id === file.id
+                  ? { ...f, progress: percent, loaded, total }
+                  : f
+              )
+            );
+          }
+        );
+
+        setUploadQueue((prev) => prev.filter((f) => f.id !== file.id));
+        toast.success(`${file.name} uploaded successfully`);
+      } catch (err) {
+        setUploadQueue((prev) => prev.filter((f) => f.id !== file.id));
+        toast.error(`Failed to upload ${file.name}`);
+        console.error(err);
+      }
+    }
+
+    // Clear files only after all are uploaded
+    setUploadedFiles([]);
+  };
+
+  const handleDelete = (id: string) => {
     setUploadedFiles((prev) => prev.filter((f) => f.id !== id));
   };
 
-  const handleRename = (id: number) => {
-    const newName = prompt("Enter new file name:");
-    if (!newName) return;
+  const handleRename = (id: string) => {
+    if (!editedName) return;
     setUploadedFiles((prev) =>
-      prev.map((f) => (f.id === id ? { ...f, name: newName } : f))
+      prev.map((f) =>
+        f.id === id
+          ? { ...f, name: `${editedName}.${f.type.split("/")[1]}` }
+          : f
+      )
     );
   };
 
   const handleCancel = () => {
     setUploadedFiles([]);
     setUploadQueue([]);
-  };
-
-  const handleAttach = async () => {
-    const formData = new FormData();
-    uploadedFiles.forEach((file) => {
-      formData.append("files", file.file);
-      formData.append("type", file.type);
-    });
-    if (client?.id) formData.append("clientId", client?.id.toString());
-    try {
-      const response = await uploadMultipleAttachments(formData);
-      console.log("Uploaded:", response);
-    } catch (error) {
-      console.error("Upload failed:", error);
-    }
   };
 
   return (
@@ -150,23 +182,6 @@ export const UploadFileButton = () => {
         />
       </label>
 
-      {/* Uploading progress */}
-      {uploadQueue.length > 0 && (
-        <div className={styles.uploadList}>
-          {uploadQueue.map((file) => (
-            <div key={file.id} className={styles.uploadItem}>
-              <span>{file.name}</span>
-              <div className={styles.progressBar}>
-                <div
-                  className={styles.progressFill}
-                  style={{ width: `${file.progress}%` }}
-                />
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
       {uploadedFiles.length > 0 && (
         <p className={styles.uploadStatusText}>
           {`Uploaded ${
@@ -178,42 +193,76 @@ export const UploadFileButton = () => {
       {/* Uploaded previews */}
       {uploadedFiles.length > 0 && (
         <div className={styles.previewGrid}>
-          {uploadedFiles.map((file) => (
-            <div key={file.id} className={styles.previewItem}>
-              {file.type.startsWith("image/") ? (
-                // <img src={file.url} alt={file.name} />
-                <div className={styles.fileInfoContainer}>
-                  <Image className="text-[var(--label)]" />
-                  <div>
-                    <span className={styles.fileText}>{file.name}</span>
-                    <span className={styles.fileSize}>{`${(
-                      file.size /
-                      (1024 * 1024)
-                    ).toFixed(2)} MB`}</span>
+          {uploadedFiles.map((file) => {
+            const matchingUpload = uploadQueue.find((f) => f.id === file.id);
+            return (
+              <div key={file.id} className={styles.previewItem}>
+                <div className={styles.item_action_container}>
+                  {file.type.startsWith("image/") ? (
+                    <div className={styles.fileInfoContainer}>
+                      <Image className="text-[var(--label)]" />
+                      <div>
+                        <span className={styles.fileText}>{file.name}</span>
+                        <span className={styles.fileSize}>{`${(
+                          file.size /
+                          (1024 * 1024)
+                        ).toFixed(2)} MB`}</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className={styles.fileInfoContainer}>
+                      <File className="text-[var(--label)]" />
+                      <div>
+                        <span className={styles.fileText}>{file.name}</span>
+                        <span className={styles.fileSize}>{`${(
+                          file.size /
+                          (1024 * 1024)
+                        ).toFixed(2)} MB`}</span>
+                      </div>
+                    </div>
+                  )}
+                  <div className={styles.actions}>
+                    <button
+                      onClick={() => {
+                        setEditFileName(file.name.split(".")[0]); // Remove extension
+                        setEditingFileId(file.id); // Track file ID
+                        toggleEditFileNameModal(); // Open modal
+                      }}
+                      title="Rename"
+                    >
+                      <Pencil size={16} />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(file.id)}
+                      title="Delete"
+                    >
+                      <Trash2 size={16} />
+                    </button>
                   </div>
                 </div>
-              ) : (
-                <div className={styles.fileInfoContainer}>
-                  <File className="text-[var(--label)]" />
-                  <div>
-                    <span className={styles.fileText}>{file.name}</span>
-                    <span className={styles.fileSize}>{`${(
-                      file.size /
-                      (1024 * 1024)
-                    ).toFixed(2)} MB`}</span>
+                {matchingUpload && (
+                  <div className={styles.uploadList}>
+                    <div className={styles.uploadItem}>
+                      <div className={styles.progressBar}>
+                        <div
+                          className={styles.progressFill}
+                          style={{ width: `${matchingUpload.progress}%` }}
+                        />
+                      </div>
+                      <div className={styles.uploadStats}>
+                        {`${(matchingUpload.loaded / (1024 * 1024)).toFixed(
+                          2
+                        )} MB / ${(
+                          matchingUpload.total /
+                          (1024 * 1024)
+                        ).toFixed(2)} MB`}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              )}
-              <div className={styles.actions}>
-                <button onClick={() => handleRename(file.id)} title="Rename">
-                  <Pencil size={16} />
-                </button>
-                <button onClick={() => handleDelete(file.id)} title="Delete">
-                  <Trash2 size={16} />
-                </button>
+                )}
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
@@ -228,6 +277,8 @@ export const UploadFileButton = () => {
           </Button>
         </div>
       )}
+
+      {isEditOpen && <EditFileModal handleRename={handleRename} />}
     </div>
   );
 };
