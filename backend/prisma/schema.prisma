@@ -169,7 +169,7 @@ model Attachment {
 
   clientId    Int?      // Optional relation to a client
   client      Client?   @relation(fields: [clientId], references: [id], onDelete: Cascade)
-
+ createdAt DateTime  @default(now())
   @@index([userId])
   @@index([invoiceId])
   @@index([clientId])

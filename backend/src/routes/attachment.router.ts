@@ -28,5 +28,13 @@ export class AttachmentRouter {
         this.attachmentController.handleUpload.bind(this.attachmentController)
       )
     );
+
+    this.router.get(
+      "/upload/:id",
+      authenticate,
+      wrapWithAuthFileRequest(
+        this.attachmentController.getAttachments.bind(this.attachmentController)
+      )
+    );
   }
 }

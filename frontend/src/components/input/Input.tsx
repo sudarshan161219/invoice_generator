@@ -8,10 +8,24 @@ import { ErrorMessage } from "./ErrorMessage";
 import { useAuthLayout } from "@/hooks/useAuthLayout";
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type = "text", label, name, id, onChange }, ref) => {
+  (
+    {
+      className,
+      type = "text",
+      label,
+      name,
+      id,
+      onChange,
+      value: controlledValue,
+    },
+    ref
+  ) => {
     const [show, setShow] = useState(false);
-    const [value, setValue] = useState("");
+    const [uncontrolledValue, setUncontrolledValue] = useState("");
     const { isLogin } = useAuthLayout();
+
+    const value =
+      controlledValue !== undefined ? controlledValue : uncontrolledValue;
 
     const toggleShow = () => setShow((prev) => !prev);
 
@@ -23,11 +37,17 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         : `input-${Math.random().toString(36).substring(2, 9)}`);
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-      setValue(e.target.value); // update local state
-      if (onChange) onChange(e); // forward to parent if neede
+      const newVal = e.target.value;
+      if (controlledValue === undefined) {
+        setUncontrolledValue(newVal); // only update internal state if not controlled
+      }
+      if (onChange) onChange(e); // pass to parent
     };
 
-    const validationMessage = useValidation(name, value);
+    const validationMessage = useValidation(
+      name,
+      value != null ? String(value) : ""
+    );
 
     return (
       <div className="w-full space-y-1">
@@ -41,7 +61,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           toggleShow={toggleShow}
           className={className}
           error={!isLogin && !!validationMessage}
-          value={value}
+          value={value != null ? String(value) : ""}
           onChange={handleChange}
           ref={ref}
         />

@@ -77,7 +77,9 @@ export class AttachmentService {
    */
   private async validateLinkedEntities(clientId?: number, invoiceId?: number) {
     if (clientId) {
-      const clientExists = await prisma.client.findUnique({ where: { id: clientId } });
+      const clientExists = await prisma.client.findUnique({
+        where: { id: clientId },
+      });
       if (!clientExists) {
         throw new AppError({
           message: "Client not found.",
@@ -89,7 +91,9 @@ export class AttachmentService {
     }
 
     if (invoiceId) {
-      const invoiceExists = await prisma.invoice.findUnique({ where: { id: invoiceId } });
+      const invoiceExists = await prisma.invoice.findUnique({
+        where: { id: invoiceId },
+      });
       if (!invoiceExists) {
         throw new AppError({
           message: "Invoice not found.",
@@ -113,5 +117,19 @@ export class AttachmentService {
    */
   private buildFileUrl(key: string): string {
     return `https://${this.accountId}.r2.cloudflarestorage.com/${this.bucket}/${key}`;
+  }
+
+  async getAttachmentsByClient(clientId: number, userId: number) {
+    const attachments = await prisma.attachment.findMany({
+      where: {
+        clientId,
+        userId,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    return attachments;
   }
 }

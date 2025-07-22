@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getClient } from "../../api/get.client.api";
+import { getClientAttachments } from "../../api/getAttachments.client.api";
 import { useInvoiceClient } from "@/hooks/useInvoiceClient";
 import {
   ClientHeader,
@@ -37,6 +38,7 @@ const getRandomGradient = () =>
 export const ClientInfo = () => {
   const { id } = useParams<{ id: string }>();
   const { client, clientName, setClient, setClientName } = useInvoiceClient();
+  const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [bgGradient] = useState(getRandomGradient());
   const note = dummyNotes[0];
@@ -48,8 +50,11 @@ export const ClientInfo = () => {
       setLoading(true);
       try {
         const { data } = await getClient(Number(id));
+
         setClient(data);
         setClientName(data.name);
+        const res = await getClientAttachments(Number(id));
+        setData(res);
       } catch (err) {
         console.error("Failed to fetch client:", err);
       } finally {
@@ -63,6 +68,9 @@ export const ClientInfo = () => {
   if (loading)
     return <div className="p-4 text-gray-600">Loading client data...</div>;
   if (!client) return <div className="p-4 text-red-500">Client not found.</div>;
+  if (!data) return <div className="p-4 text-red-500">Data is empty.</div>;
+
+  console.log(data);
 
   return (
     <div className={styles.card}>

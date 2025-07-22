@@ -3,6 +3,7 @@ import { type UploadAttachmentResponse } from "../types/types";
 
 export const uploadMultipleAttachments = async (
   formData: FormData,
+  signal: AbortSignal,
   onProgress?: (progress: {
     percent: number;
     loaded: number;
@@ -20,14 +21,15 @@ export const uploadMultipleAttachments = async (
         if (!progressEvent.total) return;
 
         const percent = Math.round(
-          (progressEvent.loaded * 100) / progressEvent.total
+          (progressEvent.loaded * 100) / (progressEvent.total || 1)
         );
         onProgress?.({
           percent,
           loaded: progressEvent.loaded,
-          total: progressEvent.total,
+          total: progressEvent.total || 0,
         });
       },
+      signal,
     }
   );
   return res.data;

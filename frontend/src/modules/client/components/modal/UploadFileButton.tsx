@@ -29,8 +29,9 @@ export const UploadFileButton = () => {
     editedName,
     setEditingFileId,
   } = useNotesModal();
-  // const [editingFileId, setEditingFileId] = useState<string | null>(null);
-
+  const [uploadControllers, setUploadControllers] = useState<
+    Record<string, AbortController>
+  >({});
   const [dragOver, setDragOver] = useState(false);
   const [uploadQueue, setUploadQueue] = useState<
     {
@@ -91,6 +92,9 @@ export const UploadFileButton = () => {
 
   const handleAttach = async () => {
     for (const file of uploadedFiles) {
+      const controller = new AbortController();
+      setUploadControllers((prev) => ({ ...prev, [file.id]: controller }));
+
       setUploadQueue((prev) => [
         ...prev,
         {
@@ -110,6 +114,7 @@ export const UploadFileButton = () => {
       try {
         await uploadMultipleAttachments(
           formData,
+          controller.signal,
           ({ percent, loaded, total }) => {
             setUploadQueue((prev) =>
               prev.map((f) =>
@@ -124,13 +129,22 @@ export const UploadFileButton = () => {
         setUploadQueue((prev) => prev.filter((f) => f.id !== file.id));
         toast.success(`${file.name} uploaded successfully`);
       } catch (err) {
+        if (controller.signal.aborted) {
+          toast.warning(`${file.name} upload canceled`);
+        } else {
+          toast.error(`Failed to upload ${file.name}`);
+          console.error(err);
+        }
+      } finally {
         setUploadQueue((prev) => prev.filter((f) => f.id !== file.id));
-        toast.error(`Failed to upload ${file.name}`);
-        console.error(err);
+        setUploadedFiles((prev) => prev.filter((f) => f.id !== file.id));
+        setUploadControllers((prev) => {
+          const copy = { ...prev };
+          delete copy[file.id];
+          return copy;
+        });
       }
     }
-
-    // Clear files only after all are uploaded
     setUploadedFiles([]);
   };
 
@@ -222,22 +236,38 @@ export const UploadFileButton = () => {
                     </div>
                   )}
                   <div className={styles.actions}>
-                    <button
-                      onClick={() => {
-                        setEditFileName(file.name.split(".")[0]); // Remove extension
-                        setEditingFileId(file.id); // Track file ID
-                        toggleEditFileNameModal(); // Open modal
-                      }}
-                      title="Rename"
-                    >
-                      <Pencil size={16} />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(file.id)}
-                      title="Delete"
-                    >
-                      <Trash2 size={16} />
-                    </button>
+                    {matchingUpload ? (
+                      <button
+                        className="text-red-500"
+                        onClick={() => {
+                          const controller = uploadControllers[file.id];
+                          if (controller) {
+                            controller.abort();
+                          }
+                        }}
+                      >
+                        Cancel
+                      </button>
+                    ) : (
+                      <div className={styles.actions}>
+                        <button
+                          onClick={() => {
+                            setEditFileName(file.name.split(".")[0]);
+                            setEditingFileId(file.id);
+                            toggleEditFileNameModal();
+                          }}
+                          title="Rename"
+                        >
+                          <Pencil size={16} />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(file.id)}
+                          title="Delete"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
                 {matchingUpload && (
