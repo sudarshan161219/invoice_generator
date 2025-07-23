@@ -154,12 +154,13 @@ model Payment {
 
 model Attachment {
   id          Int       @id @default(autoincrement())
-  filename        String
+  filename    String
   type        String         // e.g., "image/png", "application/pdf"
   size        Int            // in bytes
   url         String         // URL or path to the uploaded file
+  key         String  
   uploadedAt  DateTime  @default(now())
-  mimeType   String
+  mimeType    String
   // Relations
   userId      Int
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -169,7 +170,7 @@ model Attachment {
 
   clientId    Int?      // Optional relation to a client
   client      Client?   @relation(fields: [clientId], references: [id], onDelete: Cascade)
- createdAt DateTime  @default(now())
+  createdAt   DateTime  @default(now())
   @@index([userId])
   @@index([invoiceId])
   @@index([clientId])

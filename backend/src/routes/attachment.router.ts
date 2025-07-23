@@ -36,5 +36,36 @@ export class AttachmentRouter {
         this.attachmentController.getAttachments.bind(this.attachmentController)
       )
     );
+
+    //* Get Single Attachment Url
+    this.router.get(
+      "/getSignedUrl/:id",
+      authenticate,
+      wrapWithAuthFileRequest(
+        this.attachmentController.getSignedUrlByAttachmentId.bind(
+          this.attachmentController
+        )
+      )
+    );
+
+    //* Update Attachment's file name
+    this.router.patch(
+      "/update/:id",
+      authenticate,
+      wrapWithAuthFileRequest(
+        this.attachmentController.updateFilename.bind(this.attachmentController)
+      )
+    );
+
+    //* Delete Attachment
+    this.router.patch(
+      "/delete/:id",
+      authenticate,
+      wrapWithAuthFileRequest(
+        this.attachmentController.deleteAttachment.bind(
+          this.attachmentController
+        )
+      )
+    );
   }
 }

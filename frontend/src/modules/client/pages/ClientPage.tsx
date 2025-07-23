@@ -1,6 +1,5 @@
 import { ClientInfo } from "../components/info/ClientInfo";
 import { ClientInvoice } from "../components/invoice/ClientInvoice";
-import { NotesModal } from "../../client/components/notesModal/NotesModal";
 import { useNotesModal } from "@/hooks/useNotesModal";
 import { Modal } from "../components/modal/Modal";
 import styles from "./index.module.css";
@@ -36,10 +35,10 @@ export const ClientPage = () => {
 
   return (
     <div className={styles.container}>
-      <div className={(styles.box, styles.box1)}>
+      <div className={`${styles.box} ${styles.box1}`}>
         <ClientInfo />
       </div>
-      <div className={(styles.box, styles.box2)}>
+      <div className={`${styles.box} ${styles.box2}`}>
         <ClientInvoice />
       </div>
 

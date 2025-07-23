@@ -19,11 +19,6 @@ const dummyNotes = [
   },
 ];
 
-const dummyAttachments = [
-  { id: 1, fileName: "contract.pdf", fileUrl: "/uploads/contract.pdf" },
-  { id: 2, fileName: "mockup.jpg", fileUrl: "/uploads/mockup.jpg" },
-];
-
 const getRandomColor = () =>
   "#" +
   Array.from({ length: 6 }, () =>
@@ -46,23 +41,25 @@ export const ClientInfo = () => {
   useEffect(() => {
     if (!id) return;
 
-    const fetchClient = async () => {
+    const fetchClientAndAttachments = async () => {
       setLoading(true);
       try {
-        const { data } = await getClient(Number(id));
+        const [clientRes, attachmentsRes] = await Promise.all([
+          getClient(Number(id)),
+          getClientAttachments(Number(id)),
+        ]);
 
-        setClient(data);
-        setClientName(data.name);
-        const res = await getClientAttachments(Number(id));
-        setData(res);
+        setClient(clientRes.data);
+        setClientName(clientRes.data.name);
+        setData(attachmentsRes);
       } catch (err) {
-        console.error("Failed to fetch client:", err);
+        console.error("Failed to fetch client or attachments:", err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchClient();
+    fetchClientAndAttachments();
   }, [id, setClient, setClientName]);
 
   if (loading)
@@ -70,7 +67,7 @@ export const ClientInfo = () => {
   if (!client) return <div className="p-4 text-red-500">Client not found.</div>;
   if (!data) return <div className="p-4 text-red-500">Data is empty.</div>;
 
-  console.log(data);
+  // console.log(data);
 
   return (
     <div className={styles.card}>
@@ -82,7 +79,7 @@ export const ClientInfo = () => {
       <div className={styles.clientDetails}>
         <ClientNotes note={note} />
         <ClientAddress address={client.address || ""} />
-        <ClientAttachments attachments={dummyAttachments} />
+        <ClientAttachments attachments={data} />
       </div>
     </div>
   );

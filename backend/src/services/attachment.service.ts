@@ -4,13 +4,40 @@ import { prisma } from "../utils/prismaClient";
 import { AppError } from "../errors/AppError";
 import { IUploadAttachmentDTO } from "../types/attachment.types";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { GetObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { r2 } from "../lib/r2";
+import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { randomUUID } from "crypto";
 
 @injectable()
 export class AttachmentService {
   private bucket = process.env.CF_BUCKET_NAME!;
   private accountId = process.env.CF_ACCOUNT_ID!;
+
+  async generateSignedUrl(attachmentId: number, userId: number) {
+    const attachment = await prisma.attachment.findUnique({
+      where: { id: attachmentId },
+    });
+
+    if (!attachment || attachment.userId !== userId) {
+      throw new AppError({
+        message: "Forbidden",
+        statusCode: StatusCodes.FORBIDDEN,
+      });
+    }
+
+    const command = new GetObjectCommand({
+      Bucket: this.bucket,
+      Key: attachment?.key,
+    });
+
+    const signedUrl = await getSignedUrl(r2, command, {
+      expiresIn: 60 * 5, // 5 minutes
+    });
+
+    return signedUrl;
+  }
 
   /**
    * Uploads a file to Cloudflare R2 and returns the public URL and key.
@@ -43,7 +70,8 @@ export class AttachmentService {
       const attachment = await prisma.attachment.create({
         data: {
           filename: data.filename,
-          url: data.url,
+          url: data.key,
+          key: data.key,
           size: data.size,
           mimeType: data.mimeType,
           type: data.type,
@@ -131,5 +159,55 @@ export class AttachmentService {
     });
 
     return attachments;
+  }
+
+  async updateAttachmentFileName(
+    attachmentId: number,
+    userId: number,
+    filename: string
+  ) {
+    const attachment = await prisma.attachment.findUnique({
+      where: { id: Number(attachmentId) },
+    });
+
+    if (!attachment || attachment.userId !== userId) {
+      throw new AppError({
+        message: "Attachment not found",
+        statusCode: StatusCodes.NOT_FOUND,
+      });
+    }
+
+    const updated = await prisma.attachment.update({
+      where: { id: Number(attachmentId) },
+      data: { filename },
+    });
+
+    return updated;
+  }
+
+  async deleteAttachment(attachmentId: number, userId: number) {
+    const attachment = await prisma.attachment.findUnique({
+      where: { id: Number(attachmentId) },
+    });
+
+    if (!attachment || attachment.userId !== userId) {
+      throw new AppError({
+        message: "Attachment not found",
+        statusCode: StatusCodes.NOT_FOUND,
+      });
+    }
+
+    await r2.send(
+      new DeleteObjectCommand({
+        Bucket: process.env.CF_BUCKET_NAME!,
+        Key: attachment.key,
+      })
+    );
+
+    await prisma.attachment.delete({
+      where: { id: Number(attachmentId) },
+    });
+
+    return { success: true };
   }
 }

@@ -18,6 +18,7 @@ export interface AuthFileRequest extends Request {
   user?: JwtUserPayload;
   file?: Express.Multer.File;
   body: {
+    filename?: string;
     clientId?: string;
     invoiceId?: string;
     type?: string;

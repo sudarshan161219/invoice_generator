@@ -58,6 +58,7 @@ export class AttachmentController {
         const saved = await this.attachmentService.upload({
           filename: file.originalname,
           url,
+          key,
           size: file.size,
           mimeType: file.mimetype,
           type,
@@ -75,6 +76,43 @@ export class AttachmentController {
       });
     } catch (error) {
       next(error);
+    }
+  }
+
+  async getSignedUrlByAttachmentId(
+    req: AuthFileRequest,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const attachmentId = parseInt(req.params.id);
+      const userId = req.user?.id;
+
+      if (!userId) {
+        throw new AppError({
+          message: "Access denied. Please log in again.",
+          statusCode: StatusCodes.UNAUTHORIZED,
+          code: "UNAUTHORIZED_ACCESS",
+          debugMessage: "Missing or invalid userId from request object.",
+        });
+      }
+
+      if (!attachmentId) {
+        throw new AppError({
+          message: "Attachment ID is required",
+          statusCode: StatusCodes.BAD_REQUEST,
+          code: "Attachment_CLIENT_ID",
+        });
+      }
+
+      const signedUrl = await this.attachmentService.generateSignedUrl(
+        attachmentId,
+        userId
+      );
+
+      res.status(StatusCodes.OK).json({ url: signedUrl });
+    } catch (err) {
+      next(err);
     }
   }
 
@@ -110,6 +148,90 @@ export class AttachmentController {
       );
 
       res.status(StatusCodes.OK).json({ attachments });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async updateFilename(
+    req: AuthFileRequest,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const attachmentId = parseInt(req.params.id);
+      const userId = req.user?.id;
+      const { filename } = req.body;
+
+      if (!userId) {
+        throw new AppError({
+          message: "Access denied. Please log in again.",
+          statusCode: StatusCodes.UNAUTHORIZED,
+          code: "UNAUTHORIZED_ACCESS",
+          debugMessage: "Missing or invalid userId from request object.",
+        });
+      }
+
+      if (!attachmentId) {
+        throw new AppError({
+          message: "Attachment ID is required",
+          statusCode: StatusCodes.BAD_REQUEST,
+          code: "ATTACHMENT_ID_MISSING",
+        });
+      }
+
+      if (!filename) {
+        throw new AppError({
+          message: "File name is required",
+          statusCode: StatusCodes.BAD_REQUEST,
+          code: "FILENAME_MISSING",
+        });
+      }
+
+      const attachments = await this.attachmentService.updateAttachmentFileName(
+        attachmentId,
+        userId,
+        filename
+      );
+
+      res.status(StatusCodes.OK).json({ attachments });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async deleteAttachment(
+    req: AuthFileRequest,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const attachmentId = Number(req.params.id);
+      const userId = req.user?.id;
+
+      if (!userId) {
+        throw new AppError({
+          message: "Access denied. Please log in again.",
+          statusCode: StatusCodes.UNAUTHORIZED,
+          code: "UNAUTHORIZED_ACCESS",
+          debugMessage: "Missing or invalid userId from request object.",
+        });
+      }
+
+      if (!attachmentId) {
+        throw new AppError({
+          message: "Attachment ID is required",
+          statusCode: StatusCodes.BAD_REQUEST,
+          code: "ATTACHMENT_ID_MISSING",
+        });
+      }
+
+      const result = await this.attachmentService.deleteAttachment(
+        attachmentId,
+        userId
+      );
+
+      res.status(StatusCodes.OK).json({ result });
     } catch (err) {
       next(err);
     }
