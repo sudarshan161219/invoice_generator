@@ -3,10 +3,10 @@ import styles from "./index.module.css";
 
 type Props = {
   mode: string;
-  toggleNotesModal: () => void;
+  toggleModal: () => void;
 };
 
-export const ModalHeader = ({ mode, toggleNotesModal }: Props) => {
+export const ModalHeader = ({ mode, toggleModal }: Props) => {
   const getHeadingText = () => {
     switch (mode) {
       case "add":
@@ -25,7 +25,7 @@ export const ModalHeader = ({ mode, toggleNotesModal }: Props) => {
   return (
     <div className={styles.modalHeader}>
       <h2 className="font-bold text-[var( --primary)] ">{getHeadingText()}</h2>
-      <button onClick={toggleNotesModal}>
+      <button onClick={toggleModal}>
         <CircleX size={22} className={styles.icon} />
       </button>
     </div>

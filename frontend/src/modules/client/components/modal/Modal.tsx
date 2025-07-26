@@ -8,7 +8,7 @@ import { UploadFileButton } from "./UploadFileButton";
 import type { Props } from "../../types/types";
 
 export const Modal = ({ notes, files, onEditNote }: Props) => {
-  const { isOpen, toggleNotesModal, mode, note } = useNotesModal();
+  const { isOpen, toggleModal, mode } = useNotesModal();
 
   if (!isOpen) return null;
 
@@ -30,10 +30,10 @@ export const Modal = ({ notes, files, onEditNote }: Props) => {
   return (
     <div className={styles.modalOverlay}>
       <div className={styles.modalCard}>
-        <ModalHeader mode={mode} toggleNotesModal={toggleNotesModal} />
+        <ModalHeader mode={mode} toggleModal={toggleModal} />
         {renderView()}
       </div>
-      <div onClick={toggleNotesModal} className={styles.modalBg}></div>
+      <div onClick={toggleModal} className={styles.modalBg}></div>
     </div>
   );
 };

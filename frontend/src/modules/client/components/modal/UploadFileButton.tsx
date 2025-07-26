@@ -4,12 +4,14 @@ import styles from "./index.module.css";
 import { Button } from "@/components/button/Button";
 import { uploadMultipleAttachments } from "../../api/uploadFile.client";
 import { useInvoiceClient } from "@/hooks/useInvoiceClient";
-import { EditFileModal } from "./editFileModal";
 import { toast } from "sonner";
+import { ModalType } from "@/types/ModalType";
 import { useNotesModal } from "@/hooks/useNotesModal";
+import { stripExtension } from "@/lib/stripExtension";
+import { EditFileInfoModal } from "./editFileInfoModal";
 
 type FileType = {
-  id: string;
+  id: number;
   name: string;
   url: string;
   type: string;
@@ -22,20 +24,15 @@ const MAX_FILES = 5;
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "application/pdf"];
 
 export const UploadFileButton = () => {
-  const {
-    toggleEditFileNameModal,
-    isEditOpen,
-    setEditFileName,
-    editedName,
-    setEditingFileId,
-  } = useNotesModal();
+  const { editedName, activeModal, openModal, setEditedValue, setEditingId } =
+    useNotesModal();
   const [uploadControllers, setUploadControllers] = useState<
     Record<string, AbortController>
   >({});
   const [dragOver, setDragOver] = useState(false);
   const [uploadQueue, setUploadQueue] = useState<
     {
-      id: string;
+      id: number;
       name: string;
       progress: number;
       loaded: number;
@@ -77,7 +74,10 @@ export const UploadFileButton = () => {
         return;
       }
       if (!validateFile(file)) return;
-      const id = crypto.randomUUID();
+      const id = parseInt(
+        crypto.getRandomValues(new Uint32Array(1))[0].toString().slice(0, 9)
+      );
+
       const newFile: FileType = {
         id,
         name: file.name,
@@ -107,8 +107,13 @@ export const UploadFileButton = () => {
       ]);
 
       const formData = new FormData();
+      const stripedVer = editedName ? editedName : stripExtension(file.name);
+      const filename = stripedVer || "Untitled";
+    
       formData.append("files", file.file);
       formData.append("type", file.type);
+      formData.append("originalname", file.name);
+      formData.append("filename", filename);
       if (client?.id) formData.append("clientId", client.id.toString());
 
       try {
@@ -148,19 +153,23 @@ export const UploadFileButton = () => {
     setUploadedFiles([]);
   };
 
-  const handleDelete = (id: string) => {
+  const editButtonFun = (fileName: string, fileId: number) => {
+    const striptedExtension = stripExtension(fileName);
+    setEditingId("fileName", fileId);
+    setEditedValue("fileName", striptedExtension);
+    openModal(ModalType.EditFileName);
+  };
+
+  const handleDelete = (id: number) => {
     setUploadedFiles((prev) => prev.filter((f) => f.id !== id));
   };
 
-  const handleRename = (id: string) => {
+  const handleRename = (id: number) => {
     if (!editedName) return;
     setUploadedFiles((prev) =>
-      prev.map((f) =>
-        f.id === id
-          ? { ...f, name: `${editedName}.${f.type.split("/")[1]}` }
-          : f
-      )
+      prev.map((f) => (f.id === id ? { ...f, name: editedName } : f))
     );
+    console.log(uploadedFiles);
   };
 
   const handleCancel = () => {
@@ -209,6 +218,7 @@ export const UploadFileButton = () => {
         <div className={styles.previewGrid}>
           {uploadedFiles.map((file) => {
             const matchingUpload = uploadQueue.find((f) => f.id === file.id);
+            const striptedExtension = stripExtension(file.name);
             return (
               <div key={file.id} className={styles.previewItem}>
                 <div className={styles.item_action_container}>
@@ -216,7 +226,9 @@ export const UploadFileButton = () => {
                     <div className={styles.fileInfoContainer}>
                       <Image className="text-[var(--label)]" />
                       <div>
-                        <span className={styles.fileText}>{file.name}</span>
+                        <span className={styles.fileText}>
+                          {striptedExtension}
+                        </span>
                         <span className={styles.fileSize}>{`${(
                           file.size /
                           (1024 * 1024)
@@ -227,7 +239,9 @@ export const UploadFileButton = () => {
                     <div className={styles.fileInfoContainer}>
                       <File className="text-[var(--label)]" />
                       <div>
-                        <span className={styles.fileText}>{file.name}</span>
+                        <span className={styles.fileText}>
+                          {striptedExtension}
+                        </span>
                         <span className={styles.fileSize}>{`${(
                           file.size /
                           (1024 * 1024)
@@ -251,11 +265,7 @@ export const UploadFileButton = () => {
                     ) : (
                       <div className={styles.actions}>
                         <button
-                          onClick={() => {
-                            setEditFileName(file.name.split(".")[0]);
-                            setEditingFileId(file.id);
-                            toggleEditFileNameModal();
-                          }}
+                          onClick={() => editButtonFun(file.name, file.id)}
                           title="Rename"
                         >
                           <Pencil size={16} />
@@ -308,7 +318,13 @@ export const UploadFileButton = () => {
         </div>
       )}
 
-      {isEditOpen && <EditFileModal handleRename={handleRename} />}
+      {activeModal === ModalType.EditFileName && (
+        <EditFileInfoModal type="fileName" handleRename={handleRename} />
+      )}
+
+      {/* {activeModal === ModalType.EditFileName && (
+        <EditFileModal handleRename={handleRename} />
+      )} */}
     </div>
   );
 };

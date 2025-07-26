@@ -10,7 +10,10 @@ import {
 } from "lucide-react";
 import { useNotesModal } from "@/hooks/useNotesModal";
 import styles from "./index.module.css";
+import { EditFileInfoModal } from "../modal/editFileInfoModal";
 import { handleOpenFile } from "../../api/get.single.attachment.client.api";
+import { ModalType } from "@/types/ModalType";
+import { stripExtension } from "@/lib/stripExtension";
 
 type Attachment = {
   id: number;
@@ -25,7 +28,14 @@ interface ClientAttachmentsProps {
 }
 
 export const ClientAttachments = ({ attachments }: ClientAttachmentsProps) => {
-  const { openViewAllFiles, openAddFile } = useNotesModal();
+  const {
+    openViewAllFiles,
+    openAddFile,
+    activeModal,
+    openModal,
+    setEditedValue,
+    setEditingId,
+  } = useNotesModal();
   const [openTooltipId, setOpenTooltipId] = useState<number | null>(null);
   const [openUpward, setOpenUpward] = useState(false);
   const tooltipRef = useRef<HTMLDivElement | null>(null);
@@ -52,17 +62,23 @@ export const ClientAttachments = ({ attachments }: ClientAttachmentsProps) => {
       setOpenTooltipId(null);
     } else {
       setOpenTooltipId(fileId);
-
       // Wait for DOM to update
       setTimeout(() => {
         if (buttonRef.current) {
           const rect = buttonRef.current.getBoundingClientRect();
           const spaceBelow = window.innerHeight - rect.bottom;
-          const spaceNeeded = 120; // assume tooltip height ~120px
+          const spaceNeeded = 120;
           setOpenUpward(spaceBelow < spaceNeeded);
         }
       }, 0);
     }
+  };
+
+  const editButtonFun = (fileName: string, fileId: number) => {
+    const striptedExtension = stripExtension(fileName);
+    setEditingId("fileInfo", fileId);
+    setEditedValue("fileInfo", striptedExtension);
+    openModal(ModalType.EditFileInfo);
   };
 
   if (!attachments?.length) {
@@ -148,9 +164,6 @@ export const ClientAttachments = ({ attachments }: ClientAttachmentsProps) => {
 
               <div className="relative">
                 <button
-                  // onClick={() =>
-                  //   setOpenTooltipId(openTooltipId === file.id ? null : file.id)
-                  // }
                   ref={buttonRef}
                   onClick={() => toggleTooltip(file.id)}
                   className={styles.moreOptionsBtn}
@@ -166,7 +179,7 @@ export const ClientAttachments = ({ attachments }: ClientAttachmentsProps) => {
                     } ${styles.toolTip}`}
                   >
                     <button
-                      onClick={() => console.log("Edit", file.id)}
+                      onClick={() => editButtonFun(file.filename, file.id)}
                       className={styles.button}
                     >
                       <Pencil size={11} /> Edit
@@ -190,6 +203,10 @@ export const ClientAttachments = ({ attachments }: ClientAttachmentsProps) => {
           ))}
         </ul>
       </div>
+
+      {activeModal === ModalType.EditFileInfo && (
+        <EditFileInfoModal type="fileInfo" />
+      )}
     </div>
   );
 };

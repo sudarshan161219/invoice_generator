@@ -155,6 +155,7 @@ model Payment {
 model Attachment {
   id          Int       @id @default(autoincrement())
   filename    String
+  originalname  String 
   type        String         // e.g., "image/png", "application/pdf"
   size        Int            // in bytes
   url         String         // URL or path to the uploaded file

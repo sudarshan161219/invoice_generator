@@ -3,9 +3,7 @@ import { Button } from "@/components/button/Button";
 import { useNotesModal } from "@/hooks/useNotesModal";
 import styles from "./index.module.css";
 
-export const EditFileModal = ({
-  handleRename,
-}: {
+export const EditFileModal = ({handleRename}: {
   handleRename: (id: string) => void;
 }) => {
   const {

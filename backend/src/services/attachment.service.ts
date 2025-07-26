@@ -70,6 +70,7 @@ export class AttachmentService {
       const attachment = await prisma.attachment.create({
         data: {
           filename: data.filename,
+          originalname: data.originalname,
           url: data.key,
           key: data.key,
           size: data.size,
@@ -86,6 +87,7 @@ export class AttachmentService {
         attachment,
       };
     } catch (error) {
+      console.error("Attachment upload error:", error);
       if (error instanceof AppError) throw error;
 
       throw new AppError({

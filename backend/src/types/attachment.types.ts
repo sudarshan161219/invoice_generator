@@ -1,5 +1,6 @@
 export interface IUploadAttachmentDTO {
   filename: string;
+  originalname: string;
   url: string;
   key: string;
   size: number;

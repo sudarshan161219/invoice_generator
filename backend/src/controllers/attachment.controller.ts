@@ -17,7 +17,7 @@ export class AttachmentController {
     try {
       const files = req.files as Express.Multer.File[];
       const userId = req.user?.id;
-      const { clientId, invoiceId, type } = req.body;
+      const { clientId, invoiceId, type, originalname, filename } = req.body;
 
       if (!files || files.length === 0) {
         throw new AppError({
@@ -46,6 +46,24 @@ export class AttachmentController {
         });
       }
 
+      if (!originalname || typeof originalname !== "string") {
+        throw new AppError({
+          message: "Attachment originalName is required.",
+          statusCode: StatusCodes.BAD_REQUEST,
+          code: "MISSING_ATTACHMENT_ORIGINALNAME",
+          debugMessage: "Expected 'originalName' in body as string.",
+        });
+      }
+
+      if (!filename || typeof filename !== "string") {
+        throw new AppError({
+          message: "Attachment filename is required.",
+          statusCode: StatusCodes.BAD_REQUEST,
+          code: "MISSING_ATTACHMENT_FILENAME",
+          debugMessage: "Expected 'filename' in body as string.",
+        });
+      }
+
       const uploadedFiles = [];
 
       for (const file of files) {
@@ -56,7 +74,8 @@ export class AttachmentController {
         );
 
         const saved = await this.attachmentService.upload({
-          filename: file.originalname,
+          filename,
+          originalname,
           url,
           key,
           size: file.size,
