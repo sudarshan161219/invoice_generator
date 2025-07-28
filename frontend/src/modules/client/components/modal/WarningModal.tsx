@@ -1,30 +1,35 @@
-import { useState } from "react";
-import { handleDeleteAttachments } from "../../api/delete.attachment.client.api";
 import { useNotesModal } from "@/hooks/useNotesModal";
 import styles from "./index.module.css";
 import { Button } from "@/components/button/Button";
+import { useDeleteAttachment } from "../../hooks/useDeleteAttachment";
+import { useInvoiceClient } from "@/hooks/useInvoiceClient";
+import { toast } from "sonner";
 
 export const Warning = () => {
-  const [loading, setLoading] = useState(false);
+  const { client } = useInvoiceClient();
   const { fileId, toggleModal } = useNotesModal();
   const isBulk = Array.isArray(fileId) && fileId.length > 1;
 
-  if (!fileId) return;
+  const {
+    mutateAsync: deleteAttachment,
+    isPending: isLoading,
+    error,
+  } = useDeleteAttachment(client?.id ?? 0);
 
   const handleDelete = async () => {
     try {
-      setLoading(true);
-      const res = await handleDeleteAttachments(fileId);
-      console.log(res);
-      if (res.result.success) {
-        toggleModal();
+      if (fileId !== null) {
+        await deleteAttachment(fileId);
       }
-    } catch (error) {
-      console.error("Delete failed:", error);
-    } finally {
-      setLoading(false);
+      toggleModal();
+      toast.success("File deleted successfully");
+    } catch (err) {
+      toast.error("Failed to delete file");
+      console.error("Delete failed:", err);
     }
   };
+
+  if (!fileId) return;
 
   return (
     <div className={styles.deleteModal}>
@@ -33,12 +38,18 @@ export const Warning = () => {
         This action cannot be undone.
       </p>
 
+      {error && (
+        <p className="text-red-500 text-sm mt-2">
+          {error instanceof Error ? error.message : "Something went wrong"}
+        </p>
+      )}
+
       <div className="flex justify-end gap-1 mt-2">
         <Button
           onClick={toggleModal}
           variant="outline"
           size="md"
-          disabled={loading}
+          disabled={isLoading}
         >
           Cancel
         </Button>
@@ -48,9 +59,9 @@ export const Warning = () => {
           variant="default"
           size="md"
           onClick={handleDelete}
-          disabled={loading}
+          disabled={isLoading}
         >
-          {loading ? "Deleting..." : "Delete"}
+          {isLoading ? "Deleting..." : "Delete"}
         </Button>
       </div>
     </div>

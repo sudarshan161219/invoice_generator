@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getClient } from "../../api/get.client.api";
-import { getClientAttachments } from "../../api/getAttachments.client.api";
 import { useInvoiceClient } from "@/hooks/useInvoiceClient";
+import { useClient } from "../../hooks/useClient";
+import { useClientAttachments } from "../../hooks/useClientAttachments";
 import {
   ClientHeader,
   ClientNotes,
@@ -10,6 +9,7 @@ import {
   ClientAttachments,
 } from "../infoComponents/export";
 import styles from "./index.module.css";
+import { useEffect, useState } from "react";
 
 const dummyNotes = [
   {
@@ -32,42 +32,46 @@ const getRandomGradient = () =>
 
 export const ClientInfo = () => {
   const { id } = useParams<{ id: string }>();
+  const clientId = Number(id);
+
   const { client, clientName, setClient, setClientName } = useInvoiceClient();
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(false);
+
+  const {
+    data: clientData,
+    isLoading: isClientLoading,
+    error: clientError,
+  } = useClient(clientId);
+
+  const {
+    data: attachments,
+    isLoading: isAttachmentsLoading,
+    error: attachmentsError,
+  } = useClientAttachments(clientId);
+
   const [bgGradient] = useState(getRandomGradient());
   const note = dummyNotes[0];
 
+  // console.log(clientData?.data);
+
+  // Sync client state to global context
   useEffect(() => {
-    if (!id) return;
+    if (clientData) {
+      setClient(clientData?.data);
+      setClientName(clientData?.data.name);
+    }
+  }, [clientData, setClient, setClientName]);
 
-    const fetchClientAndAttachments = async () => {
-      setLoading(true);
-      try {
-        const [clientRes, attachmentsRes] = await Promise.all([
-          getClient(Number(id)),
-          getClientAttachments(Number(id)),
-        ]);
-
-        setClient(clientRes.data);
-        setClientName(clientRes.data.name);
-        setData(attachmentsRes);
-      } catch (err) {
-        console.error("Failed to fetch client or attachments:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchClientAndAttachments();
-  }, [id, setClient, setClientName]);
-
-  if (loading)
+  if (isClientLoading || isAttachmentsLoading)
     return <div className="p-4 text-gray-600">Loading client data...</div>;
-  if (!client) return <div className="p-4 text-red-500">Client not found.</div>;
-  if (!data) return <div className="p-4 text-red-500">Data is empty.</div>;
 
-  // console.log(data);
+  if (clientError || attachmentsError)
+    return (
+      <div className="p-4 text-red-500">
+        Error: {clientError?.message || attachmentsError?.message}
+      </div>
+    );
+
+  if (!client) return <div className="p-4 text-red-500">Client not found.</div>;
 
   return (
     <div className={styles.card}>
@@ -79,7 +83,7 @@ export const ClientInfo = () => {
       <div className={styles.clientDetails}>
         <ClientNotes note={note} />
         <ClientAddress address={client.address || ""} />
-        <ClientAttachments attachments={data} />
+        <ClientAttachments attachments={attachments || []} />
       </div>
     </div>
   );

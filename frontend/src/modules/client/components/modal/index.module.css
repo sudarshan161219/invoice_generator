@@ -21,7 +21,7 @@
   background: var(--card);
   border-radius: 8px;
   width: 90%;
-  max-width: 400px;
+  max-width: 450px;
   padding: 0.9rem;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
 }

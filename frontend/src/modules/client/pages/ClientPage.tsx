@@ -1,6 +1,6 @@
 import { ClientInfo } from "../components/info/ClientInfo";
 import { ClientInvoice } from "../components/invoice/ClientInvoice";
-import { useNotesModal } from "@/hooks/useNotesModal";
+// import { useNotesModal } from "@/hooks/useNotesModal";
 import { Modal } from "../components/modal/Modal";
 import styles from "./index.module.css";
 
@@ -31,8 +31,6 @@ const clientFiles = [
 ];
 
 export const ClientPage = () => {
-  const { isOpen } = useNotesModal();
-
   return (
     <div className={styles.container}>
       <div className={`${styles.box} ${styles.box1}`}>

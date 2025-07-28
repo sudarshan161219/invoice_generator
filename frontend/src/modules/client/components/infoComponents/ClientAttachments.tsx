@@ -15,6 +15,7 @@ import { handleOpenFile } from "../../api/get.single.attachment.client.api";
 import { ModalType } from "@/types/ModalType";
 import { stripExtension } from "@/lib/stripExtension";
 
+
 type Attachment = {
   id: number;
   filename: string;

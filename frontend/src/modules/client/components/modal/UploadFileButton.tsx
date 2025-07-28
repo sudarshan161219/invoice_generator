@@ -1,15 +1,14 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { UploadCloud, Trash2, Pencil, File, Image } from "lucide-react";
 import styles from "./index.module.css";
 import { Button } from "@/components/button/Button";
-import { uploadMultipleAttachments } from "../../api/uploadFile.client";
 import { useInvoiceClient } from "@/hooks/useInvoiceClient";
 import { toast } from "sonner";
 import { ModalType } from "@/types/ModalType";
 import { useNotesModal } from "@/hooks/useNotesModal";
 import { stripExtension } from "@/lib/stripExtension";
 import { EditFileInfoModal } from "./editFileInfoModal";
-
+import { useUploadAttachments } from "../../hooks/useUploadAttachments";
 
 type FileType = {
   id: number;
@@ -42,6 +41,11 @@ export const UploadFileButton = () => {
   >([]);
   const [uploadedFiles, setUploadedFiles] = useState<FileType[]>([]);
   const { client } = useInvoiceClient();
+
+  const { mutateAsync: uploadAttachment } = useUploadAttachments(
+    client?.id ?? 0
+  );
+  const controllerRef = useRef<AbortController | null>(null);
 
   const validateFile = (file: File) => {
     if (!ALLOWED_TYPES.includes(file.type)) {
@@ -94,6 +98,7 @@ export const UploadFileButton = () => {
   const handleAttach = async () => {
     for (const file of uploadedFiles) {
       const controller = new AbortController();
+      controllerRef.current = controller;
       setUploadControllers((prev) => ({ ...prev, [file.id]: controller }));
 
       setUploadQueue((prev) => [
@@ -110,7 +115,7 @@ export const UploadFileButton = () => {
       const formData = new FormData();
       const stripedVer = editedName ? editedName : stripExtension(file.name);
       const filename = stripedVer || "Untitled";
-    
+
       formData.append("files", file.file);
       formData.append("type", file.type);
       formData.append("originalname", file.name);
@@ -118,10 +123,10 @@ export const UploadFileButton = () => {
       if (client?.id) formData.append("clientId", client.id.toString());
 
       try {
-        await uploadMultipleAttachments(
+        await uploadAttachment({
           formData,
-          controller.signal,
-          ({ percent, loaded, total }) => {
+          signal: controller.signal,
+          onProgress: ({ percent, loaded, total }) => {
             setUploadQueue((prev) =>
               prev.map((f) =>
                 f.id === file.id
@@ -129,8 +134,8 @@ export const UploadFileButton = () => {
                   : f
               )
             );
-          }
-        );
+          },
+        });
 
         setUploadQueue((prev) => prev.filter((f) => f.id !== file.id));
         toast.success(`${file.name} uploaded successfully`);
@@ -322,7 +327,6 @@ export const UploadFileButton = () => {
       {activeModal === ModalType.EditFileName && (
         <EditFileInfoModal type="fileName" handleRename={handleRename} />
       )}
-
     </div>
   );
 };
