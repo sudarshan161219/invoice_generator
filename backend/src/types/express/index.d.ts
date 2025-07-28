@@ -22,6 +22,7 @@ export interface AuthFileRequest extends Request {
     filename?: string;
     clientId?: string;
     invoiceId?: string;
+    ids?: number;
     type?: string;
   };
 }

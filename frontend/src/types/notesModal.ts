@@ -7,12 +7,13 @@ export type EditedFileInfoName = string;
 export interface NoteModalContextType {
   note: Note;
   editedName: EditedName;
+  fileId: number | number[] | null;
   editingFileId: number | null;
   editingFileInfoId: number | null;
   editedFileInfoName: EditedFileInfoName;
   isOpen: boolean;
   activeModal: ModalType;
-  mode: "add" | "viewAll" | "addFile" | "viewAllFiles";
+  mode: "add" | "viewAll" | "addFile" | "viewAllFiles" | "warning";
   currentEditedValue: string;
   currentEditingId: number | null;
   setEditedValue: (
@@ -21,6 +22,7 @@ export interface NoteModalContextType {
   ) => void;
   setEditingId: (type: "fileName" | "fileInfo", id: number | null) => void;
   toggleModal: () => void;
+  fileID: (id: number) => void;
   closeModal: () => void;
   openModal: (modalType: ModalType) => void;
   openEditFileNameModal: () => void;
@@ -29,6 +31,7 @@ export interface NoteModalContextType {
   openViewAll: () => void;
   openAddFile: () => void;
   openViewAllFiles: () => void;
+  openWarning: () => void;
   setNotes: (note: Note) => void;
   // setEditFileName: (editedName: EditedName) => void;
   // setEditFileInfoName: (editedName: EditedFileInfoName) => void;

@@ -35,6 +35,8 @@ export const ClientAttachments = ({ attachments }: ClientAttachmentsProps) => {
     openModal,
     setEditedValue,
     setEditingId,
+    fileID,
+    openWarning,
   } = useNotesModal();
   const [openTooltipId, setOpenTooltipId] = useState<number | null>(null);
   const [openUpward, setOpenUpward] = useState(false);
@@ -79,6 +81,11 @@ export const ClientAttachments = ({ attachments }: ClientAttachmentsProps) => {
     setEditingId("fileInfo", fileId);
     setEditedValue("fileInfo", striptedExtension);
     openModal(ModalType.EditFileInfo);
+  };
+
+  const handleDeleteFile = (fileId: number) => {
+    fileID(fileId);
+    openWarning();
   };
 
   if (!attachments?.length) {
@@ -191,7 +198,7 @@ export const ClientAttachments = ({ attachments }: ClientAttachmentsProps) => {
                       <ArrowDownToLine size={13} /> Download
                     </button>
                     <button
-                      onClick={() => console.log("Delete", file.id)}
+                      onClick={() => handleDeleteFile(file.id)}
                       className={styles.Deletebutton}
                     >
                       <Trash size={12} /> Delete

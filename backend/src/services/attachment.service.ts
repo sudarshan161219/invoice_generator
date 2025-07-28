@@ -187,29 +187,67 @@ export class AttachmentService {
     return updated;
   }
 
-  async deleteAttachment(attachmentId: number, userId: number) {
-    const attachment = await prisma.attachment.findUnique({
-      where: { id: Number(attachmentId) },
+  //fallback
+  // async deleteAttachment(attachmentId: number, userId: number) {
+  //   const attachment = await prisma.attachment.findUnique({
+  //     where: { id: Number(attachmentId) },
+  //   });
+
+  //   if (!attachment || attachment.userId !== userId) {
+  //     throw new AppError({
+  //       message: "Attachment not found",
+  //       statusCode: StatusCodes.NOT_FOUND,
+  //     });
+  //   }
+
+  //   await r2.send(
+  //     new DeleteObjectCommand({
+  //       Bucket: process.env.CF_BUCKET_NAME!,
+  //       Key: attachment.key,
+  //     })
+  //   );
+
+  //   await prisma.attachment.delete({
+  //     where: { id: Number(attachmentId) },
+  //   });
+
+  //   return { success: true };
+  // }
+
+  async deleteAttachments(attachmentIds: number[], userId: number) {
+    const attachments = await prisma.attachment.findMany({
+      where: {
+        id: { in: attachmentIds },
+        userId,
+      },
     });
 
-    if (!attachment || attachment.userId !== userId) {
+    if (attachments.length !== attachmentIds.length) {
       throw new AppError({
-        message: "Attachment not found",
+        message: "Some attachments not found or unauthorized.",
         statusCode: StatusCodes.NOT_FOUND,
       });
     }
 
-    await r2.send(
-      new DeleteObjectCommand({
-        Bucket: process.env.CF_BUCKET_NAME!,
-        Key: attachment.key,
-      })
+    // Delete from R2
+    const deleteCommands = attachments.map((att) =>
+      r2.send(
+        new DeleteObjectCommand({
+          Bucket: process.env.CF_BUCKET_NAME!,
+          Key: att.key,
+        })
+      )
     );
 
-    await prisma.attachment.delete({
-      where: { id: Number(attachmentId) },
+    await Promise.all(deleteCommands);
+
+    // Delete from DB
+    await prisma.attachment.deleteMany({
+      where: {
+        id: { in: attachmentIds },
+      },
     });
 
-    return { success: true };
+    return { success: true, deleted: attachmentIds.length };
   }
 }

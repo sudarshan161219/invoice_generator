@@ -1,4 +1,5 @@
 import { CircleX } from "lucide-react";
+import { useNotesModal } from "@/hooks/useNotesModal";
 import styles from "./index.module.css";
 
 type Props = {
@@ -7,6 +8,8 @@ type Props = {
 };
 
 export const ModalHeader = ({ mode, toggleModal }: Props) => {
+  const { fileId } = useNotesModal();
+  const isBulk = Array.isArray(fileId) && fileId.length > 1;
   const getHeadingText = () => {
     switch (mode) {
       case "add":
@@ -17,6 +20,8 @@ export const ModalHeader = ({ mode, toggleModal }: Props) => {
         return "Upload and attach file";
       case "viewAllFiles":
         return "Client Files";
+      case "warning":
+        return isBulk ? "Delete Attachments" : "Delete Attachment";
       default:
         return "";
     }

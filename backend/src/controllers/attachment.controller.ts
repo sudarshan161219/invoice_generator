@@ -219,37 +219,78 @@ export class AttachmentController {
     }
   }
 
-  async deleteAttachment(
+  // fallback
+  // async deleteAttachment(
+  //   req: AuthFileRequest,
+  //   res: Response,
+  //   next: NextFunction
+  // ) {
+  //   try {
+  //     const attachmentId = Number(req.params.id);
+  //     const userId = req.user?.id;
+
+  //     if (!userId) {
+  //       throw new AppError({
+  //         message: "Access denied. Please log in again.",
+  //         statusCode: StatusCodes.UNAUTHORIZED,
+  //         code: "UNAUTHORIZED_ACCESS",
+  //         debugMessage: "Missing or invalid userId from request object.",
+  //       });
+  //     }
+
+  //     if (!attachmentId) {
+  //       throw new AppError({
+  //         message: "Attachment ID is required",
+  //         statusCode: StatusCodes.BAD_REQUEST,
+  //         code: "ATTACHMENT_ID_MISSING",
+  //       });
+  //     }
+
+  //     const result = await this.attachmentService.deleteAttachment(
+  //       attachmentId,
+  //       userId
+  //     );
+
+  //     res.status(StatusCodes.OK).json({ result });
+  //   } catch (err) {
+  //     next(err);
+  //   }
+  // }
+
+  async deleteAttachments(
     req: AuthFileRequest,
     res: Response,
     next: NextFunction
   ) {
     try {
-      const attachmentId = Number(req.params.id);
       const userId = req.user?.id;
+      const paramId = req.params.id;
+      const bodyIds = Array.isArray(req.body?.ids)
+        ? req.body.ids.map((id: any) => Number(id))
+        : [];
 
       if (!userId) {
         throw new AppError({
-          message: "Access denied. Please log in again.",
+          message: "Unauthorized",
           statusCode: StatusCodes.UNAUTHORIZED,
-          code: "UNAUTHORIZED_ACCESS",
-          debugMessage: "Missing or invalid userId from request object.",
         });
       }
 
-      if (!attachmentId) {
+      // Combine both body and param ID into one array
+      const ids: number[] =
+        bodyIds.length > 0 ? bodyIds : paramId ? [Number(paramId)] : [];
+
+      if (ids.length === 0) {
         throw new AppError({
-          message: "Attachment ID is required",
+          message: "No attachment IDs provided",
           statusCode: StatusCodes.BAD_REQUEST,
-          code: "ATTACHMENT_ID_MISSING",
         });
       }
 
-      const result = await this.attachmentService.deleteAttachment(
-        attachmentId,
+      const result = await this.attachmentService.deleteAttachments(
+        ids,
         userId
       );
-
       res.status(StatusCodes.OK).json({ result });
     } catch (err) {
       next(err);

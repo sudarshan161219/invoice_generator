@@ -58,11 +58,32 @@ export class AttachmentRouter {
     );
 
     //* Delete Attachment
-    this.router.patch(
+    // this.router.patch(
+    //   "/delete/:id",
+    //   authenticate,
+    //   wrapWithAuthFileRequest(
+    //     this.attachmentController.deleteAttachment.bind(
+    //       this.attachmentController
+    //     )
+    //   )
+    // );
+
+    // For bulk and single delete (same controller)
+    this.router.delete(
       "/delete/:id",
       authenticate,
       wrapWithAuthFileRequest(
-        this.attachmentController.deleteAttachment.bind(
+        this.attachmentController.deleteAttachments.bind(
+          this.attachmentController
+        )
+      )
+    );
+
+    this.router.delete(
+      "/delete",
+      authenticate,
+      wrapWithAuthFileRequest(
+        this.attachmentController.deleteAttachments.bind(
           this.attachmentController
         )
       )

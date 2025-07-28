@@ -10,6 +10,7 @@ import { useNotesModal } from "@/hooks/useNotesModal";
 import { stripExtension } from "@/lib/stripExtension";
 import { EditFileInfoModal } from "./editFileInfoModal";
 
+
 type FileType = {
   id: number;
   name: string;
@@ -322,9 +323,6 @@ export const UploadFileButton = () => {
         <EditFileInfoModal type="fileName" handleRename={handleRename} />
       )}
 
-      {/* {activeModal === ModalType.EditFileName && (
-        <EditFileModal handleRename={handleRename} />
-      )} */}
     </div>
   );
 };

@@ -5,10 +5,12 @@ import { NoteList } from "./NoteList";
 import { AddNoteForm } from "./AddNoteForm";
 import { FileList } from "./FileList";
 import { UploadFileButton } from "./UploadFileButton";
+import { Warning } from "./WarningModal";
 import type { Props } from "../../types/types";
 
 export const Modal = ({ notes, files, onEditNote }: Props) => {
-  const { isOpen, toggleModal, mode } = useNotesModal();
+  const { isOpen, toggleModal, mode,  } = useNotesModal();
+   
 
   if (!isOpen) return null;
 
@@ -22,6 +24,8 @@ export const Modal = ({ notes, files, onEditNote }: Props) => {
         return <FileList files={files} />;
       case "addFile":
         return <UploadFileButton />;
+      case "warning":
+        return <Warning />;
       default:
         return <p>Unknown modal mode.</p>;
     }
