@@ -43,15 +43,15 @@ export const ClientInfo = () => {
   } = useClient(clientId);
 
   const {
-    data: attachments,
+    data,
     isLoading: isAttachmentsLoading,
     error: attachmentsError,
   } = useClientAttachments(clientId);
 
+  const attachments = data?.attachments || [];
   const [bgGradient] = useState(getRandomGradient());
   const note = dummyNotes[0];
 
-  // console.log(clientData?.data);
 
   // Sync client state to global context
   useEffect(() => {
@@ -83,6 +83,7 @@ export const ClientInfo = () => {
       <div className={styles.clientDetails}>
         <ClientNotes note={note} />
         <ClientAddress address={client.address || ""} />
+
         <ClientAttachments attachments={attachments || []} />
       </div>
     </div>

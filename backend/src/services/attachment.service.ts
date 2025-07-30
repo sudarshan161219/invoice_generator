@@ -150,6 +150,24 @@ export class AttachmentService {
   }
 
   async getAttachmentsByClient(clientId: number, userId: number) {
+    // 1. Fetch client name
+    const client = await prisma.client.findUnique({
+      where: {
+        id: clientId,
+      },
+      select: {
+        name: true,
+      },
+    });
+
+    if (!client) {
+      throw new AppError({
+        message: "Client not found",
+        statusCode: StatusCodes.NOT_FOUND,
+      });
+    }
+
+    // 2. Fetch attachments
     const attachments = await prisma.attachment.findMany({
       where: {
         clientId,
@@ -160,7 +178,11 @@ export class AttachmentService {
       },
     });
 
-    return attachments;
+    // 3. Return both as separate keys
+    return {
+      clientName: client.name,
+      attachments,
+    };
   }
 
   async updateAttachmentFileName(
@@ -186,33 +208,6 @@ export class AttachmentService {
 
     return updated;
   }
-
-  //fallback
-  // async deleteAttachment(attachmentId: number, userId: number) {
-  //   const attachment = await prisma.attachment.findUnique({
-  //     where: { id: Number(attachmentId) },
-  //   });
-
-  //   if (!attachment || attachment.userId !== userId) {
-  //     throw new AppError({
-  //       message: "Attachment not found",
-  //       statusCode: StatusCodes.NOT_FOUND,
-  //     });
-  //   }
-
-  //   await r2.send(
-  //     new DeleteObjectCommand({
-  //       Bucket: process.env.CF_BUCKET_NAME!,
-  //       Key: attachment.key,
-  //     })
-  //   );
-
-  //   await prisma.attachment.delete({
-  //     where: { id: Number(attachmentId) },
-  //   });
-
-  //   return { success: true };
-  // }
 
   async deleteAttachments(attachmentIds: number[], userId: number) {
     const attachments = await prisma.attachment.findMany({

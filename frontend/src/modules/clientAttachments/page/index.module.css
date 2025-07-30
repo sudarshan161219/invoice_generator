@@ -1,0 +1,45 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 1rem;
+}
+
+.topBtnContainer {
+  display: flex;
+  justify-content: space-between;
+}
+
+.tableCellText {
+  color: var(--primary);
+  font-size: 0.85rem;
+}
+
+.fileTypeText {
+  color: var(--label);
+  font-size: 0.75rem;
+}
+
+.moreMenu {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 5px;
+}
+
+.moreMenu > li {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  font-size: 13px;
+  justify-content: flex-start;
+  gap: 5px;
+  cursor: pointer;
+  overflow: hidden;
+  background-color: var(--card);
+  color: var(--primary);
+}
+
+.moreMenu > li:hover {
+  background-color: var(--accent);
+}

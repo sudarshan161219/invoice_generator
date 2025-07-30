@@ -5,7 +5,7 @@ import "./index.css";
 export const MainHeading: FC = (): ReactElement => {
   const location = useLocation();
   const [heading, setHeading] = useState("Overview");
-
+  // Attachments
   useEffect(() => {
     const path = location.pathname;
 
@@ -13,6 +13,14 @@ export const MainHeading: FC = (): ReactElement => {
       const id = path.split("/client/")[1]; // e.g., "123"
       if (id && /^\d+$/.test(id)) {
         setHeading(`Client details`);
+        return;
+      }
+    }
+
+    if (path.startsWith("/attachments/")) {
+      const id = path.split("/attachments/")[1]; // e.g., "123"
+      if (id && /^\d+$/.test(id)) {
+        setHeading(`Attachments`);
         return;
       }
     }

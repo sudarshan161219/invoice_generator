@@ -223,26 +223,26 @@
   overflow: hidden;
 }
 
-.toolTip {
-  position: absolute;
-  background-color: var(--card);
-  border-radius: 3px;
+.moreMenu {
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  gap: 10px;
-  z-index: 10;
+  overflow: hidden;
+  border-radius: 5px;
 }
 
-.toolTip > button {
+.moreMenu > li {
   display: flex;
   align-items: center;
-  gap: 3px;
-  text-align: left;
-  cursor: pointer;
   padding: 0.5rem;
+  font-size: 13px;
+  justify-content: flex-start;
+  gap: 5px;
+  cursor: pointer;
+  overflow: hidden;
+  background-color: var(--card);
+  color: var(--primary);
 }
 
-.toolTip > button:hover {
-  background-color: var(--label);
+.moreMenu > li:hover {
+  background-color: var(--accent);
 }

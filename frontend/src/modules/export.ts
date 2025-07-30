@@ -7,7 +7,7 @@ import { CreateClient } from "@/modules/createClient/pages/CreateClient";
 import { PaymentsPage } from "@/modules/payments/pages/PaymentsPage";
 import { AuthPage } from "@/modules/auth/pages/AuthPage";
 import { NotFound } from "@/modules/notfound/pages/NotFound";
-// import { CreateClient } from "./createClient/pages/CreateClient";
+import { AttachmentsPage } from "@/modules/clientAttachments/page/AttachmentsPage";
 import { ClientPage } from "@/modules/client/pages/ClientPage";
 import { ForgotPasswordPage } from "./forgotPassword/pages/ForgotPassword";
 import { ResetPassword } from "./resetPassword/pages/ResetPassword";
@@ -16,6 +16,7 @@ export {
   AuthPage,
   DashboardPage,
   ClientsPage,
+  AttachmentsPage,
   InvoicesPage,
   SettingsPage,
   CreateInvoice,

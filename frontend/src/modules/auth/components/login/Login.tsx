@@ -62,7 +62,6 @@ export const Login: FC = (): ReactElement => {
           label="Password"
           {...register("password")}
           placeholder="••••••••"
-          // error={errors.password?.message}
         />
       </div>
 

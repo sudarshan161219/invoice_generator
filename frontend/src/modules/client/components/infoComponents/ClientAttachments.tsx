@@ -1,5 +1,11 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/button/Button";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Paperclip,
   Ellipsis,
@@ -15,7 +21,6 @@ import { handleOpenFile } from "../../api/get.single.attachment.client.api";
 import { ModalType } from "@/types/ModalType";
 import { stripExtension } from "@/lib/stripExtension";
 
-
 type Attachment = {
   id: number;
   filename: string;
@@ -29,8 +34,8 @@ interface ClientAttachmentsProps {
 }
 
 export const ClientAttachments = ({ attachments }: ClientAttachmentsProps) => {
+  const navigate = useNavigate();
   const {
-    openViewAllFiles,
     openAddFile,
     activeModal,
     openModal,
@@ -39,54 +44,30 @@ export const ClientAttachments = ({ attachments }: ClientAttachmentsProps) => {
     fileID,
     openWarning,
   } = useNotesModal();
-  const [openTooltipId, setOpenTooltipId] = useState<number | null>(null);
-  const [openUpward, setOpenUpward] = useState(false);
-  const tooltipRef = useRef<HTMLDivElement | null>(null);
-  const buttonRef = useRef<HTMLButtonElement | null>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        tooltipRef.current &&
-        !tooltipRef.current.contains(event.target as Node)
-      ) {
-        setOpenTooltipId(null);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
-  const toggleTooltip = (fileId: number) => {
-    if (openTooltipId === fileId) {
-      setOpenTooltipId(null);
-    } else {
-      setOpenTooltipId(fileId);
-      // Wait for DOM to update
-      setTimeout(() => {
-        if (buttonRef.current) {
-          const rect = buttonRef.current.getBoundingClientRect();
-          const spaceBelow = window.innerHeight - rect.bottom;
-          const spaceNeeded = 120;
-          setOpenUpward(spaceBelow < spaceNeeded);
-        }
-      }, 0);
-    }
-  };
+  const [openPopoverId, setOpenPopoverId] = useState<number | null>(null);
+  const { id } = useParams<{ id: string }>();
+  const clientId = Number(id);
 
   const editButtonFun = (fileName: string, fileId: number) => {
     const striptedExtension = stripExtension(fileName);
     setEditingId("fileInfo", fileId);
     setEditedValue("fileInfo", striptedExtension);
     openModal(ModalType.EditFileInfo);
+    setOpenPopoverId(null);
   };
 
+  const redirect = () => {
+    navigate(`/attachments/${clientId}`);
+  };
   const handleDeleteFile = (fileId: number) => {
     fileID(fileId);
     openWarning();
+    setOpenPopoverId(null);
+  };
+
+  const handle_Open_File = (fileId: number) => {
+    handleOpenFile(fileId);
+    setOpenPopoverId(null);
   };
 
   if (!attachments?.length) {
@@ -137,7 +118,7 @@ export const ClientAttachments = ({ attachments }: ClientAttachmentsProps) => {
 
           <Button
             className={styles.actionbtn}
-            onClick={openViewAllFiles}
+            onClick={redirect}
             variant="ghost"
             size="sm"
           >
@@ -156,7 +137,7 @@ export const ClientAttachments = ({ attachments }: ClientAttachmentsProps) => {
                 <div>
                   <span
                     role="button"
-                    onClick={() => handleOpenFile(file.id)}
+                    onClick={() => handle_Open_File(file.id)}
                     className={styles.attachmentName}
                     title={file.filename}
                   >
@@ -170,43 +151,35 @@ export const ClientAttachments = ({ attachments }: ClientAttachmentsProps) => {
                 </div>
               </div>
 
-              <div className="relative">
-                <button
-                  ref={buttonRef}
-                  onClick={() => toggleTooltip(file.id)}
-                  className={styles.moreOptionsBtn}
-                >
-                  <Ellipsis size={18} />
-                </button>
+              <Popover
+                open={openPopoverId === Number(file.id)}
+                onOpenChange={(open) => {
+                  setOpenPopoverId(open ? Number(file.id) : null);
+                }}
+              >
+                <PopoverTrigger asChild>
+                  <button className={styles.moreOptionsBtn}>
+                    <Ellipsis size={18} />
+                  </button>
+                </PopoverTrigger>
 
-                {openTooltipId === file.id && (
-                  <div
-                    ref={tooltipRef}
-                    className={`${
-                      openUpward ? "bottom-full mb-2" : "top-full mt-2"
-                    } ${styles.toolTip}`}
-                  >
-                    <button
-                      onClick={() => editButtonFun(file.filename, file.id)}
-                      className={styles.button}
-                    >
-                      <Pencil size={11} /> Edit
-                    </button>
-                    <button
-                      onClick={() => handleOpenFile(file.id)}
-                      className={styles.button}
-                    >
+                <PopoverContent side="bottom" align="end" className="w-40 p-0">
+                  <ul className={styles.moreMenu}>
+                    <li onClick={() => handle_Open_File(file.id)}>
                       <ArrowDownToLine size={13} /> Download
-                    </button>
-                    <button
+                    </li>
+                    <li onClick={() => editButtonFun(file.filename, file.id)}>
+                      <Pencil size={13} /> Rename
+                    </li>
+                    <li
+                      className=" text-red-600"
                       onClick={() => handleDeleteFile(file.id)}
-                      className={styles.Deletebutton}
                     >
-                      <Trash size={12} /> Delete
-                    </button>
-                  </div>
-                )}
-              </div>
+                      <Trash size={13} /> Delete
+                    </li>
+                  </ul>
+                </PopoverContent>
+              </Popover>
             </li>
           ))}
         </ul>

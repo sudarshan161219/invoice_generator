@@ -90,20 +90,6 @@ export const ClientsPage: FC = (): ReactElement => {
         </div>
       ),
     },
-
-    // {
-    //   key: "notes",
-    //   title: "Notes",
-    //   render: (client) => {
-    //     return (
-    //       <div className=" cursor-pointer">
-    //         {client.notes && (
-    //           <NotebookPen className="text-(--label)" size={16} />
-    //         )}
-    //       </div>
-    //     );
-    //   },
-    // },
     {
       key: "createdAt",
       title: "Created",
