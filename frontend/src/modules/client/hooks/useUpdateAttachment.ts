@@ -1,4 +1,3 @@
-// hooks/useUpdateAttachment.ts
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateAttachmentName } from "@/modules/client/api/update.fileName.client.api";
 

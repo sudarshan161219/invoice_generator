@@ -33,10 +33,9 @@ type Attachment = {
 };
 
 export const AttachmentsPage = () => {
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const { id } = useParams<{ id: string }>();
   const [openPopoverId, setOpenPopoverId] = useState<number | null>(null);
-
   const clientId = Number(id);
 
   const {
@@ -48,14 +47,17 @@ export const AttachmentsPage = () => {
   const attachments = data?.attachments || [];
   const clientName = data?.clientName || "";
 
-  const toggleSelect = (id: string) => {
+  const isAllSelected = selectedIds.length === attachments.length;
+
+  const toggleSelect = (id: number) => {
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
     );
   };
 
   const selectAll = () => {
-    setSelectedIds(attachments.map((a) => a.id));
+    const allIds = attachments.map((file) => file.id);
+    setSelectedIds(allIds);
   };
 
   const clearAll = () => {
@@ -64,6 +66,7 @@ export const AttachmentsPage = () => {
 
   const handleBulkDelete = () => {
     // Confirm & send API call to delete selectedIds
+    console.log(selectedIds);
   };
 
   if (isAttachmentsLoading)
@@ -106,9 +109,10 @@ export const AttachmentsPage = () => {
             <TableRow>
               <TableHead>
                 <Checkbox
-                  checked={selectedIds.length === attachments.length}
+                  className={styles.checkBox}
+                  checked={isAllSelected}
                   onChange={() => {
-                    if (selectedIds.length === attachments.length) {
+                    if (isAllSelected) {
                       clearAll();
                     } else {
                       selectAll();
@@ -128,9 +132,10 @@ export const AttachmentsPage = () => {
               <TableRow key={file.id}>
                 <TableCell>
                   <Checkbox
-                    checked={selectedIds.includes(file.id)}
-                    onChange={() => toggleSelect(file.id)}
+                    checked={selectedIds.includes(Number(file.id))}
+                    onChange={() => toggleSelect(Number(file.id))}
                     aria-label={`Select file ${file.filename}`}
+                    className={styles.checkBox}
                   />
                 </TableCell>
                 <TableCell className={styles.tableCellText}>

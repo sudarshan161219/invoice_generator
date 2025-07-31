@@ -2,6 +2,8 @@ import { Input } from "@/components/input/Input";
 import { Button } from "@/components/button/Button";
 import { useNotesModal } from "@/hooks/useNotesModal";
 import { updateAttachmentName } from "../../api/update.fileName.client.api";
+import { useUpdateAttachment } from "../../hooks/useUpdateAttachment";
+import { useInvoiceClient } from "@/hooks/useInvoiceClient";
 import { toast } from "sonner";
 import styles from "./index.module.css";
 
@@ -21,9 +23,14 @@ export const EditFileInfoModal = ({
     currentEditedValue,
     currentEditingId,
     setEditedValue,
-    // editedName,
     editedFileInfoName,
   } = useNotesModal();
+  const { client } = useInvoiceClient();
+
+  // if (!client) return null;
+  const { mutate, isPending, isSuccess, isError } = useUpdateAttachment(
+    client?.id ?? 0
+  );
 
   const onSave = async () => {
     if (!currentEditingId) return;
@@ -33,14 +40,25 @@ export const EditFileInfoModal = ({
       }
 
       if (editingFileInfoId) {
-        await updateAttachmentName(editingFileInfoId, editedFileInfoName);
+        mutate(
+          { id: editingFileInfoId, filename: editedFileInfoName },
+          {
+            onError: (error) => {
+              console.error("Mutation error:", error);
+              toast.error("Failed to save changes");
+            },
+            onSuccess: () => {
+              closeModal();
+              toast.success("File name updated");
+            },
+          }
+        );
       }
 
       closeModal();
     } catch (error) {
       console.error("Failed to save changes:", error);
       toast.error("Failed to save changes");
-      // Optionally show an error toast or message here
     }
   };
 
@@ -59,8 +77,8 @@ export const EditFileInfoModal = ({
           <Button onClick={closeModal} variant="outline" size="smMd">
             Cancel
           </Button>
-          <Button onClick={onSave} size="smMd">
-            Save
+          <Button onClick={onSave} size="smMd" disabled={isPending}>
+            {isPending ? "Saving..." : "Save"}
           </Button>
         </div>
       </div>

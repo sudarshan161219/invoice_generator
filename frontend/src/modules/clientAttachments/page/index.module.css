@@ -5,6 +5,11 @@
   margin-top: 1rem;
 }
 
+.checkBox {
+  display: flex;
+  border-radius: 5px;
+}
+
 .topBtnContainer {
   display: flex;
   justify-content: space-between;
