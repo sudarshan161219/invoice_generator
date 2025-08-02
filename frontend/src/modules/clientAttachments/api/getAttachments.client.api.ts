@@ -1,4 +1,4 @@
-import api from "@/lib/api";
+import api from "@/lib/api/api";
 
 export const getClientAttachments = async (id: number) => {
   const res = await api.get(`/attachments/upload/${id}`, {

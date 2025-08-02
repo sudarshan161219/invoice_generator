@@ -22,7 +22,7 @@ export const NotesModalProvider = ({ children }: { children: ReactNode }) => {
   // Setters
   const setNotes = (note: Note) => setNote(note);
   const toggleModal = () => setIsOpen(!isOpen);
-  const fileID = (id: number) => setFileID(id);
+  const fileID = (id: number | number[]) => setFileID(id);
 
   function setEditedValue(
     type: "fileName" | "fileInfo",

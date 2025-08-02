@@ -1,4 +1,4 @@
-import api from "@/lib/api";
+import api from "@/lib/api/api";
 
 export const handleDeleteAttachments = async (ids: number | number[]) => {
   const idArray = Array.isArray(ids) ? ids : [ids];

@@ -1,5 +1,5 @@
 import api from "@/lib/api/api";
-import { type UploadAttachmentResponse } from "../types/types";
+import { type UploadAttachmentResponse } from "@/types/attachment_types/types";
 
 export const uploadMultipleAttachments = async (
   formData: FormData,

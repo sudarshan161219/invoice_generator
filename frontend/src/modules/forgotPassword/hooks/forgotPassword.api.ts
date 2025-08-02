@@ -1,4 +1,4 @@
-import api from "@/lib/api";
+import api from "@/lib/api/api";
 import type { ForgotPasswordForm } from "../types";
 
 export const forgotPassword_post = async (data: ForgotPasswordForm) => {

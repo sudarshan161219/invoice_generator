@@ -1,4 +1,4 @@
-import api from "@/lib/api";
+import api from "@/lib/api/api";
 import { type ClientsApiResponse } from "../types/clients";
 
 export const getAllClients = async (): Promise<ClientsApiResponse> => {

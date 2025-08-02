@@ -1,6 +1,6 @@
 // /getSignedUrl/:id
 
-import api from "@/lib/api";
+import api from "@/lib/api/api";
 
 export const handleOpenFile = async (id: number) => {
   const res = await api.get(`/attachments/getSignedUrl/${id}`, {

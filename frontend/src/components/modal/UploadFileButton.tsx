@@ -8,7 +8,7 @@ import { ModalType } from "@/types/ModalType";
 import { useNotesModal } from "@/hooks/useNotesModal";
 import { stripExtension } from "@/lib/stripExtension";
 import { EditFileInfoModal } from "./editFileInfoModal";
-import { useUploadAttachments } from "../../hooks/useUploadAttachments";
+import { useUploadAttachments } from "@/hooks/attachment/useUploadAttachments";
 
 type FileType = {
   id: number;
@@ -115,8 +115,6 @@ export const UploadFileButton = () => {
       const formData = new FormData();
       const stripedVer = stripExtension(file.name);
       const filename = stripedVer || "Untitled";
-
-
 
       formData.append("files", file.file);
       formData.append("type", file.type);

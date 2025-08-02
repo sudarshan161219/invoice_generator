@@ -1,6 +1,5 @@
-// hooks/useClientAttachments.ts
 import { useQuery } from "@tanstack/react-query";
-import { getClientAttachments } from "@/modules/client/api/getAttachments.client.api";
+import { getClientAttachments } from "@/lib/api/attachment/getAttachments.client.api";
 
 export const useClientAttachments = (clientId: number) =>
   useQuery({
@@ -8,6 +7,3 @@ export const useClientAttachments = (clientId: number) =>
     queryFn: () => getClientAttachments(clientId),
     enabled: !!clientId,
   });
-
-
-  

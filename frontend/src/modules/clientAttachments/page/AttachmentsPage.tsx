@@ -10,6 +10,9 @@ import { formatBytes } from "../lib/utils/formatBytes";
 import { formatDate } from "../lib/utils/formatDate";
 import { Checkbox } from "@/components/checkboxs/checkbox";
 import { Button } from "@/components/button/Button";
+import { useNotesModal } from "@/hooks/useNotesModal";
+import { Modal } from "@/components/modal/Modal";
+import { UploadFileButton } from "@/components/modal/UploadFileButton";
 import {
   Table,
   TableBody,
@@ -34,53 +37,68 @@ type Attachment = {
 
 export const AttachmentsPage = () => {
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
-  const { id } = useParams<{ id: string }>();
   const [openPopoverId, setOpenPopoverId] = useState<number | null>(null);
+  const { fileID, openWarning } = useNotesModal();
+  const { id } = useParams<{ id: string }>();
   const clientId = Number(id);
 
-  const {
-    data,
-    isLoading: isAttachmentsLoading,
-    error: attachmentsError,
-  } = useClientAttachments(clientId);
+  const { data, isLoading, error } = useClientAttachments(clientId);
 
   const attachments = data?.attachments || [];
   const clientName = data?.clientName || "";
-
   const isAllSelected = selectedIds.length === attachments.length;
 
-  const toggleSelect = (id: number) => {
+  // Selection handlers
+  const toggleSelect = (id: number) =>
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
     );
-  };
 
-  const selectAll = () => {
-    const allIds = attachments.map((file) => file.id);
-    setSelectedIds(allIds);
-  };
+  const selectAll = () =>
+    setSelectedIds(attachments.map((file: Attachment) => file.id));
 
-  const clearAll = () => {
-    setSelectedIds([]);
+  const clearAll = () => setSelectedIds([]);
+
+  const handleDeleteFile = (fileId: number) => {
+    fileID(fileId);
+    openWarning();
+    setOpenPopoverId(null);
   };
 
   const handleBulkDelete = () => {
-    // Confirm & send API call to delete selectedIds
-    console.log(selectedIds);
+    if (selectedIds.length > 0) {
+      fileID(selectedIds);
+      openWarning();
+    }
   };
 
-  if (isAttachmentsLoading)
+  // Handle loading and error states early
+  if (isLoading) {
     return (
-      <div className="p-4 text-gray-600">Loading client Attachments...</div>
+      <div className="p-4 text-gray-600">Loading client attachments...</div>
     );
+  }
 
-  if (attachmentsError)
+  if (error) {
     return (
       <div className="p-4 text-red-600">
-        There was error while loading client Attachments...
+        There was an error while loading attachments...
       </div>
     );
+  }
 
+  if (!isLoading && !error && attachments.length === 0) {
+    return (
+      <div className={styles.uploadAttachmentsContainer}>
+        <h3 className="mb-4 font-semibold text-lg">
+          No attachments found. Upload new files:
+        </h3>
+        <div className={styles.UploadFileButton}>
+          <UploadFileButton />
+        </div>
+      </div>
+    );
+  }
   return (
     <div className={styles.container}>
       <div className={styles.topBtnContainer}>
@@ -111,13 +129,7 @@ export const AttachmentsPage = () => {
                 <Checkbox
                   className={styles.checkBox}
                   checked={isAllSelected}
-                  onChange={() => {
-                    if (isAllSelected) {
-                      clearAll();
-                    } else {
-                      selectAll();
-                    }
-                  }}
+                  onChange={() => (isAllSelected ? clearAll() : selectAll())}
                 />
               </TableHead>
               <TableHead>File Name</TableHead>
@@ -157,16 +169,15 @@ export const AttachmentsPage = () => {
                   <div className="relative">
                     <Popover
                       open={openPopoverId === Number(file.id)}
-                      onOpenChange={(open) => {
-                        setOpenPopoverId(open ? Number(file.id) : null);
-                      }}
+                      onOpenChange={(open) =>
+                        setOpenPopoverId(open ? Number(file.id) : null)
+                      }
                     >
                       <PopoverTrigger asChild>
                         <button className={styles.moreOptionsBtn}>
                           <Ellipsis size={18} />
                         </button>
                       </PopoverTrigger>
-
                       <PopoverContent
                         side="bottom"
                         align="end"
@@ -180,10 +191,8 @@ export const AttachmentsPage = () => {
                             <Pencil size={13} /> Rename
                           </li>
                           <li
-                            className=" text-red-600"
-                            onClick={() => {
-                              setOpenPopoverId(null);
-                            }}
+                            className="text-red-600"
+                            onClick={() => handleDeleteFile(Number(file.id))}
                           >
                             <Trash size={13} /> Delete
                           </li>
@@ -197,6 +206,8 @@ export const AttachmentsPage = () => {
           </TableBody>
         </Table>
       </div>
+
+      <Modal />
     </div>
   );
 };

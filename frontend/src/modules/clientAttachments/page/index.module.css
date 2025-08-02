@@ -8,6 +8,7 @@
 .checkBox {
   display: flex;
   border-radius: 5px;
+  cursor: pointer;
 }
 
 .topBtnContainer {
@@ -47,4 +48,23 @@
 
 .moreMenu > li:hover {
   background-color: var(--accent);
+}
+
+.moreOptionsBtn {
+  cursor: pointer;
+}
+
+.uploadAttachmentsContainer {
+  padding: 1rem;
+}
+
+.UploadFileButton {
+  width: 100%;
+  margin: 0 auto;
+}
+
+@media screen and (min-width: 500px) {
+  .UploadFileButton {
+    width: 490px;
+  }
 }

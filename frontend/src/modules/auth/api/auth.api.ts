@@ -1,4 +1,4 @@
-import api from "@/lib/api";
+import api from "@/lib/api/api";
 import type { IRegisterDTO } from "@/types/register";
 import type { ILoginDTO } from "@/types/login";
 

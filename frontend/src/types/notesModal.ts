@@ -22,7 +22,7 @@ export interface NoteModalContextType {
   ) => void;
   setEditingId: (type: "fileName" | "fileInfo", id: number | null) => void;
   toggleModal: () => void;
-  fileID: (id: number) => void;
+  fileID: (id: number | number[]) => void;
   closeModal: () => void;
   openModal: (modalType: ModalType) => void;
   openEditFileNameModal: () => void;

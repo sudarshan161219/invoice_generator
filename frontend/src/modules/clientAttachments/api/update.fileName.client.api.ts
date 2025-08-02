@@ -1,4 +1,4 @@
-import api from "@/lib/api";
+import api from "@/lib/api/api";
 
 export const updateAttachmentName = async (id: number, filename: string) => {
   const res = await api.patch(
