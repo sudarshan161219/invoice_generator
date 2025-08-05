@@ -23,7 +23,13 @@ const MAX_SIZE_MB = 25;
 const MAX_FILES = 5;
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "application/pdf"];
 
-export const UploadFileButton = () => {
+export const UploadFileButton = ({
+  onUploadStart,
+  onUploadEnd,
+}: {
+  onUploadStart?: () => void;
+  onUploadEnd?: () => void;
+}) => {
   const { editedName, activeModal, openModal, setEditedValue, setEditingId } =
     useNotesModal();
   const [uploadControllers, setUploadControllers] = useState<
@@ -96,6 +102,7 @@ export const UploadFileButton = () => {
   };
 
   const handleAttach = async () => {
+    onUploadStart?.();
     for (const file of uploadedFiles) {
       const controller = new AbortController();
       controllerRef.current = controller;
@@ -157,6 +164,7 @@ export const UploadFileButton = () => {
       }
     }
     setUploadedFiles([]);
+    onUploadEnd?.();
   };
 
   const editButtonFun = (fileName: string, fileId: number) => {

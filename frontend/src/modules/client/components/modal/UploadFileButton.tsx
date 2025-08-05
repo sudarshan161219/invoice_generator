@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { UploadCloud, Trash2, Pencil, File, Image } from "lucide-react";
+import { UploadCloud, Trash2, Pencil } from "lucide-react";
 import styles from "./index.module.css";
 import { Button } from "@/components/button/Button";
 import { useInvoiceClient } from "@/hooks/useInvoiceClient";
@@ -7,8 +7,11 @@ import { toast } from "sonner";
 import { ModalType } from "@/types/ModalType";
 import { useNotesModal } from "@/hooks/useNotesModal";
 import { stripExtension } from "@/lib/stripExtension";
+import { truncateFileName } from "@/lib/truncate";
 import { EditFileInfoModal } from "./editFileInfoModal";
 import { useUploadAttachments } from "../../hooks/useUploadAttachments";
+import { isAllowedFile } from "@/lib/FileValidation/isAllowedFile";
+import { getFileIcon } from "@/lib/ConditionalIcons/getFileIcon";
 
 type FileType = {
   id: number;
@@ -19,9 +22,7 @@ type FileType = {
   file: File;
 };
 
-const MAX_SIZE_MB = 25;
 const MAX_FILES = 5;
-const ALLOWED_TYPES = ["image/jpeg", "image/png", "application/pdf"];
 
 export const UploadFileButton = () => {
   const { editedName, activeModal, openModal, setEditedValue, setEditingId } =
@@ -47,19 +48,6 @@ export const UploadFileButton = () => {
   );
   const controllerRef = useRef<AbortController | null>(null);
 
-  const validateFile = (file: File) => {
-    if (!ALLOWED_TYPES.includes(file.type)) {
-      toast.warning(`Unsupported file: ${file.name}`);
-      return false;
-    }
-    const sizeMB = file.size / (1024 * 1024);
-    if (sizeMB > MAX_SIZE_MB) {
-      toast.warning(`File too large: ${file.name}`);
-      return false;
-    }
-    return true;
-  };
-
   const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
     e.preventDefault();
     setDragOver(false);
@@ -78,7 +66,7 @@ export const UploadFileButton = () => {
         toast.warning(`You can only upload up to ${MAX_FILES} files.`);
         return;
       }
-      if (!validateFile(file)) return;
+      if (!isAllowedFile(file)) return;
       const id = parseInt(
         crypto.getRandomValues(new Uint32Array(1))[0].toString().slice(0, 9)
       );
@@ -115,8 +103,6 @@ export const UploadFileButton = () => {
       const formData = new FormData();
       const stripedVer = stripExtension(file.name);
       const filename = stripedVer || "Untitled";
-
-
 
       formData.append("files", file.file);
       formData.append("type", file.type);
@@ -208,7 +194,12 @@ export const UploadFileButton = () => {
           onChange={handleChange}
           multiple
           disabled={uploadedFiles.length + uploadQueue.length >= MAX_FILES}
-          accept=".jpg,.jpeg,.png,.pdf"
+          accept="
+    .jpg,.jpeg,.png,.webp,
+    .pdf,.doc,.docx,.xls,.xlsx,.csv,.txt,.odt,
+    .zip,.rar,.7z,.tar,.gz,
+    .mp3,.wav,.mp4,.mov,
+    .psd,.ai,.svg,.fig"
         />
       </label>
 
@@ -225,37 +216,24 @@ export const UploadFileButton = () => {
         <div className={styles.previewGrid}>
           {uploadedFiles.map((file) => {
             const matchingUpload = uploadQueue.find((f) => f.id === file.id);
-            const striptedExtension = stripExtension(file.name);
             return (
               <div key={file.id} className={styles.previewItem}>
                 <div className={styles.item_action_container}>
-                  {file.type.startsWith("image/") ? (
-                    <div className={styles.fileInfoContainer}>
-                      <Image className="text-[var(--label)]" />
-                      <div>
-                        <span className={styles.fileText}>
-                          {striptedExtension}
-                        </span>
-                        <span className={styles.fileSize}>{`${(
-                          file.size /
-                          (1024 * 1024)
-                        ).toFixed(2)} MB`}</span>
-                      </div>
+                  <div className={styles.fileInfoContainer}>
+                    {getFileIcon(file.type)}
+                    <div>
+                      <span className={styles.fileText}>
+                        {/* {striptedExtension} */}
+                        {truncateFileName(file.name)}
+                      </span>
+                      <span className={styles.fileSize}>{`${(
+                        file.size /
+                        (1024 * 1024)
+                      ).toFixed(2)} MB`}</span>
                     </div>
-                  ) : (
-                    <div className={styles.fileInfoContainer}>
-                      <File className="text-[var(--label)]" />
-                      <div>
-                        <span className={styles.fileText}>
-                          {striptedExtension}
-                        </span>
-                        <span className={styles.fileSize}>{`${(
-                          file.size /
-                          (1024 * 1024)
-                        ).toFixed(2)} MB`}</span>
-                      </div>
-                    </div>
-                  )}
+                  </div>
+
+                  {/* { getFileIcon} */}
                   <div className={styles.actions}>
                     {matchingUpload ? (
                       <button

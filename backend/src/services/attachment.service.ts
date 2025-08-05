@@ -27,9 +27,14 @@ export class AttachmentService {
       });
     }
 
+    const fullFileName = `${attachment.filename}.${
+      attachment.type?.split("/")[1]
+    }`;
+
     const command = new GetObjectCommand({
       Bucket: this.bucket,
       Key: attachment?.key,
+      ResponseContentDisposition: `attachment; filename="${fullFileName}"`,
     });
 
     const signedUrl = await getSignedUrl(r2, command, {
