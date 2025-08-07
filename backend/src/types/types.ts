@@ -18,4 +18,8 @@ export const TYPES = {
   AttachmentService: Symbol.for("AttachmentService"),
   AttachmentController: Symbol.for("AttachmentController"),
   AttachmentRouter: Symbol.for("AttachmentRouter"),
+
+  NoteService: Symbol.for("NoteService"),
+  NoteController: Symbol.for("NoteController"),
+  NoteRouter: Symbol.for("NoteRouter"),
 };

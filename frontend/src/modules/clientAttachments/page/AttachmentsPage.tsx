@@ -4,6 +4,11 @@ import { Ellipsis, Pencil, ArrowDownToLine, Trash } from "lucide-react";
 import { stripExtension } from "@/lib/stripExtension";
 import { truncateFileName } from "@/lib/truncate";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -28,6 +33,7 @@ import {
 import { useNotesModal } from "@/hooks/useNotesModal";
 import { useClientAttachments } from "../hooks/useClientAttachments";
 import styles from "./index.module.css";
+import { getFileIcon } from "@/lib/ConditionalIcons/getFileIcon";
 
 type Attachment = {
   id: string;
@@ -94,7 +100,6 @@ export const AttachmentsPage = () => {
     setOpenPopoverId(null);
   };
 
-  // Handle loading and error states early
   if (isLoading) {
     return (
       <div className="p-4 text-gray-600">Loading client attachments...</div>
@@ -173,7 +178,6 @@ export const AttachmentsPage = () => {
               <TableHead>File Name</TableHead>
               <TableHead>Size</TableHead>
               <TableHead>Uploaded</TableHead>
-              <TableHead>Last Updated</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -193,20 +197,29 @@ export const AttachmentsPage = () => {
                       className={styles.checkBox}
                     />
                   </TableCell>
-                  <TableCell className={styles.tableCellText}>
-                    {truncateFileName(file.filename)}
-                    <p className={styles.fileTypeText}>
-                      {file.type?.split("/")[1]?.toUpperCase() || "FILE"}
-                    </p>
+                  <TableCell
+                    className={`${styles.tableCellText} flex items-center gap-1 `}
+                  >
+                    {getFileIcon(file.type)}
+                    <div>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          {truncateFileName(file.filename)}
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>{file.filename}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                      <p className={styles.fileTypeText}>
+                        {file.type?.split("/")[1]?.toUpperCase() || "FILE"}
+                      </p>
+                    </div>
                   </TableCell>
                   <TableCell className={styles.tableCellText}>
                     {formatBytes(file.size)}
                   </TableCell>
                   <TableCell className={styles.tableCellText}>
                     {formatDate(file.uploadedAt)}
-                  </TableCell>
-                  <TableCell className={styles.tableCellText}>
-                    {formatDate(file.updatedAt)}
                   </TableCell>
                   <TableCell>
                     <div className="relative">

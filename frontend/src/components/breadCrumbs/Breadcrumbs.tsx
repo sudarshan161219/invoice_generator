@@ -49,6 +49,10 @@ export const Breadcrumbs = () => {
             label = "Attachments";
           }
 
+          if (/^\d+$/.test(segment) && pathnames[index - 1] === "notes") {
+            label = "Notes";
+          }
+
           // ✅ Force `/client` to render as "Clients" and link to `/clients`
           if (segment === "client" && pathnames.length === 2) {
             label = "Clients";
@@ -56,6 +60,11 @@ export const Breadcrumbs = () => {
           }
 
           if (segment === "attachments" && pathnames.length === 2) {
+            label = "Client";
+            routeTo = `/client/${clientId}`;
+          }
+
+          if (segment === "notes" && pathnames.length === 2) {
             label = "Client";
             routeTo = `/client/${clientId}`;
           }

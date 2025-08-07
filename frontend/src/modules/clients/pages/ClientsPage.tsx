@@ -9,6 +9,7 @@ import type { Column } from "@/types/table.types";
 import { MoreVertical, Copy } from "lucide-react";
 import type { Clients, ClientsApiResponse } from "../types/clients";
 import { NotebookPen } from "lucide-react";
+import { EmptyState } from "@/components/EmptyState/EmptyState";
 import { Link } from "react-router-dom";
 import {
   Pagination,
@@ -132,6 +133,17 @@ export const ClientsPage: FC = (): ReactElement => {
 
   const clientDataBlock = clientResponse?.data;
   const clients = clientDataBlock?.data;
+
+  if (clients?.length === 0) {
+    return (
+      <EmptyState
+        title="No clients found"
+        description="You haven’t added any clients yet. Start by creating one."
+        buttonText="Create Client"
+        redirectTo="/clients/new"
+      />
+    );
+  }
 
   return (
     <div className="space-y-6">

@@ -14,6 +14,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       type = "text",
       label,
       name,
+      placeholder,
       id,
       onChange,
       value: controlledValue,
@@ -61,6 +62,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           toggleShow={toggleShow}
           className={className}
           error={!isLogin && !!validationMessage}
+          placeholder={placeholder}
           value={value != null ? String(value) : ""}
           onChange={handleChange}
           ref={ref}

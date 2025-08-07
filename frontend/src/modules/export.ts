@@ -12,11 +12,13 @@ import { ClientPage } from "@/modules/client/pages/ClientPage";
 import { ForgotPasswordPage } from "./forgotPassword/pages/ForgotPassword";
 import { ResetPassword } from "./resetPassword/pages/ResetPassword";
 import { HelpPage } from "./help/pages/HelpPage";
+import { ClientNotes } from "@/modules/clientNotes/page/ClientNotes";
 export {
   AuthPage,
   DashboardPage,
   ClientsPage,
   AttachmentsPage,
+  ClientNotes,
   InvoicesPage,
   SettingsPage,
   CreateInvoice,

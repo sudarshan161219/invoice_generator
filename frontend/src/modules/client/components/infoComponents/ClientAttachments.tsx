@@ -11,7 +11,7 @@ import {
 import { Ellipsis, Upload, Pencil, ArrowDownToLine, Trash } from "lucide-react";
 import { useNotesModal } from "@/hooks/useNotesModal";
 import styles from "./index.module.css";
-import { EditFileInfoModal } from "../modal/editFileInfoModal";
+import { EditFileInfoModal } from "@/components/modal/editFileInfoModal";
 import { handleOpenFile } from "../../api/get.single.attachment.client.api";
 import { handleDownloadFile } from "@/lib/api/attachment/get.single.attachment.client.api";
 import { ModalType } from "@/types/ModalType";

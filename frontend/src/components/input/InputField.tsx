@@ -7,6 +7,7 @@ type Props = {
   id: string;
   name?: string;
   type: string;
+  placeholder?: string;
   show: boolean;
   toggleShow: () => void;
   value: string;
@@ -17,7 +18,18 @@ type Props = {
 
 export const InputField = forwardRef<HTMLInputElement, Props>(
   (
-    { id, name, type, show, toggleShow, className, error, value, onChange },
+    {
+      id,
+      name,
+      type,
+      show,
+      toggleShow,
+      className,
+      error,
+      value,
+      onChange,
+      placeholder,
+    },
     ref
   ) => {
     const inputType = type === "password" && show ? "text" : type;
@@ -36,6 +48,7 @@ export const InputField = forwardRef<HTMLInputElement, Props>(
             className
           )}
           ref={ref}
+          placeholder={placeholder}
           value={value}
           onChange={onChange}
         />

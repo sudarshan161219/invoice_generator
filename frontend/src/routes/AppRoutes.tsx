@@ -5,6 +5,7 @@ import {
   ClientsPage,
   ClientPage,
   AttachmentsPage,
+  ClientNotes,
   InvoicesPage,
   SettingsPage,
   CreateInvoice,
@@ -52,6 +53,7 @@ export default function AppRoutes() {
         <Route path="clients" element={<ClientsPage />} />
         <Route path="client/:id" element={<ClientPage />} />
         <Route path="attachments/:id" element={<AttachmentsPage />} />
+        <Route path="notes/:id" element={<ClientNotes />} />
         <Route path="payments" element={<PaymentsPage />} />
         <Route path="settings" element={<SettingsPage />} />
         <Route path="/help" element={<HelpPage />} />

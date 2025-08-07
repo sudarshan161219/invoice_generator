@@ -24,7 +24,6 @@ model Invoice {
   amount     Float
   dueDate    DateTime
   paid       Boolean   @default(false)
-  notes String?
   support    String?
   description String?
   createdAt  DateTime  @default(now())
@@ -37,7 +36,7 @@ model Invoice {
   client     Client    @relation(fields: [clientId], references: [id], onDelete: Cascade)
   user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   payments   Payment[]
-
+  notes      ClientNote[]
   // Indexes
   @@index([userId])
   @@unique([id, userId])
@@ -98,23 +97,34 @@ model Session {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-
+enum NoteType {
+  general
+  invoiceRelated
+}
 
 model ClientNote {
-  id        Int      @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
+  title     String?
   content   String
-  createdAt DateTime @default(now())
+  label     Json?    // e.g. { name: "Important", color: "#f97316" }
+  noteType  NoteType  @default(general)
+  createdAt DateTime  @default(now())
 
   // Relations
-  clientId  Int
-  client    Client   @relation(fields: [clientId], references: [id])
+  clientId  Int?
+  client    Client?    @relation(fields: [clientId], references: [id])
 
   userId    Int
-  user      User     @relation(fields: [userId], references: [id])
+  user      User      @relation(fields: [userId], references: [id])
+
+  invoiceId Int?      
+  invoice   Invoice?  @relation(fields: [invoiceId], references: [id])
 
   @@index([clientId])
   @@index([userId])
+  @@index([invoiceId])
 }
+
 
 
 model Client {
@@ -156,12 +166,15 @@ model Attachment {
   id          Int       @id @default(autoincrement())
   filename    String
   originalname  String 
-  type        String         // e.g., "image/png", "application/pdf"
-  size        Int            // in bytes
-  url         String         // URL or path to the uploaded file
+  type        String       
+  size        Int            
+  url         String         
   key         String  
-  uploadedAt  DateTime  @default(now())
   mimeType    String
+  uploadedAt  DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  createdAt   DateTime  @default(now())
+  
   // Relations
   userId      Int
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -171,7 +184,6 @@ model Attachment {
 
   clientId    Int?      // Optional relation to a client
   client      Client?   @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  createdAt   DateTime  @default(now())
   @@index([userId])
   @@index([invoiceId])
   @@index([clientId])
