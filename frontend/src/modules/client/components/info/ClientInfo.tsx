@@ -33,7 +33,6 @@ const getRandomGradient = () =>
 export const ClientInfo = () => {
   const { id } = useParams<{ id: string }>();
   const clientId = Number(id);
-
   const { client, clientName, setClient, setClientName } = useInvoiceClient();
 
   const {
@@ -51,7 +50,6 @@ export const ClientInfo = () => {
   const attachments = data?.attachments || [];
   const [bgGradient] = useState(getRandomGradient());
   const note = dummyNotes[0];
-
 
   // Sync client state to global context
   useEffect(() => {
@@ -83,7 +81,6 @@ export const ClientInfo = () => {
       <div className={styles.clientDetails}>
         <ClientNotes note={note} />
         <ClientAddress address={client.address || ""} />
-
         <ClientAttachments attachments={attachments || []} />
       </div>
     </div>

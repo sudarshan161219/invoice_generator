@@ -61,6 +61,42 @@ export class NoteController {
 
   async handleGetAll(req: AuthRequest, res: Response, next: NextFunction) {
     try {
+      const userId = req.user?.id;
+      const { clientId, invoiceId } = req.query;
+
+      const parsedClientId = clientId
+        ? parseInt(clientId as string)
+        : undefined;
+      const parsedInvoiceId = invoiceId
+        ? parseInt(invoiceId as string)
+        : undefined;
+
+      if (!userId) {
+        throw new AppError({
+          message: "Access denied. Please log in again.",
+          statusCode: StatusCodes.UNAUTHORIZED,
+          code: "UNAUTHORIZED_ACCESS",
+          debugMessage: "Missing or invalid userId from request object.",
+        });
+      }
+
+      if (!clientId && !invoiceId) {
+        throw new AppError({
+          message: "Note must belong to either a client or an invoice.",
+          statusCode: StatusCodes.BAD_REQUEST,
+          code: "NOTE_TARGET_MISSING",
+        });
+      }
+
+      const notes = await this.noteService.getAll(userId, {
+        clientId: parsedClientId,
+        invoiceId: parsedInvoiceId,
+      });
+
+      res.status(StatusCodes.OK).json({
+        success: true,
+        data: notes,
+      });
     } catch (error) {
       next(error);
     }
@@ -75,6 +111,40 @@ export class NoteController {
 
   async handleUpdate(req: AuthRequest, res: Response, next: NextFunction) {
     try {
+      const userId = req.user?.id;
+      const noteId = parseInt(req.params.id);
+      const { title, content, label, noteType, clientId, invoiceId } = req.body;
+
+      if (!userId) {
+        throw new AppError({
+          message: "Access denied. Please log in again.",
+          statusCode: StatusCodes.UNAUTHORIZED,
+          code: "UNAUTHORIZED_ACCESS",
+          debugMessage: "Missing or invalid userId from request object.",
+        });
+      }
+
+      if (!noteId) {
+        throw new AppError({
+          message: "Missing or invalid noteId",
+          statusCode: StatusCodes.BAD_REQUEST,
+          code: "NOTE_TARGET_MISSING",
+        });
+      }
+
+      const note = await this.noteService.updateNote(noteId, {
+        title,
+        content,
+        label,
+        noteType,
+        clientId,
+        invoiceId,
+      });
+
+      res.status(StatusCodes.OK).json({
+        success: true,
+        data: note,
+      });
     } catch (error) {
       next(error);
     }

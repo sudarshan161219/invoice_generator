@@ -33,7 +33,6 @@
 .noteLabel {
   display: flex;
   align-items: center;
-  color: #92400e;
   font-size: 0.85rem;
   font-weight: 600;
 }

@@ -187,7 +187,7 @@ export const MobileSidebar = () => {
               <div className={styles.name_email}>
                 <span className={styles.name}>{user && user.name}</span>
                 <span className={styles.email}>
-                  {user && shortenEmail(user.email)}
+                  {user && shortenEmail(user?.email)}
                 </span>
               </div>
             </div>

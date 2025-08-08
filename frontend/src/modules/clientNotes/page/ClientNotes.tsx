@@ -1,8 +1,12 @@
 import styles from "./index.module.css";
+import { useState } from "react";
 import { MoreHorizontal, Pencil, Trash, Dot, Plus } from "lucide-react";
+import { useParams } from "react-router-dom";
 import { Button } from "@/components/button/Button";
 import { useNotesModal } from "@/hooks/useNotesModal";
 import { AddNoteModal } from "@/components/addNoteModal/AddNoteModal";
+import { useGetAllNotes } from "@/hooks/note/useGetAllNotes";
+import type { ExtendedNoteDTO } from "@/types/note_types/types";
 import {
   Popover,
   PopoverContent,
@@ -10,58 +14,46 @@ import {
 } from "@/components/ui/popover";
 
 export const ClientNotes = () => {
-  const { openAddNote, isOpen } = useNotesModal();
+  const { openAddNote, openEditNote, isOpen, setNoteEdit, setNoteId } =
+    useNotesModal();
+  const [openPopoverId, setOpenPopoverId] = useState<number | null>(null);
+  const { id } = useParams<{ id: string }>();
+  const clientId = Number(id);
+  const { data, isLoading, error } = useGetAllNotes({ clientId });
 
-  const notes = [
-    {
-      id: 1,
-      heading: "Invoice Split Request",
-      label: "Important",
-      content: "Client requested invoice split into Q3 and Q4.",
-      date: "Jul 20, 25",
-    },
-    {
-      id: 2,
-      heading: "Monthly Reminder",
-      label: "Reminder",
-      content: "Send invoice by 5th of every month.",
-      date: "Jul 10, 25",
-    },
-    {
-      id: 3,
-      heading: "Late Fee Follow-up",
-      label: "Follow-up",
-      content: "Ask about late fee policy agreement.",
-      date: "Jul 05, 25",
-    },
-    {
-      id: 4,
-      heading: "Invoice Split Request",
-      label: "Important",
-      content: "Client requested invoice split into Q3 and Q4.",
-      date: "Jul 20, 25",
-    },
-    {
-      id: 5,
-      heading: "Monthly Reminder",
-      label: "Reminder",
-      content: "Send invoice by 5th of every month.",
-      date: "Jul 10, 25",
-    },
-    {
-      id: 6,
-      heading: "Late Fee Follow-up",
-      label: "Follow-up",
-      content: "Ask about late fee policy agreement.",
-      date: "Jul 05, 25",
-    },
-  ];
+  const onEdit = (
+    noteId: number,
+    title: string,
+    content: string,
+    label: {
+      name: string;
+      color: string;
+    }
+  ) => {
+    const noteEdit = {
+      title,
+      content,
+      label,
+    };
+    setNoteId(noteId);
+    setNoteEdit(noteEdit);
+    openEditNote();
+    setOpenPopoverId(null);
+  };
+
+  const onCreate = () => {
+    setNoteEdit(null);
+    openAddNote();
+  };
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error loading notes</div>;
 
   return (
     <div className={styles.container}>
       <div className={styles.btnContainer}>
         <Button
-          onClick={openAddNote}
+          onClick={onCreate}
           className={styles.addBtn}
           size="md"
           variant="outline"
@@ -70,48 +62,75 @@ export const ClientNotes = () => {
         </Button>
       </div>
       <div className={styles.grid}>
-        {notes.map((note) => (
-          <div key={note.id} className={styles.noteCard}>
-            <div className="flex flex-col ">
-              <div className={styles.noteHeader}>
-                <span className={styles.noteLabel}>
-                  <Dot size={16} />
-                  {note.label}
-                </span>
+        {data.map((note: ExtendedNoteDTO) => {
+          const date = new Date(note.createdAt);
 
-                <div className="relative">
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <button className={styles.moreOptionsBtn}>
-                        <MoreHorizontal size={18} />
-                      </button>
-                    </PopoverTrigger>
-                    <PopoverContent
-                      side="bottom"
-                      align="end"
-                      className="w-25 p-0"
+          const formatted = date.toLocaleDateString("en-US", {
+            month: "short",
+            day: "2-digit",
+            year: "2-digit",
+          });
+
+          return (
+            <div key={note.id} className={styles.noteCard}>
+              <div className="flex flex-col ">
+                <div className={styles.noteHeader}>
+                  <span
+                    className={styles.noteLabel}
+                    style={{ color: note.label?.color }}
+                  >
+                    <Dot size={16} />
+                    {note.label?.name}
+                  </span>
+
+                  <div className="relative">
+                    <Popover
+                      open={openPopoverId === Number(note.id)}
+                      onOpenChange={(open) => {
+                        setOpenPopoverId(open ? Number(note.id) : null);
+                      }}
                     >
-                      <ul className={styles.options}>
-                        <li>
-                          <Pencil size={13} /> Edit
-                        </li>
-                        <li>
-                          <Trash size={13} /> Delete
-                        </li>
-                      </ul>
-                    </PopoverContent>
-                  </Popover>
+                      <PopoverTrigger asChild>
+                        <button className={styles.moreOptionsBtn}>
+                          <MoreHorizontal size={18} />
+                        </button>
+                      </PopoverTrigger>
+                      <PopoverContent
+                        side="bottom"
+                        align="end"
+                        className="w-25 p-0"
+                      >
+                        <ul className={styles.options}>
+                          <li
+                            onClick={() =>
+                              onEdit(
+                                note.id,
+                                note.title,
+                                note.content,
+                                note.label
+                              )
+                            }
+                          >
+                            <Pencil size={13} /> Edit
+                          </li>
+                          <li>
+                            <Trash size={13} /> Delete
+                          </li>
+                        </ul>
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                </div>
+                <div className={styles.notesContentContainer}>
+                  <h3 className={styles.noteHeading}>{note.title}</h3>
+                  <p className={styles.noteContent}>{note.content}</p>
                 </div>
               </div>
-              <div className={styles.notesContentContainer}>
-                <h3 className={styles.noteHeading}>{note.heading}</h3>
-                <p className={styles.noteContent}>{note.content}</p>
-              </div>
-            </div>
 
-            <span className={styles.noteDate}>{note.date}</span>
-          </div>
-        ))}
+              <span className={styles.noteDate}>{formatted}</span>
+            </div>
+          );
+        })}
       </div>
 
       {isOpen && <AddNoteModal />}

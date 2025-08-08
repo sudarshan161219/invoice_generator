@@ -12,6 +12,11 @@ declare global {
 
 export interface AuthRequest extends Request {
   user?: JwtUserPayload;
+  query: {
+    clientId?: string;
+    invoiceId?: string;
+    noteId?: string;
+  };
 }
 
 export interface AuthFileRequest extends Request {

@@ -1,23 +1,30 @@
 import { useState, type ReactNode } from "react";
-import type { Note, EditedName, EditedFileInfoName } from "@/types/notesModal";
+import type {
+  Note,
+  EditedName,
+  EditedFileInfoName,
+  editnoteDTO,
+} from "@/types/notesModal";
 import { NotesModalContext } from "../context/notesModal-context";
 import { ModalType } from "@/types/ModalType";
 
 export const NotesModalProvider = ({ children }: { children: ReactNode }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [fileId, setFileID] = useState<number | number[] | null>(null);
+  const [noteId, setNoteId] = useState<number | null>(null);
   const [activeModal, setActiveModal] = useState<ModalType>(ModalType.None);
   const [editingFileId, setEditingFileId] = useState<number | null>(null);
   const [editingFileInfoId, setEditingFileInfoId] = useState<number | null>(
     null
   );
   const [mode, setMode] = useState<
-    "add" | "viewAll" | "addFile" | "viewAllFiles" | "warning"
+    "add" | "edit" | "viewAll" | "addFile" | "viewAllFiles" | "warning"
   >("viewAll");
   const [note, setNote] = useState<Note>("");
   const [editedName, setEditName] = useState<EditedName>("");
   const [editedFileInfoName, setEditFileinfoName] =
     useState<EditedFileInfoName>("");
+  const [noteEdit, setNoteEdit] = useState<editnoteDTO | null>(null);
 
   // Setters
   const setNotes = (note: Note) => setNote(note);
@@ -54,6 +61,11 @@ export const NotesModalProvider = ({ children }: { children: ReactNode }) => {
   // Content mode
   const openAddNote = () => {
     setMode("add");
+    setIsOpen(true);
+  };
+
+  const openEditNote = () => {
+    setMode("edit");
     setIsOpen(true);
   };
 
@@ -110,6 +122,7 @@ export const NotesModalProvider = ({ children }: { children: ReactNode }) => {
         currentEditedValue,
         setEditedValue,
         openAddNote,
+        openEditNote,
         openViewAll,
         openAddFile,
         openViewAllFiles,
@@ -121,6 +134,10 @@ export const NotesModalProvider = ({ children }: { children: ReactNode }) => {
         closeModal,
         openModal,
         toggleModal,
+        noteEdit,
+        setNoteEdit,
+        noteId,
+        setNoteId,
       }}
     >
       {children}

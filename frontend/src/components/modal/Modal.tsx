@@ -2,10 +2,9 @@ import styles from "./index.module.css";
 import { useNotesModal } from "@/hooks/useNotesModal";
 import { ModalHeader } from "./ModalHeader";
 import { NoteList } from "./NoteList";
-import { AddNoteForm } from "./AddNoteForm";
+import { AddNoteModal } from "@/components/addNoteModal/AddNoteModal";
 import { UploadFileButton } from "./UploadFileButton";
 import { Warning } from "./WarningModal";
-// import type { Props } from "./types/types";
 
 export const Modal = () => {
   const { isOpen, toggleModal, mode } = useNotesModal();
@@ -17,7 +16,7 @@ export const Modal = () => {
       case "viewAll":
         return <NoteList />;
       case "add":
-        return <AddNoteForm />;
+        return <AddNoteModal />;
       case "addFile":
         return <UploadFileButton />;
       case "warning":

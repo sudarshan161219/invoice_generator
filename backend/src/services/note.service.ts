@@ -29,6 +29,12 @@ export class NoteService {
       });
 
       await redisClient.del(`notes:user:${userId}:*`);
+      await redisClient.del(`notes:user:${userId}:client:any:invoice:any`);
+      await redisClient.del(
+        `notes:user:${userId}:client:${clientId ?? "any"}:invoice:${
+          invoiceId ?? "any"
+        }`
+      );
 
       return note;
     } catch (error) {
@@ -124,7 +130,14 @@ export class NoteService {
       });
 
       // Invalidate cache
-      await redisClient.del(`notes:user:${existing.userId}:*`);
+      await redisClient.del(
+        `notes:user:${existing.userId}:client:any:invoice:any`
+      );
+      await redisClient.del(
+        `notes:user:${existing.userId}:client:${
+          existing.clientId ?? "any"
+        }:invoice:${existing.invoiceId ?? "any"}`
+      );
 
       return updated;
     } catch (error) {

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useNotesModal } from "@/hooks/useNotesModal";
 import { Button } from "@/components/button/Button";
@@ -6,11 +6,15 @@ import { Input } from "../input/Input";
 import { ColorDropdown } from "../ColorDropdown/ColorDropdown";
 import type { noteDTO } from "@/types/note_types/types";
 import { Dot } from "lucide-react";
-import { createNote } from "@/lib/api/note/create.note.api";
 import styles from "./index.module.css";
+// import { useCreateNote } from "@/hooks/note/useCreateNote";
+// import { useUpdateNote } from "@/hooks/note/useUpdateNote";
+import { useSaveNote } from "@/hooks/note/useSaveNote";
+import { toast } from "sonner";
 
 export const AddNoteModal = () => {
-  const { toggleModal } = useNotesModal();
+  const { toggleModal, noteEdit, noteId } = useNotesModal();
+  const { mutate, isPending, isSuccess, isError, error } = useSaveNote();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [labelName, setLabelName] = useState("");
@@ -18,11 +22,38 @@ export const AddNoteModal = () => {
   const { id } = useParams<{ id: string }>();
   const clientId = Number(id);
 
+  useEffect(() => {
+    if (noteEdit) {
+      setTitle(noteEdit.title);
+      setContent(noteEdit.content);
+      setLabelName(noteEdit.label.name);
+      setLabelColor(noteEdit.label.color);
+    } else {
+      setTitle("");
+      setContent("");
+      setLabelName("");
+      setLabelColor("#f97316");
+    }
+  }, [noteEdit]);
+
+  useEffect(() => {
+    if (isError) {
+      toast.error(error?.message || "Something went wrong");
+    }
+  }, [isError, error]);
+
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success("Note added successfully!");
+      toggleModal();
+    }
+  }, [isSuccess, toggleModal]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim() || !content.trim()) return;
 
-    const noteData: noteDTO = {
+    const data: noteDTO = {
       title,
       content,
       label: {
@@ -31,13 +62,20 @@ export const AddNoteModal = () => {
       },
       noteType: "general",
       clientId: clientId,
+      invoiceId: undefined,
     };
-    await createNote(noteData);
-
-    setTitle("");
-    setContent("");
-    setLabelName("");
-    setLabelColor("#f97316");
+    mutate({
+      noteId: noteEdit ? noteId : undefined, // only send noteId if editing
+      data,
+    });
+    // if (isEditing) {
+    //   updateNoteMutate({
+    //     noteId: noteId,
+    //     data,
+    //   });
+    // } else {
+    //   mutate(data);
+    // }
   };
 
   return (
@@ -91,11 +129,18 @@ export const AddNoteModal = () => {
               variant="outline"
               type="button"
               onClick={toggleModal}
+              disabled={isPending}
             >
               Cancel
             </Button>
-            <Button size="md" variant="default" type="submit">
-              Add Note
+            <Button
+              size="md"
+              variant="default"
+              type="submit"
+              disabled={isPending}
+            >
+              {isPending ? "Adding note..." : "Add Note"}
+              {/* {updating ? "Updating note..." : "Add Note"} */}
             </Button>
           </div>
         </form>

@@ -1,9 +1,7 @@
 import { Router, Request, Response, NextFunction } from "express";
-import { AuthFileRequest } from "../types/express";
 import { injectable, inject } from "inversify";
 import { TYPES } from "../types/types";
 import { NoteController } from "../controllers/note.controller";
-import { upload } from "../middlewares/upload/upload";
 import { authenticate } from "../middlewares/auth/auth.middleware";
 import { wrapWithAuthRequest } from "../utils/wrapWithAuthRequest";
 

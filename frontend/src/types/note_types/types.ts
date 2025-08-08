@@ -12,3 +12,13 @@ export type noteDTO = {
   clientId?: number;
   invoiceId?: number;
 };
+
+export type ids = {
+  clientId?: number;
+  invoiceId?: number;
+};
+
+export type ExtendedNoteDTO = noteDTO & {
+  id: number;
+  createdAt: string;
+};

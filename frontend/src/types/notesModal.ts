@@ -3,17 +3,28 @@ import { ModalType } from "@/types/ModalType";
 export type Note = string;
 export type EditedName = string;
 export type EditedFileInfoName = string;
+export type NoteType = "general" | "invoiceRelated";
+export type editnoteDTO = {
+  title: string;
+  content: string;
+  label: {
+    name: string;
+    color: string;
+  };
+};
 
 export interface NoteModalContextType {
   note: Note;
   editedName: EditedName;
   fileId: number | number[] | null;
+  noteId: number ;
   editingFileId: number | null;
   editingFileInfoId: number | null;
   editedFileInfoName: EditedFileInfoName;
+  noteEdit: editnoteDTO | null;
   isOpen: boolean;
   activeModal: ModalType;
-  mode: "add" | "viewAll" | "addFile" | "viewAllFiles" | "warning";
+  mode: "add" | "edit" | "viewAll" | "addFile" | "viewAllFiles" | "warning";
   currentEditedValue: string;
   currentEditingId: number | null;
   setEditedValue: (
@@ -28,13 +39,14 @@ export interface NoteModalContextType {
   openEditFileNameModal: () => void;
   openEditFileInfoModal: () => void;
   openAddNote: () => void;
+  openEditNote: () => void;
   openViewAll: () => void;
   openAddFile: () => void;
   openViewAllFiles: () => void;
   openWarning: () => void;
   setNotes: (note: Note) => void;
-  // setEditFileName: (editedName: EditedName) => void;
-  // setEditFileInfoName: (editedName: EditedFileInfoName) => void;
   setEditingFileId: (id: number | null) => void;
   setEditingFileInfoId: (id: number | null) => void;
+  setNoteEdit: (note: editnoteDTO | null) => void;
+  setNoteId: (id: number | null) => void;
 }

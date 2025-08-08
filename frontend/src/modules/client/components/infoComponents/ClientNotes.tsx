@@ -10,7 +10,7 @@ export const ClientNotes = ({
   note: { content: string; createdAt: string };
 }) => {
   const navigate = useNavigate();
-  const { openAddNote, openViewAll } = useNotesModal();
+  const { openAddNote } = useNotesModal();
   const { id } = useParams<{ id: string }>();
   const clientId = Number(id);
   if (!note) {
