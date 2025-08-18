@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import {
   AuthPage,
   DashboardPage,
@@ -16,20 +16,8 @@ import {
   ResetPassword,
   HelpPage,
 } from "@/modules/export.ts";
-import { LoadingSpinner } from "@/components/loading";
-import { Sidebar } from "@/layout/sidebarLayout/Sidebar";
 import { OAuthGitHub } from "@/modules/auth/pages/OAuthGitHub";
-
-import { useAuth } from "@/hooks/useAuth";
-import type { JSX } from "react";
-
-const PrivateRoute = ({ children }: { children: JSX.Element }) => {
-  const { user, loading } = useAuth();
-  if (loading) {
-    return <LoadingSpinner />;
-  }
-  return user ? children : <Navigate to="/auth" />;
-};
+import { PrivateRoutes } from "./PrivateRoutes";
 
 export default function AppRoutes() {
   return (
@@ -38,14 +26,7 @@ export default function AppRoutes() {
       <Route path="/oauth/github" element={<OAuthGitHub />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/reset-password" element={<ResetPassword />} />
-      <Route
-        path="/"
-        element={
-          <PrivateRoute>
-            <Sidebar />
-          </PrivateRoute>
-        }
-      >
+      <Route path="/" element={<PrivateRoutes />}>
         <Route index element={<DashboardPage />} />
         <Route path="invoices" element={<InvoicesPage />} />
         <Route path="invoices/new" element={<CreateInvoice />} />

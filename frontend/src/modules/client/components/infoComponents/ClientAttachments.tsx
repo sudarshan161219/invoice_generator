@@ -9,7 +9,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Ellipsis, Upload, Pencil, ArrowDownToLine, Trash } from "lucide-react";
-import { useNotesModal } from "@/hooks/useNotesModal";
+import { useModal } from "@/hooks/useModal";
 import styles from "./index.module.css";
 import { EditFileInfoModal } from "@/components/modal/editFileInfoModal";
 import { handleOpenFile } from "../../api/get.single.attachment.client.api";
@@ -39,7 +39,7 @@ export const ClientAttachments = ({ attachments }: ClientAttachmentsProps) => {
     setEditingId,
     fileID,
     openWarning,
-  } = useNotesModal();
+  } = useModal();
   const [openPopoverId, setOpenPopoverId] = useState<number | null>(null);
   const { id } = useParams<{ id: string }>();
   const clientId = Number(id);

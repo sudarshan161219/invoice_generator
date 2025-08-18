@@ -14,11 +14,12 @@ type Props = {
   className?: string;
   error?: boolean;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 };
 
 export const InputField = forwardRef<HTMLInputElement, Props>(
-  (
-    {
+  ({ ...props }, ref) => {
+    const {
       id,
       name,
       type,
@@ -29,9 +30,9 @@ export const InputField = forwardRef<HTMLInputElement, Props>(
       value,
       onChange,
       placeholder,
-    },
-    ref
-  ) => {
+      onKeyDown,
+    } = props;
+
     const inputType = type === "password" && show ? "text" : type;
 
     return (
@@ -51,6 +52,7 @@ export const InputField = forwardRef<HTMLInputElement, Props>(
           placeholder={placeholder}
           value={value}
           onChange={onChange}
+          onKeyDown={onKeyDown}
         />
         {type === "password" && (
           <span

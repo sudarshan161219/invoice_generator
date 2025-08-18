@@ -1,10 +1,10 @@
 import { updateNote } from "@/lib/api/note/update.note.api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useNotesModal } from "../useNotesModal";
+import { useModal } from "../useModal";
 
 export const useUpdateNote = () => {
   const queryClient = useQueryClient();
-  const { setNoteEdit } = useNotesModal();
+  const { setNoteEdit } = useModal();
 
   return useMutation({
     mutationFn: updateNote,

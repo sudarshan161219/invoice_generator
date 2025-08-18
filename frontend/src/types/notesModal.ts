@@ -12,17 +12,22 @@ export type editnoteDTO = {
     color: string;
   };
 };
+export interface Tag {
+  name: string;
+  color?: string;
+}
 
 export interface NoteModalContextType {
   note: Note;
   editedName: EditedName;
   fileId: number | number[] | null;
-  noteId: number ;
+  noteId: number | null;
   editingFileId: number | null;
   editingFileInfoId: number | null;
   editedFileInfoName: EditedFileInfoName;
   noteEdit: editnoteDTO | null;
   isOpen: boolean;
+  tags: Tag[];
   activeModal: ModalType;
   mode: "add" | "edit" | "viewAll" | "addFile" | "viewAllFiles" | "warning";
   currentEditedValue: string;
@@ -49,4 +54,5 @@ export interface NoteModalContextType {
   setEditingFileInfoId: (id: number | null) => void;
   setNoteEdit: (note: editnoteDTO | null) => void;
   setNoteId: (id: number | null) => void;
+  setTags: (tag: Tag[]) => void;
 }

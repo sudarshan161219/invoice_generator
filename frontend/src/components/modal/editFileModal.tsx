@@ -1,9 +1,11 @@
 import { Input } from "@/components/input/Input";
 import { Button } from "@/components/button/Button";
-import { useNotesModal } from "@/hooks/useNotesModal";
+import { useModal } from "@/hooks/useModal";
 import styles from "./index.module.css";
 
-export const EditFileModal = ({handleRename}: {
+export const EditFileModal = ({
+  handleRename,
+}: {
   handleRename: (id: string) => void;
 }) => {
   const {
@@ -12,7 +14,7 @@ export const EditFileModal = ({handleRename}: {
     editingFileId,
     setEditFileName,
     setEditingFileId,
-  } = useNotesModal();
+  } = useModal();
 
   const onSave = () => {
     if (!editingFileId) return;

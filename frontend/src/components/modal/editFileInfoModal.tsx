@@ -1,6 +1,6 @@
 import { Input } from "@/components/input/Input";
 import { Button } from "@/components/button/Button";
-import { useNotesModal } from "@/hooks/useNotesModal";
+import { useModal } from "@/hooks/useModal";
 import { useUpdateAttachment } from "@/hooks/attachment/useUpdateAttachment";
 import { useInvoiceClient } from "@/hooks/useInvoiceClient";
 import { toast } from "sonner";
@@ -23,7 +23,7 @@ export const EditFileInfoModal = ({
     currentEditingId,
     setEditedValue,
     editedFileInfoName,
-  } = useNotesModal();
+  } = useModal();
   const { client } = useInvoiceClient();
 
   // if (!client) return null;

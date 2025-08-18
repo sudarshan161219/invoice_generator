@@ -1,4 +1,4 @@
-import { useNotesModal } from "@/hooks/useNotesModal";
+import { useModal } from "@/hooks/useModal";
 import styles from "./index.module.css";
 import { Button } from "@/components/button/Button";
 import { useDeleteAttachment } from "@/hooks/attachment/useDeleteAttachment";
@@ -7,7 +7,7 @@ import { toast } from "sonner";
 
 export const Warning = () => {
   const { client } = useInvoiceClient();
-  const { fileId, toggleModal } = useNotesModal();
+  const { fileId, toggleModal } = useModal();
   const isBulk = Array.isArray(fileId) && fileId.length > 1;
 
   const {

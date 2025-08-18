@@ -10,7 +10,10 @@ import { MoreVertical, Copy } from "lucide-react";
 import type { Clients, ClientsApiResponse } from "../types/clients";
 import { NotebookPen } from "lucide-react";
 import { EmptyState } from "@/components/EmptyState/EmptyState";
+import { Button } from "@/components/button/Button";
 import { Link } from "react-router-dom";
+import styles from "./index.module.css";
+import { CreateClientModal } from "@/components/createClientModal/CreateClientModal";
 import {
   Pagination,
   PaginationContent,
@@ -21,6 +24,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { getAllClients } from "../api/getAll.clients.api";
+import { useModal } from "@/hooks/useModal";
 
 function CopyButton({ value }: { value: string }) {
   const handleCopy = async () => {
@@ -49,6 +53,7 @@ export const ClientsPage: FC = (): ReactElement => {
   const [sortBy, setSortBy] = useState("name-asc");
   // const [notesModal, setNotesModal] = useState(false);
   // const [notes, setNotes] = useState("");
+  const { isOpen, toggleModal } = useModal();
   const [loading, setLoading] = useState(true);
   const [clientResponse, setClientResponse] =
     useState<ClientsApiResponse | null>(null);
@@ -153,6 +158,16 @@ export const ClientsPage: FC = (): ReactElement => {
           placeholder="Search client"
           onDebouncedChange={handleSearch}
         />
+
+        {/* create client modal Toggle */}
+        <Button
+          onClick={toggleModal}
+          variant="default"
+          size="md"
+          className={styles.addBtn}
+        >
+          New Client
+        </Button>
       </div>
 
       <Table
@@ -177,6 +192,8 @@ export const ClientsPage: FC = (): ReactElement => {
           </PaginationItem>
         </PaginationContent>
       </Pagination>
+
+      {isOpen && <CreateClientModal />}
     </div>
   );
 };

@@ -80,6 +80,13 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  --status-paid-text: oklch(0.8797 0.210869 156.631);
+  --status-paid-border: oklch(0.5812 0.1344 154.87);
+  --status-overdue-text: oklch(0.5299 0.2159 29.07);
+  --status-overdue-border: oklch(0.5847 0.1852 24.05);
+  --status-unpaid-text: oklch(0.8223 0.1655 91.33);
+  --status-unpaid-border: oklch(0.8665 0.1314 106.29);
 }
 
 .dark {

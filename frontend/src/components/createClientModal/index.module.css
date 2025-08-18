@@ -1,0 +1,59 @@
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modalBg {
+  position: fixed;
+  width: 100%;
+  height: 100vh;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(0.9px);
+  z-index: 50;
+}
+
+.modalCard {
+  z-index: 150;
+  background: var(--card);
+  border-radius: 8px;
+  width: 90%;
+  max-width: 450px;
+  padding: 1rem;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.headerContainer {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.header > h1 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.header > p {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--label);
+}
+
+.closeIcon:hover {
+  cursor: pointer;
+  color: var(--label);
+}

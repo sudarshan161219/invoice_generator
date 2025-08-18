@@ -43,18 +43,18 @@ export const ClientHeader = ({
 
         <ul className={styles.actionsContainer}>
           <li>
-            <Button variant="outline" size="smMd" className={styles.button}>
+            <Button variant="outline" size="md" className={styles.button}>
               <Pencil size={13} /> Edit
             </Button>
           </li>
           <li>
-            <Button variant="outline" size="smMd" className={styles.button}>
-              <FilePlus size={14} /> Create invoice
+            <Button variant="outline" size="md" className={styles.button}>
+              <FilePlus size={14} /> New invoice
             </Button>
           </li>
           <li>
-            <Button variant="danger" size="smMd" className={styles.button}>
-              <UserX size={14} /> Delete client
+            <Button variant="danger" size="md" className={styles.button}>
+              <UserX size={14} /> Delete
             </Button>
           </li>
         </ul>

@@ -1,19 +1,17 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { useNotesModal } from "@/hooks/useNotesModal";
+import { useModal } from "@/hooks/useModal";
 import { Button } from "@/components/button/Button";
 import { Input } from "../input/Input";
 import { ColorDropdown } from "../ColorDropdown/ColorDropdown";
 import type { noteDTO } from "@/types/note_types/types";
 import { Dot } from "lucide-react";
 import styles from "./index.module.css";
-// import { useCreateNote } from "@/hooks/note/useCreateNote";
-// import { useUpdateNote } from "@/hooks/note/useUpdateNote";
 import { useSaveNote } from "@/hooks/note/useSaveNote";
 import { toast } from "sonner";
 
 export const AddNoteModal = () => {
-  const { toggleModal, noteEdit, noteId } = useNotesModal();
+  const { toggleModal, noteEdit, noteId } = useModal();
   const { mutate, isPending, isSuccess, isError, error } = useSaveNote();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -68,14 +66,6 @@ export const AddNoteModal = () => {
       noteId: noteEdit ? noteId : undefined, // only send noteId if editing
       data,
     });
-    // if (isEditing) {
-    //   updateNoteMutate({
-    //     noteId: noteId,
-    //     data,
-    //   });
-    // } else {
-    //   mutate(data);
-    // }
   };
 
   return (
@@ -140,7 +130,6 @@ export const AddNoteModal = () => {
               disabled={isPending}
             >
               {isPending ? "Adding note..." : "Add Note"}
-              {/* {updating ? "Updating note..." : "Add Note"} */}
             </Button>
           </div>
         </form>

@@ -3,7 +3,7 @@ import { useState } from "react";
 import { MoreHorizontal, Pencil, Trash, Dot, Plus } from "lucide-react";
 import { useParams } from "react-router-dom";
 import { Button } from "@/components/button/Button";
-import { useNotesModal } from "@/hooks/useNotesModal";
+import { useModal } from "@/hooks/useModal";
 import { AddNoteModal } from "@/components/addNoteModal/AddNoteModal";
 import { useGetAllNotes } from "@/hooks/note/useGetAllNotes";
 import type { ExtendedNoteDTO } from "@/types/note_types/types";
@@ -15,7 +15,7 @@ import {
 
 export const ClientNotes = () => {
   const { openAddNote, openEditNote, isOpen, setNoteEdit, setNoteId } =
-    useNotesModal();
+    useModal();
   const [openPopoverId, setOpenPopoverId] = useState<number | null>(null);
   const { id } = useParams<{ id: string }>();
   const clientId = Number(id);
@@ -83,7 +83,7 @@ export const ClientNotes = () => {
                     {note.label?.name}
                   </span>
 
-                  <div className="relative">
+                  <div className="relative overflow-hidden">
                     <Popover
                       open={openPopoverId === Number(note.id)}
                       onOpenChange={(open) => {
@@ -98,7 +98,7 @@ export const ClientNotes = () => {
                       <PopoverContent
                         side="bottom"
                         align="end"
-                        className="w-25 p-0"
+                        className="w-25 p-0 "
                       >
                         <ul className={styles.options}>
                           <li

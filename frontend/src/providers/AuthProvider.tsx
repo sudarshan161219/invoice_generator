@@ -11,6 +11,7 @@ type AuthProviderProps = {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
+  const [userId, setUserId] = useState<number | undefined>()
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -18,6 +19,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       try {
         const res = await getUser();
         setUser(res.data);
+        setUserId(res.data.id);
       } catch (err) {
         console.log(err);
         setUser(null);
@@ -46,6 +48,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const value: AuthContextType = {
     user,
+    userId,
     login,
     logout,
     loading,

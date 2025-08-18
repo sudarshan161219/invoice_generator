@@ -12,7 +12,7 @@ import { CollapseProvider } from "./providers/CollapseProvider";
 import { AuthLayoutProvider } from "./providers/AuthLayoutProvider";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { GitHubOAuthProvider } from "./providers/GitHubOAuthProvider";
-import { NotesModalProvider } from "./providers/NotesModalProvider";
+import { ModalProvider } from "./providers/ModalProvider";
 import { InvoiceClientProvider } from "./providers/InvoiceClientProvider";
 
 const rootEl = document.getElementById("root");
@@ -34,7 +34,7 @@ createRoot(rootEl).render(
           <AuthProvider>
             <AuthLayoutProvider>
               <InvoiceClientProvider>
-                <NotesModalProvider>
+                <ModalProvider>
                   <CollapseProvider>
                     <BrowserRouter>
                       <GitHubOAuthProvider>
@@ -43,7 +43,7 @@ createRoot(rootEl).render(
                     </BrowserRouter>
                     <Toaster richColors />
                   </CollapseProvider>
-                </NotesModalProvider>
+                </ModalProvider>
               </InvoiceClientProvider>
             </AuthLayoutProvider>
           </AuthProvider>

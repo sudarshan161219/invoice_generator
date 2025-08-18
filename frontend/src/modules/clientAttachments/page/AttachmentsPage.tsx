@@ -30,7 +30,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useNotesModal } from "@/hooks/useNotesModal";
+import { useModal } from "@/hooks/useModal";
 import { useClientAttachments } from "../hooks/useClientAttachments";
 import styles from "./index.module.css";
 import { getFileIcon } from "@/lib/ConditionalIcons/getFileIcon";
@@ -58,7 +58,7 @@ export const AttachmentsPage = () => {
     setEditedValue,
     setEditingId,
     openModal,
-  } = useNotesModal();
+  } = useModal();
   const { id } = useParams<{ id: string }>();
   const clientId = Number(id);
 

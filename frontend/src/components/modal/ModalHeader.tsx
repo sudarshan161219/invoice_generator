@@ -1,5 +1,5 @@
 import { CircleX } from "lucide-react";
-import { useNotesModal } from "@/hooks/useNotesModal";
+import { useModal } from "@/hooks/useModal";
 import styles from "./index.module.css";
 
 type Props = {
@@ -8,7 +8,7 @@ type Props = {
 };
 
 export const ModalHeader = ({ mode, toggleModal }: Props) => {
-  const { fileId } = useNotesModal();
+  const { fileId } = useModal();
   const isBulk = Array.isArray(fileId) && fileId.length > 1;
   const getHeadingText = () => {
     switch (mode) {

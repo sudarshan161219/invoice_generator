@@ -9,7 +9,7 @@ import {
 import { useClientAttachments } from "@/hooks/attachment/useClientAttachments";
 import { handleOpenFile } from "@/lib/api/attachment/get.single.attachment.client.api";
 import { stripExtension } from "@/lib/stripExtension";
-import { useNotesModal } from "@/hooks/useNotesModal";
+import { useModal } from "@/hooks/useModal";
 import { useInvoiceClient } from "@/hooks/useInvoiceClient";
 import { ModalType } from "@/types/ModalType";
 import styles from "./index.module.css";
@@ -33,7 +33,7 @@ export const FileList = () => {
     setEditingId,
     fileID,
     openWarning,
-  } = useNotesModal();
+  } = useModal();
 
   const {
     data: attachments,

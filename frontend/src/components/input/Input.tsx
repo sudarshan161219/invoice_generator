@@ -7,7 +7,10 @@ import { Label } from "./Label";
 import { ErrorMessage } from "./ErrorMessage";
 import { useAuthLayout } from "@/hooks/useAuthLayout";
 
-export const Input = forwardRef<HTMLInputElement, InputProps>(
+export const Input = forwardRef<
+  HTMLInputElement,
+  InputProps & { required?: boolean; disableEnterSubmit?: boolean }
+>(
   (
     {
       className,
@@ -17,7 +20,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       placeholder,
       id,
       onChange,
+      onKeyDown,
       value: controlledValue,
+      required = false,
     },
     ref
   ) => {
@@ -40,9 +45,27 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
       const newVal = e.target.value;
       if (controlledValue === undefined) {
-        setUncontrolledValue(newVal); // only update internal state if not controlled
+        setUncontrolledValue(newVal);
       }
-      if (onChange) onChange(e); // pass to parent
+      if (onChange) onChange(e);
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Enter") {
+        // prevent form submission
+        e.preventDefault();
+
+        // 👉 optionally, move focus to the next input instead of submitting
+        const form = e.currentTarget.form;
+        if (form) {
+          const index = Array.prototype.indexOf.call(form, e.currentTarget);
+          const next = form.elements[index + 1] as HTMLElement | undefined;
+          next?.focus();
+        }
+      }
+
+      // call parent-provided onKeyDown if exists
+      if (onKeyDown) onKeyDown(e);
     };
 
     const validationMessage = useValidation(
@@ -52,7 +75,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 
     return (
       <div className="w-full space-y-1">
-        {label && <Label htmlFor={fallbackId} text={label} />}
+        {label && (
+          <Label htmlFor={fallbackId} text={label} required={required} />
+        )}
 
         <InputField
           id={fallbackId}
@@ -65,8 +90,10 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           placeholder={placeholder}
           value={value != null ? String(value) : ""}
           onChange={handleChange}
+          onKeyDown={handleKeyDown}
           ref={ref}
         />
+
         {!isLogin && validationMessage && (
           <ErrorMessage message={validationMessage} />
         )}

@@ -11,25 +11,23 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 export class ClientService {
   async create(userId: number, data: ICreateClientDTO) {
     try {
-      const { notes, ...rest } = data;
-
       const client = await prisma.client.create({
         data: {
-          ...rest,
-          user: {
-            connect: { id: userId },
-          },
-          notes: notes?.length
-            ? {
-                create: notes.map((note) => ({
-                  content: note.content,
-                  user: { connect: { id: userId } },
-                })),
-              }
-            : undefined,
+          name: data.name,
+          email: data.email,
+          userId,
+          phone: data.phone,
+          company: data.company,
+          ...(data.tags && {
+            tags: {
+              connectOrCreate: data.tags.map((tag) => ({
+                where: { name_userId: { name: tag.name, userId } },
+                create: { name: tag.name, color: tag.color, userId },
+              })),
+            },
+          }),
         },
       });
-
       return client;
     } catch (err) {
       console.error("Create Client Error:", err);
@@ -249,46 +247,41 @@ export class ClientService {
     });
   }
 
-  // async updateClientNote(userId: number, noteId: number, content: string) {
-  //   // Optional: check if the note belongs to the user before updating
-  //   return await prisma.clientNote.update({
-  //     where: { id: noteId },
-  //     data: { content },
-  //   });
-  // }
-
   async updateClientNote(userId: number, noteId: number, content: string) {
-  // Check if the note exists and belongs to the user
-  const existingNote = await prisma.clientNote.findFirst({
-    where: {
-      id: noteId,
-      userId,
-    },
-  });
+    // Check if the note exists and belongs to the user
+    const existingNote = await prisma.clientNote.findFirst({
+      where: {
+        id: noteId,
+        userId,
+      },
+    });
 
-  if (!existingNote) {
-    throw new AppError({
-      message: "Note not found or access denied.",
-      statusCode: StatusCodes.NOT_FOUND,
-      code: "NOTE_NOT_FOUND",
+    if (!existingNote) {
+      throw new AppError({
+        message: "Note not found or access denied.",
+        statusCode: StatusCodes.NOT_FOUND,
+        code: "NOTE_NOT_FOUND",
+      });
+    }
+
+    // Validate content
+    if (
+      !content ||
+      typeof content !== "string" ||
+      content.trim().length === 0
+    ) {
+      throw new AppError({
+        message: "Note content must be a non-empty string.",
+        statusCode: StatusCodes.BAD_REQUEST,
+        code: "INVALID_NOTE_CONTENT",
+      });
+    }
+
+    return await prisma.clientNote.update({
+      where: { id: noteId },
+      data: { content },
     });
   }
-
-  // Validate content
-  if (!content || typeof content !== "string" || content.trim().length === 0) {
-    throw new AppError({
-      message: "Note content must be a non-empty string.",
-      statusCode: StatusCodes.BAD_REQUEST,
-      code: "INVALID_NOTE_CONTENT",
-    });
-  }
-
-  return await prisma.clientNote.update({
-    where: { id: noteId },
-    data: { content },
-  });
-}
-
 
   async deleteClientNote(userId: number, noteId: number) {
     // Optional: secure with findFirst check
@@ -311,6 +304,4 @@ export class ClientService {
       where: { id: noteId },
     });
   }
-
-  
 }

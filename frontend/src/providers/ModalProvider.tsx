@@ -4,11 +4,12 @@ import type {
   EditedName,
   EditedFileInfoName,
   editnoteDTO,
+  Tag,
 } from "@/types/notesModal";
 import { NotesModalContext } from "../context/notesModal-context";
 import { ModalType } from "@/types/ModalType";
 
-export const NotesModalProvider = ({ children }: { children: ReactNode }) => {
+export const ModalProvider = ({ children }: { children: ReactNode }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [fileId, setFileID] = useState<number | number[] | null>(null);
   const [noteId, setNoteId] = useState<number | null>(null);
@@ -25,6 +26,7 @@ export const NotesModalProvider = ({ children }: { children: ReactNode }) => {
   const [editedFileInfoName, setEditFileinfoName] =
     useState<EditedFileInfoName>("");
   const [noteEdit, setNoteEdit] = useState<editnoteDTO | null>(null);
+  const [tags, setTags] = useState<Tag[]>([]);
 
   // Setters
   const setNotes = (note: Note) => setNote(note);
@@ -138,6 +140,8 @@ export const NotesModalProvider = ({ children }: { children: ReactNode }) => {
         setNoteEdit,
         noteId,
         setNoteId,
+        tags,
+        setTags,
       }}
     >
       {children}

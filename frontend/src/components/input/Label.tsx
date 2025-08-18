@@ -1,7 +1,13 @@
 import { cn } from "@/lib/utils";
 import styles from "./Input.module.css";
 
-export const Label = ({ htmlFor, text }: { htmlFor: string; text: string }) => {
+interface LabelProps {
+  htmlFor: string;
+  text: string;
+  required?: boolean;
+}
+
+export const Label = ({ htmlFor, text, required = false }: LabelProps) => {
   return (
     <label
       htmlFor={htmlFor}
@@ -10,7 +16,12 @@ export const Label = ({ htmlFor, text }: { htmlFor: string; text: string }) => {
         styles.inputlabel
       )}
     >
-      {text}
+      {text}{" "}
+      {required ? (
+        <span className="text-red-500">*</span>
+      ) : (
+        <span className="text-gray-500 text-xs">(optional)</span>
+      )}
     </label>
   );
 };

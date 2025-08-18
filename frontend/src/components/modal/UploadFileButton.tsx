@@ -5,7 +5,7 @@ import { Button } from "@/components/button/Button";
 import { useInvoiceClient } from "@/hooks/useInvoiceClient";
 import { toast } from "sonner";
 import { ModalType } from "@/types/ModalType";
-import { useNotesModal } from "@/hooks/useNotesModal";
+import { useModal } from "@/hooks/useModal";
 import { stripExtension } from "@/lib/stripExtension";
 import { truncateFileName } from "@/lib/truncate";
 import { EditFileInfoModal } from "./editFileInfoModal";
@@ -32,7 +32,7 @@ export const UploadFileButton = ({
   onUploadEnd?: () => void;
 }) => {
   const { editedName, activeModal, openModal, setEditedValue, setEditingId } =
-    useNotesModal();
+    useModal();
   const [uploadControllers, setUploadControllers] = useState<
     Record<string, AbortController>
   >({});

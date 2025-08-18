@@ -13,3 +13,8 @@
 .sideBarClose {
   width: 0px;
 }
+
+.logo {
+  font-size: 2rem;
+  color: var(--primary);
+}

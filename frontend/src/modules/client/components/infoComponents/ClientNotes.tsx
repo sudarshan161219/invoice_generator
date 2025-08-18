@@ -2,7 +2,7 @@ import { Button } from "@/components/button/Button";
 import { useNavigate, useParams } from "react-router-dom";
 import styles from "./index.module.css";
 import { ReadMore } from "../readMore/ReadMore";
-import { useNotesModal } from "@/hooks/useNotesModal";
+import { useModal } from "@/hooks/useModal";
 
 export const ClientNotes = ({
   note,
@@ -10,7 +10,7 @@ export const ClientNotes = ({
   note: { content: string; createdAt: string };
 }) => {
   const navigate = useNavigate();
-  const { openAddNote } = useNotesModal();
+  const { openAddNote } = useModal();
   const { id } = useParams<{ id: string }>();
   const clientId = Number(id);
   if (!note) {
@@ -36,7 +36,7 @@ export const ClientNotes = ({
             className={styles.actionbtn}
             onClick={openAddNote}
             variant="default"
-            size="sm"
+            size="md"
           >
             + Add Note
           </Button>
@@ -44,7 +44,7 @@ export const ClientNotes = ({
             className={styles.actionbtn}
             onClick={redirect}
             variant="ghost"
-            size="sm"
+            size="md"
           >
             View All
           </Button>

@@ -11,9 +11,6 @@ import {
 } from "lucide-react";
 import { Header } from "@/components/header/Header";
 import { Link, Outlet, useLocation } from "react-router-dom";
-import darkLogo from "@/assets/dark.svg";
-import lightLogo from "@/assets/light.svg";
-import { useTheme } from "@/hooks/useTheme";
 import { Button } from "@/components/ui/button";
 import { useCollapse } from "@/hooks/useCollapse";
 import { Breadcrumbs } from "@/components/breadCrumbs/Breadcrumbs";
@@ -21,8 +18,8 @@ import styles from "./index.module.css";
 
 export const DesktopSidebar = () => {
   const location = useLocation();
-  const { theme } = useTheme();
   const { collapse, toggleSidebar } = useCollapse();
+
   const handleLogout = () => {
     console.log("Logging out...");
   };
@@ -58,13 +55,7 @@ export const DesktopSidebar = () => {
         } ${collapse ? `${styles.sideBarClose}` : `${styles.sideBarOpen}`}`}
       >
         <div className="flex items-center justify-between p-4">
-          <img
-            className="ml-3"
-            src={theme === "dark" ? darkLogo : lightLogo}
-            alt="Billoop logo"
-            width={80}
-            height={80}
-          />
+          {!collapse && <h1 className={styles.logo}>Invii</h1>}
           <button
             className={`cursor-pointer ${collapse ? "hidden" : "inline"}`}
             onClick={toggleSidebar}

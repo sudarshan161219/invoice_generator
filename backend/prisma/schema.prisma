@@ -14,7 +14,6 @@ enum InvoiceStatus {
   overdue
 }
 
-
 model Invoice {
   id         Int       @id @default(autoincrement())
   invoiceNumber String? @unique
@@ -43,7 +42,6 @@ model Invoice {
   Attachment Attachment[]
 }
 
-
 model User {
   id           Int       @id @default(autoincrement())
   name         String
@@ -59,14 +57,17 @@ model User {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt @default(now())
 
-    // Relations
-  accounts     Account[]
-  sessions     Session[]
-  clients      Client[]
-  invoices     Invoice[]
-  ClientNotes ClientNote[]
-
-  Attachment Attachment[]
+  // Relations
+  accounts        Account[]
+  sessions        Session[]
+  clients         Client[]
+  invoices        Invoice[]
+  clientNotes     ClientNote[]
+  clientTags      ClientTag[]       // User-defined tags for classification
+  clientCategories ClientCategory[] // User-defined categories for classification
+  paymentTerms    PaymentTerm[]     // Custom payment terms per user
+  currencies      Currency[]        // Custom currency preferences per user
+  attachments     Attachment[]
 }
 
 model Account {
@@ -106,7 +107,7 @@ model ClientNote {
   id        Int       @id @default(autoincrement())
   title     String?
   content   String
-  label     Json?    // e.g. { name: "Important", color: "#f97316" }
+  label     Json?   
   noteType  NoteType  @default(general)
   createdAt DateTime  @default(now())
 
@@ -125,28 +126,112 @@ model ClientNote {
   @@index([invoiceId])
 }
 
-
-
-model Client {
-  id        Int       @id @default(autoincrement())
-  name      String
-  email     String   
-  phone     String?
-  company    String?
-  address    String?
-  notes      ClientNote[]
-  imageUrl   String?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  userId    Int
-  user      User      @relation(fields: [userId], references: [id])
-  invoices  Invoice[]
-  @@index([userId])
-  @@unique([email, userId]) 
-  @@unique([id, userId])
-  Attachment Attachment[]
+enum PaymentTermsEnum {
+  net15
+  net30
+  net45
+  dueOnReceipt
 }
 
+enum ClientStatus {
+  active
+  inactive
+  prospect
+}
+
+enum ClientCategoryEnum {
+  retail
+  wholesale
+  corporate
+}
+
+model Client {
+  id              Int           @id @default(autoincrement())
+  name            String
+  email           String @unique
+  phone           String?
+  company         String?
+  address         String?
+  billingAddress  String?
+  shippingAddress String?
+  website         String?
+  status          ClientStatus?       // Enum
+  paymentTermId  Int?
+  paymentTerm    PaymentTerm?    @relation(fields: [paymentTermId], references: [id])
+  currencyId     Int?
+  currency       Currency?       @relation(fields: [currencyId], references: [id])
+  notes           ClientNote[]
+  imageUrl        String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  userId          Int
+  user            User          @relation(fields: [userId], references: [id])
+  invoices        Invoice[]
+  Attachment      Attachment[]
+
+  // Relations for tags and categories
+   tags           ClientTag[]     @relation("ClientTagsOnClients")
+
+  // tax id
+  taxId       String?
+  taxIdType   String?
+
+  // Socials
+  socialLinks Json?
+
+  // Categories (custom + predefined enum)
+  categoryId      Int?
+  category        ClientCategory? @relation(fields: [categoryId], references: [id])
+  categoryType    ClientCategoryEnum? // Enum for quick classification
+
+  @@index([userId])
+  @@unique([email, userId])
+  @@unique([id, userId])
+}
+
+
+model ClientCategory {
+  id        Int       @id @default(autoincrement())
+  name      String
+  color     String?   // optional, for UI
+  isDefault Boolean   @default(false)
+  userId    Int       // so each user has their own list
+  clients   Client[]
+
+  User User[]
+  
+}
+
+model ClientTag {
+  id        Int       @id @default(autoincrement())
+  name      String
+  color     String?
+  userId    Int
+  clients   Client[]  @relation("ClientTagsOnClients")
+
+  User User[]
+  @@unique([name, userId])
+}
+
+model PaymentTerm {
+  id        Int       @id @default(autoincrement())
+  name      String    // e.g., "Net 30", "Due on Receipt"
+  days      Int?      // For automation/reminders
+  userId    Int
+  clients   Client[]
+
+  User User[]
+}
+
+model Currency {
+  id        Int       @id @default(autoincrement())
+  code      String    // e.g., "USD"
+  symbol    String    // e.g., "$"
+  userId    Int
+  clients   Client[]
+
+  User User[]
+}
 
 
 model Payment {

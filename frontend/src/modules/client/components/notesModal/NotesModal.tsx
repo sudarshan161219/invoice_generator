@@ -1,6 +1,6 @@
 import { useState } from "react";
 import styles from "./index.module.css";
-import { useNotesModal } from "@/hooks/useNotesModal";
+import { useModal } from "@/hooks/useModal";
 import { Pencil, Trash, CircleX } from "lucide-react";
 
 type Note = {
@@ -22,7 +22,7 @@ export const NotesModal = ({
   onDeleteNote,
   onEditNote,
 }: NotesModalProps) => {
-  const { toggleNotesModal, isOpen, mode } = useNotesModal();
+  const { toggleNotesModal, isOpen, mode } = useModal();
   const [newNote, setNewNote] = useState("");
   const [editingNoteId, setEditingNoteId] = useState<number | null>(null);
   const [editedContent, setEditedContent] = useState("");
