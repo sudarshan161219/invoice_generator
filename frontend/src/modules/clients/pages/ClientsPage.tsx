@@ -24,6 +24,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { getAllClients } from "../api/getAll.clients.api";
+import { useGetAllClients } from "@/hooks/client/useGetAllClients";
 import { useModal } from "@/hooks/useModal";
 
 function CopyButton({ value }: { value: string }) {
@@ -51,12 +52,11 @@ function CopyButton({ value }: { value: string }) {
 export const ClientsPage: FC = (): ReactElement => {
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState("name-asc");
-  // const [notesModal, setNotesModal] = useState(false);
-  // const [notes, setNotes] = useState("");
   const { isOpen, toggleModal } = useModal();
+  const { data, isLoading, isError, error } = useGetAllClients();
   const [loading, setLoading] = useState(true);
-  const [clientResponse, setClientResponse] =
-    useState<ClientsApiResponse | null>(null);
+
+  const clients = data?.data;
 
   const clientColumns: Column<Clients>[] = [
     {
@@ -122,33 +122,30 @@ export const ClientsPage: FC = (): ReactElement => {
     // Make API call or filter data here
   };
 
+  console.log(clients);
+
   const handleSortChange = (value: string) => {
     setSortBy(value);
     // trigger sorting logic here
     console.log("Sort by:", value);
   };
 
-  useEffect(() => {
-    getAllClients()
-      .then((res) => {
-        return setClientResponse(res);
-      })
-      .catch(console.error);
-  }, []);
-
-  const clientDataBlock = clientResponse?.data;
-  const clients = clientDataBlock?.data;
-
-  if (clients?.length === 0) {
+  if (clients?.data.length === 0) {
     return (
-      <EmptyState
-        title="No clients found"
-        description="You haven’t added any clients yet. Start by creating one."
-        buttonText="Create Client"
-        redirectTo="/clients/new"
-      />
+      <>
+        <EmptyState
+          title="No clients found"
+          description="You haven’t added any clients yet. Start by creating one."
+          buttonText="Create Client"
+          redirectTo="/clients/new"
+        />
+        {isOpen && <CreateClientModal />}
+      </>
     );
   }
+
+  if (isLoading) return <p>Loading clients...</p>;
+  if (isError) return <p>Error: {error.message}</p>;
 
   return (
     <div className="space-y-6">
@@ -171,7 +168,7 @@ export const ClientsPage: FC = (): ReactElement => {
       </div>
 
       <Table
-        data={clients ?? []}
+        data={clients?.data ?? []}
         columns={clientColumns}
         rowKey={(c) => c.id}
       />

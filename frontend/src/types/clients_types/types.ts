@@ -3,8 +3,7 @@ import { z } from "zod";
 export interface ClientTag {
   id: number;
   name: string;
-  color?: string;
-  userId: number | undefined;
+  color: string;
 }
 
 export interface Client {
@@ -18,8 +17,8 @@ export interface Client {
   imageUrl?: string;
   createdAt: string;
   updatedAt: string;
-  userId: number | undefined;
   tags?: ClientTag[];
+  userId: number;
 }
 
 export interface PaginationMeta {
@@ -63,15 +62,15 @@ export const clientSchema = z.object({
     .max(100, "Company name must be under 100 characters")
     .optional(),
 
-  address: z
-    .string()
-    .max(250, "Address must be under 250 characters")
-    .optional(),
-
   tags: z
-    .array(z.string().min(1, "Tag cannot be empty"))
+    .array(
+      z.object({
+        name: z.string(),
+        color: z.string().optional().default("#3b82f6"),
+      })
+    )
     .max(10, "You can add a maximum of 10 tags")
-    .optional(),
+    .default([]),
 });
 
 export type ClientCreateForm = z.infer<typeof clientSchema>;

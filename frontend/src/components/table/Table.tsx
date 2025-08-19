@@ -2,12 +2,7 @@ import { cn } from "@/lib/utils";
 import type { TableProps } from "@/types/table.types";
 import styles from "./index.module.css";
 
-export const Table = <T,>({
-  data,
-  columns,
-  rowKey,
-  emptyText = "No data.",
-}: TableProps<T>) => {
+export const Table = <T,>({ data, columns, rowKey }: TableProps<T>) => {
   if (data.length === 0) {
     return (
       <div className="text-center py-10 text-gray-500">No clients found.</div>

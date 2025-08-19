@@ -63,7 +63,7 @@ export const AddNoteModal = () => {
       invoiceId: undefined,
     };
     mutate({
-      noteId: noteEdit ? noteId : undefined, // only send noteId if editing
+      noteId: noteEdit ? noteId : null,
       data,
     });
   };

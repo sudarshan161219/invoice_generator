@@ -45,7 +45,6 @@ export const TagInput = ({ value, onChange }: TagInputProps) => {
     if (!tags.find((t) => t.name.toLowerCase() === name.toLowerCase())) {
       const color = selectedColor || labelColors[0].hex;
       const newTags = [...tags, { name, color }];
-      // onChange([...value, { name, color }]);
       if (onChange) {
         onChange(newTags);
       } else {
@@ -84,8 +83,7 @@ export const TagInput = ({ value, onChange }: TagInputProps) => {
                 onKeyDown={handleKeyDown}
                 placeholder="Type tag..."
               />
-              <button onClick={handleAddTag}>
-                {" "}
+              <button type="button" onClick={handleAddTag}>
                 <Plus size={15} />
                 add
               </button>

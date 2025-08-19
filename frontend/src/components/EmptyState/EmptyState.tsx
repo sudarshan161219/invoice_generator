@@ -1,5 +1,5 @@
-import { useNavigate } from "react-router-dom";
 import { Button } from "../button/Button";
+import { useModal } from "@/hooks/useModal";
 
 type EmptyStateProps = {
   title: string;
@@ -12,9 +12,8 @@ export const EmptyState = ({
   title,
   description,
   buttonText,
-  redirectTo,
 }: EmptyStateProps) => {
-  const navigate = useNavigate();
+  const { toggleModal } = useModal();
 
   return (
     <div className="flex flex-col items-center justify-center text-center py-16">
@@ -22,7 +21,7 @@ export const EmptyState = ({
       {description && (
         <p className="text-muted-foreground mb-6 max-w-md">{description}</p>
       )}
-      <Button variant="outline" onClick={() => navigate(redirectTo)}>
+      <Button variant="outline" onClick={toggleModal}>
         {buttonText}
       </Button>
     </div>

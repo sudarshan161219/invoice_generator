@@ -1,11 +1,14 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/api/clients/create.client";
+import { AxiosError } from "axios";
+import { toast } from "sonner";
+import { useModal } from "@/hooks/useModal";
+
 import {
   type Client,
   type ClientCreateForm,
   type ClientTag,
 } from "@/types/clients_types/types";
-import { useAuth } from "@/hooks/useAuth";
 
 type MutationContext = {
   previousClients?: Client[];
@@ -14,8 +17,7 @@ type MutationContext = {
 
 export const useCreateClient = () => {
   const queryClient = useQueryClient();
-  const { userId } = useAuth();
-
+  const { toggleModal } = useModal();
   return useMutation<Client, unknown, ClientCreateForm, MutationContext>({
     mutationFn: createClient,
     onMutate: async (newClientData) => {
@@ -27,10 +29,9 @@ export const useCreateClient = () => {
       // Add temporary IDs to tags if they exist
       const tempTags: ClientTag[] | undefined = newClientData.tags?.map(
         (tagName) => ({
-          id: Math.random(), // temporary ID
-          name: tagName, // the string becomes the name
-          color: undefined, // optional
-          userId, // assign logged-in userId
+          id: Math.random(),
+          name: tagName.name,
+          color: tagName.color || "#3b82f6",
         })
       );
 
@@ -40,11 +41,9 @@ export const useCreateClient = () => {
         email: newClientData.email ?? "",
         phone: newClientData.phone,
         company: newClientData.company,
-        address: newClientData.address,
         tags: tempTags,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        userId: userId,
       };
 
       queryClient.setQueryData<Client[]>(["clients"], (old = []) => [
@@ -58,6 +57,8 @@ export const useCreateClient = () => {
       if (context?.previousClients) {
         queryClient.setQueryData(["clients"], context.previousClients);
       }
+      const axiosError = _err as AxiosError<{ message: string }>;
+      toast.error(axiosError.response?.data.message);
     },
     onSuccess: (createdClient, _variables, context) => {
       // Replace temporary client with real server response
@@ -66,6 +67,8 @@ export const useCreateClient = () => {
           client.id === context?.tempId ? createdClient : client
         )
       );
+      toast.success("Client added successfully!");
+      toggleModal();
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["clients"] });

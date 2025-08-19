@@ -6,7 +6,7 @@ export const useGetAllClients = () => {
   return useQuery<ClientsApiResponse, Error>({
     queryKey: ["clients"],
     queryFn: getAllClients,
-    staleTime: 1000 * 60 * 5, // 5 minutes cache
-    retry: 1, // retry once on failure
+    staleTime: 1000 * 60 * 5,
+    retry: 1,
   });
 };
