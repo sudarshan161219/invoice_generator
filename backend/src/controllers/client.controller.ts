@@ -35,12 +35,80 @@ export class ClientController {
     }
   }
 
+  // async handleGetAll(req: AuthRequest, res: Response, next: NextFunction) {
+  //   try {
+  //     const userId = req.user?.id;
+  //     const page = Math.max(1, Number(req.query.page) || 1);
+  //     const limit = Math.min(100, Number(req.query.limit) || 10);
+  //     const noCache = String(req.query.noCache).toLowerCase() === "true";
+
+  //     if (!userId) {
+  //       throw new AppError({
+  //         message: "Please login to view your clients.",
+  //         statusCode: StatusCodes.UNAUTHORIZED,
+  //         code: "UNAUTHORIZED_ACCESS",
+  //         debugMessage: "User ID missing in AuthRequest object",
+  //       });
+  //     }
+
+  //     const clients = await this.clientService.getAll({
+  //       userId,
+  //       page,
+  //       limit,
+  //       noCache,
+  //     });
+  //     res.status(StatusCodes.OK).json({
+  //       success: true,
+  //       page,
+  //       limit,
+  //       data: clients,
+  //     });
+  //   } catch (err) {
+  //     next(err);
+  //   }
+  // }
+
   async handleGetAll(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const userId = req.user?.id;
       const page = Math.max(1, Number(req.query.page) || 1);
       const limit = Math.min(100, Number(req.query.limit) || 10);
       const noCache = String(req.query.noCache).toLowerCase() === "true";
+
+      const search = req.query.search ? String(req.query.search) : undefined;
+      const sortBy = req.query.sortBy as
+        | "createdAt"
+        | "name"
+        | "email"
+        | "company"
+        | "status"
+        | undefined;
+      const sortOrder = req.query.sortOrder as "asc" | "desc" | undefined;
+      const status = req.query.status as
+        | "active"
+        | "inactive"
+        | "prospect"
+        | undefined;
+
+      // Parse multiple values for filters
+      const categoryIds = req.query.categoryIds
+        ? String(req.query.categoryIds).split(",").map(Number).filter(Boolean)
+        : undefined;
+
+      const tagIds = req.query.tagIds
+        ? String(req.query.tagIds).split(",").map(Number).filter(Boolean)
+        : undefined;
+
+      const paymentTermIds = req.query.paymentTermIds
+        ? String(req.query.paymentTermIds)
+            .split(",")
+            .map(Number)
+            .filter(Boolean)
+        : undefined;
+
+      const currencyIds = req.query.currencyIds
+        ? String(req.query.currencyIds).split(",").map(Number).filter(Boolean)
+        : undefined;
 
       if (!userId) {
         throw new AppError({
@@ -56,7 +124,16 @@ export class ClientController {
         page,
         limit,
         noCache,
+        search,
+        sortBy,
+        sortOrder,
+        status,
+        categoryIds,
+        tagIds,
+        paymentTermIds,
+        currencyIds,
       });
+
       res.status(StatusCodes.OK).json({
         success: true,
         page,

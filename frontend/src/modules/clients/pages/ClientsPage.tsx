@@ -1,19 +1,27 @@
 // components/ClientPage.tsx
-import { type FC, type ReactElement, useEffect, useState } from "react";
+import {
+  type FC,
+  type ReactElement,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { FilterSort } from "@/components/FilterSort/FilterSort";
 import { Tabs } from "../components/Tabs/Tabs";
+import { Filter } from "@/components/Filter/Filter";
+import { Client } from "@/types/clients_types/types";
 import { SearchInput } from "@/components/searchInput/SearchInput";
 import type { SortOption } from "@/types/sortOptions";
 import { Table } from "@/components/table/Table";
 import type { Column } from "@/types/table.types";
 import { MoreVertical, Copy } from "lucide-react";
-import type { Clients, ClientsApiResponse } from "../types/clients";
-import { NotebookPen } from "lucide-react";
+import type { Clients } from "../types/clients";
 import { EmptyState } from "@/components/EmptyState/EmptyState";
 import { Button } from "@/components/button/Button";
 import { Link } from "react-router-dom";
 import styles from "./index.module.css";
 import { CreateClientModal } from "@/components/createClientModal/CreateClientModal";
+import { TagFilter } from "@/components/Filter/TagFilter";
 import {
   Pagination,
   PaginationContent,
@@ -23,7 +31,6 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { getAllClients } from "../api/getAll.clients.api";
 import { useGetAllClients } from "@/hooks/client/useGetAllClients";
 import { useModal } from "@/hooks/useModal";
 
@@ -49,14 +56,41 @@ function CopyButton({ value }: { value: string }) {
   );
 }
 
+type FilterState = {
+  status?: "active" | "inactive" | "prospect";
+  sortBy?: "createdAt" | "name" | "email" | "company" | "status";
+  sortOrder?: "asc" | "desc";
+  tagIds?: number[];
+};
+
 export const ClientsPage: FC = (): ReactElement => {
+  const [filters, setFilters] = useState<FilterState>({
+    status: undefined,
+    sortBy: "createdAt",
+    sortOrder: "desc",
+    tagIds: undefined,
+  });
+
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState("name-asc");
   const { isOpen, toggleModal } = useModal();
-  const { data, isLoading, isError, error } = useGetAllClients();
-  const [loading, setLoading] = useState(true);
+  const { data, isLoading, isError, error } = useGetAllClients({
+    page: 1,
+    limit: 10,
+    ...filters,
+  });
 
   const clients = data?.data;
+
+  const allTags = useMemo(() => {
+    return Array.from(
+      new Map(
+        clients?.data
+          .flatMap((client) => client.tags ?? [])
+          .map((tag) => [tag.id, tag])
+      ).values()
+    );
+  }, [clients]);
 
   const clientColumns: Column<Clients>[] = [
     {
@@ -122,8 +156,6 @@ export const ClientsPage: FC = (): ReactElement => {
     // Make API call or filter data here
   };
 
-  console.log(clients);
-
   const handleSortChange = (value: string) => {
     setSortBy(value);
     // trigger sorting logic here
@@ -151,10 +183,14 @@ export const ClientsPage: FC = (): ReactElement => {
     <div className="space-y-6">
       <div className="w-full flex flex-row justify-between">
         {/* <Tabs /> */}
-        <SearchInput
-          placeholder="Search client"
-          onDebouncedChange={handleSearch}
-        />
+        <div>
+          {/* <SearchInput
+            placeholder="Search client"
+            onDebouncedChange={handleSearch}
+          /> */}
+
+          <Filter filters={filters} setFilters={setFilters} allTags={allTags} />
+        </div>
 
         {/* create client modal Toggle */}
         <Button

@@ -156,10 +156,10 @@ model Client {
   shippingAddress String?
   website         String?
   status          ClientStatus?       // Enum
-  paymentTermId  Int?
-  paymentTerm    PaymentTerm?    @relation(fields: [paymentTermId], references: [id])
-  currencyId     Int?
-  currency       Currency?       @relation(fields: [currencyId], references: [id])
+  paymentTermId   Int?
+  paymentTerm     PaymentTerm?    @relation(fields: [paymentTermId], references: [id])
+  currencyId      Int?
+  currency        Currency?       @relation(fields: [currencyId], references: [id])
   notes           ClientNote[]
   imageUrl        String?
   createdAt       DateTime      @default(now())
@@ -170,14 +170,14 @@ model Client {
   Attachment      Attachment[]
 
   // Relations for tags and categories
-   tags           ClientTag[]     @relation("ClientTagsOnClients")
+  tags           ClientTag[]     @relation("ClientTagsOnClients")
 
   // tax id
-  taxId       String?
-  taxIdType   String?
+  taxId           String?
+  taxIdType       String?
 
   // Socials
-  socialLinks Json?
+  socialLinks     Json?
 
   // Categories (custom + predefined enum)
   categoryId      Int?

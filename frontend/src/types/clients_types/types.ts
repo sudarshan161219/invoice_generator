@@ -4,6 +4,7 @@ export interface ClientTag {
   id: number;
   name: string;
   color: string;
+  userId: number;
 }
 
 export interface Client {
