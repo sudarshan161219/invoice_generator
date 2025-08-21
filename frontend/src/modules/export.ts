@@ -13,6 +13,9 @@ import { ForgotPasswordPage } from "./forgotPassword/pages/ForgotPassword";
 import { ResetPassword } from "./resetPassword/pages/ResetPassword";
 import { HelpPage } from "./help/pages/HelpPage";
 import { ClientNotes } from "@/modules/clientNotes/page/ClientNotes";
+import { InvoicePaymentPage } from "@/modules/InvoicePaymentPage/InvoicePaymentPage";
+import { NotificationsPage } from "@/modules/Notifications/NotificationsPage";
+
 export {
   AuthPage,
   DashboardPage,
@@ -29,4 +32,6 @@ export {
   ForgotPasswordPage,
   ResetPassword,
   HelpPage,
+  InvoicePaymentPage,
+  NotificationsPage,
 };

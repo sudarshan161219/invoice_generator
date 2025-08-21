@@ -72,12 +72,16 @@ export const TagInput = ({ value, onChange }: TagInputProps) => {
     <div className="space-y-3">
       {/* Tag list */}
       <div>
+        <label className={styles.label} htmlFor="tags">
+          Tags (optional)
+        </label>
         {tags.length < 10 && (
           <div className="flex items-center gap-2">
             <div
               className={`w-full rounded-md border shadow-sm not-last-of-type:border-[var(--input)] text-[var(--foreground)] focus:outline-none focus:ring-[var(--ring)] focus:ring-1 ${styles.inputContainer}`}
             >
               <input
+                id="tags"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}

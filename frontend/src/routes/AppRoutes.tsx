@@ -15,6 +15,8 @@ import {
   ForgotPasswordPage,
   ResetPassword,
   HelpPage,
+  InvoicePaymentPage,
+  NotificationsPage,
 } from "@/modules/export.ts";
 import { OAuthGitHub } from "@/modules/auth/pages/OAuthGitHub";
 import { PrivateRoutes } from "./PrivateRoutes";
@@ -26,6 +28,7 @@ export default function AppRoutes() {
       <Route path="/oauth/github" element={<OAuthGitHub />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/invoice/:id" element={<InvoicePaymentPage />} />
       <Route path="/" element={<PrivateRoutes />}>
         <Route index element={<DashboardPage />} />
         <Route path="invoices" element={<InvoicesPage />} />
@@ -37,6 +40,7 @@ export default function AppRoutes() {
         <Route path="notes/:id" element={<ClientNotes />} />
         <Route path="payments" element={<PaymentsPage />} />
         <Route path="settings" element={<SettingsPage />} />
+        <Route path="notifications" element={<NotificationsPage />} />
         <Route path="/help" element={<HelpPage />} />
       </Route>
       <Route path="*" element={<NotFound />} />

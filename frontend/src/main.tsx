@@ -14,6 +14,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import { GitHubOAuthProvider } from "./providers/GitHubOAuthProvider";
 import { ModalProvider } from "./providers/ModalProvider";
 import { InvoiceClientProvider } from "./providers/InvoiceClientProvider";
+import { AppTitle } from "./components/AppTitle/AppTitle";
 
 const rootEl = document.getElementById("root");
 if (!rootEl) throw new Error("Failed to find root element");
@@ -39,6 +40,7 @@ createRoot(rootEl).render(
                     <BrowserRouter>
                       <GitHubOAuthProvider>
                         <App />
+                        <AppTitle />
                       </GitHubOAuthProvider>
                     </BrowserRouter>
                     <Toaster richColors />

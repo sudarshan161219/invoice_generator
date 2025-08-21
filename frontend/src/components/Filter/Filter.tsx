@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { TagFilter } from "./TagFilter";
+import { ListFilter } from "lucide-react";
 
 type FilterState = {
   status?: "active" | "inactive" | "prospect";
@@ -44,7 +45,13 @@ export const Filter = ({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline">Filters</Button>
+        <Button
+          variant="outline"
+          className="flex items-center gap-1
+        "
+        >
+          <ListFilter size={14} /> Filters
+        </Button>
       </PopoverTrigger>
       <PopoverContent className="w-64 space-y-4">
         {/* Status Filter */}
@@ -120,17 +127,11 @@ export const Filter = ({
           </Select>
         </div>
 
-        {/* <TagFilter
-          availableTags={allTags}
-          selectedTagIds={filters.tagIds ?? []}
-          onChange={(ids) => setFilters((prev) => ({ ...prev, tagIds: ids }))}
-        /> */}
-
         <Popover>
           <PopoverTrigger asChild>
             <Button variant="outline">Tags</Button>
           </PopoverTrigger>
-          <PopoverContent>
+          <PopoverContent className="p-0">
             <TagFilter
               availableTags={allTags}
               selectedTagIds={filters.tagIds ?? []}

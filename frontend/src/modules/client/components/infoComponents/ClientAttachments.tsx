@@ -75,7 +75,7 @@ export const ClientAttachments = ({ attachments }: ClientAttachmentsProps) => {
           <div className={styles.actionsbtns}>
             <Button
               variant="default"
-              size="sm"
+              size="md"
               className={styles.actionbtn}
               onClick={openAddFile}
             >
@@ -105,7 +105,7 @@ export const ClientAttachments = ({ attachments }: ClientAttachmentsProps) => {
         <div className={styles.actionsbtns}>
           <Button
             variant="default"
-            size="sm"
+            size="md"
             className={styles.actionbtn}
             onClick={openAddFile}
           >
@@ -117,7 +117,7 @@ export const ClientAttachments = ({ attachments }: ClientAttachmentsProps) => {
             className={styles.actionbtn}
             onClick={redirect}
             variant="ghost"
-            size="sm"
+            size="md"
           >
             View files
           </Button>

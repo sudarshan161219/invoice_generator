@@ -90,7 +90,8 @@
 }
 
 .containerHeading {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 600;
   color: var(--primary);
 }
 
@@ -153,11 +154,6 @@
   flex-wrap: wrap;
   gap: 0.5rem;
   margin-bottom: 1rem;
-}
-
-.containerHeading {
-  font-size: 1.1rem;
-  font-weight: 600;
 }
 
 .actionsbtns {

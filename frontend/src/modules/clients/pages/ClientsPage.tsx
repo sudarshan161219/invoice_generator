@@ -1,4 +1,3 @@
-// components/ClientPage.tsx
 import {
   type FC,
   type ReactElement,
@@ -183,11 +182,11 @@ export const ClientsPage: FC = (): ReactElement => {
     <div className="space-y-6">
       <div className="w-full flex flex-row justify-between">
         {/* <Tabs /> */}
-        <div>
-          {/* <SearchInput
+        <div className={styles.inputSearchContainer}>
+          <SearchInput
             placeholder="Search client"
             onDebouncedChange={handleSearch}
-          /> */}
+          />
 
           <Filter filters={filters} setFilters={setFilters} allTags={allTags} />
         </div>
@@ -209,23 +208,24 @@ export const ClientsPage: FC = (): ReactElement => {
         rowKey={(c) => c.id}
       />
 
-      <Pagination>
-        <PaginationContent>
-          <PaginationItem>
-            <PaginationPrevious href="#" />
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationLink href="#">1</PaginationLink>
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationEllipsis />
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationNext href="#" />
-          </PaginationItem>
-        </PaginationContent>
-      </Pagination>
-
+      {clients?.meta.page >= 10 && (
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious href="#" />
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationLink href="#">1</PaginationLink>
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationEllipsis />
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationNext href="#" />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      )}
       {isOpen && <CreateClientModal />}
     </div>
   );

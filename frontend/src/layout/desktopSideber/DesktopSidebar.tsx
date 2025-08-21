@@ -2,7 +2,7 @@ import {
   PanelLeftClose,
   LayoutDashboard,
   Users,
-  UserRoundPlus,
+  // UserRoundPlus,
   FileText,
   Settings,
   LogOut,
@@ -37,11 +37,11 @@ export const DesktopSidebar = () => {
       path: "/invoices/new",
     },
     { label: "Clients", icon: <Users size={18} />, path: "/clients" },
-    {
-      label: "Create Client",
-      icon: <UserRoundPlus size={18} />,
-      path: "clients/new",
-    },
+    // {
+    //   label: "Create Client",
+    //   icon: <UserRoundPlus size={18} />,
+    //   path: "clients/new",
+    // },
     { label: "Payments", icon: <CreditCard size={18} />, path: "/payments" },
     { label: "Settings", icon: <Settings size={18} />, path: "/settings" },
   ];

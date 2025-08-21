@@ -7,7 +7,6 @@ import {
 } from "react";
 import { debounce } from "lodash";
 import type { SearchInputProps } from "@/types/search-input";
-// import { Input } from "@/components/ui/input";
 import { Input } from "@/components/input/Input";
 
 export const SearchInput: FC<SearchInputProps> = ({
@@ -30,14 +29,12 @@ export const SearchInput: FC<SearchInputProps> = ({
   }, [value, debouncedChangeHandler]);
 
   return (
-    <div className="w-full max-w-sm">
-      <Input
-        type="text"
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        placeholder={placeholder}
-        className="placeholder:text-muted-foreground"
-      />
-    </div>
+    <Input
+      type="text"
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+      placeholder={placeholder}
+      className="placeholder:text-muted-foreground"
+    />
   );
 };

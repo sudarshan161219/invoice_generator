@@ -1,0 +1,19 @@
+.container {
+  padding: 0.3rem;
+}
+
+.ulList {
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  padding: 0.3rem;
+}
+
+.ulList:hover {
+  background-color: var(--input);
+}
+
+.checkBox {
+  background-color: #0046ff;
+  color: #fff;
+}

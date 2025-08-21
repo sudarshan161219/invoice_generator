@@ -1,1 +1,4 @@
-.addBtn{}
+.inputSearchContainer {
+  display: flex;
+  gap: 5px;
+}
