@@ -31,6 +31,8 @@ model Invoice {
   // Optional: add a status field for better filtering and clarity
   status InvoiceStatus @default(pending)// values can be "pending", "paid", "overdue"
 
+  // Stripe or Razorpay checkout link
+  paymentLink   String? 
   // Relations
   client     Client    @relation(fields: [clientId], references: [id], onDelete: Cascade)
   user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -68,6 +70,10 @@ model User {
   paymentTerms    PaymentTerm[]     // Custom payment terms per user
   currencies      Currency[]        // Custom currency preferences per user
   attachments     Attachment[]
+
+  Subscription Subscription[]
+
+  Notification Notification[]
 }
 
 model Account {
@@ -273,3 +279,30 @@ model Attachment {
   @@index([invoiceId])
   @@index([clientId])
 }
+
+
+
+model Subscription {
+  id            Int       @id @default(autoincrement())
+  userId        Int       @unique
+  plan          String  
+  status        String   
+  currentPeriodStart DateTime
+  currentPeriodEnd   DateTime
+  stripeCustomerId   String?
+  razorpayCustomerId String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  type      String   // "payment_received", "invoice_overdue", "subscription_renewal"
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+

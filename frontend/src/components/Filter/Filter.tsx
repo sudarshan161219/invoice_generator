@@ -1,4 +1,4 @@
-import type { SetStateAction, Dispatch } from "react";
+import { type SetStateAction, type Dispatch, useState } from "react";
 import { Button } from "@/components/button/Button";
 import {
   Popover,
@@ -15,7 +15,8 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { TagFilter } from "./TagFilter";
-import { ListFilter } from "lucide-react";
+import { ListFilter, Tag, X } from "lucide-react";
+import styles from "./index.module.css";
 
 type FilterState = {
   status?: "active" | "inactive" | "prospect";
@@ -42,33 +43,49 @@ export const Filter = ({
   setFilters,
   allTags,
 }: FilterPopoverProps) => {
+  const [tempFilters, setTempFilters] = useState<FilterState>(filters);
+  const [open, setOpen] = useState(false);
+
+  const handleApply = () => {
+    setFilters(tempFilters); // commit
+    setOpen(false); // close popover
+  };
+
+  const handleClear = () => {
+    const cleared: FilterState = {
+      status: undefined,
+      sortBy: "createdAt",
+      sortOrder: "asc",
+      tagIds: [],
+    };
+    setTempFilters(cleared);
+    setFilters(cleared);
+  };
+
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          className="flex items-center gap-1
-        "
-        >
+        <Button variant="outline" className="flex items-center gap-1">
           <ListFilter size={14} /> Filters
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-64 space-y-4">
+      <PopoverContent className="space-y-4">
         {/* Status Filter */}
         <div className="space-y-2">
           <Label>Status</Label>
-          <div className="flex flex-col gap-2">
+          <div className={styles.statusContainer}>
             {["active", "inactive", "prospect"].map((status) => (
               <div key={status} className="flex items-center space-x-2">
                 <Checkbox
+                  className="hover:cursor-pointer"
                   id={status}
-                  checked={filters.status === status}
+                  checked={tempFilters.status === status}
                   onCheckedChange={(checked) =>
-                    setFilters((prev) => ({
+                    setTempFilters((prev) => ({
                       ...prev,
                       status: checked
                         ? (status as FilterState["status"])
-                        : "active",
+                        : undefined,
                     }))
                   }
                 />
@@ -79,14 +96,13 @@ export const Filter = ({
             ))}
           </div>
         </div>
-
         {/* Sort By */}
         <div className="space-y-2">
           <Label>Sort By</Label>
           <Select
-            value={filters.sortBy}
+            value={tempFilters.sortBy ?? ""}
             onValueChange={(val) =>
-              setFilters((prev) => ({
+              setTempFilters((prev) => ({
                 ...prev,
                 sortBy: val as FilterState["sortBy"],
               }))
@@ -105,13 +121,12 @@ export const Filter = ({
           </Select>
         </div>
 
-        {/* Sort Order */}
         <div className="space-y-2">
           <Label>Sort Order</Label>
           <Select
-            value={filters.sortOrder}
+            value={tempFilters.sortOrder ?? ""}
             onValueChange={(val) =>
-              setFilters((prev) => ({
+              setTempFilters((prev) => ({
                 ...prev,
                 sortOrder: val as FilterState["sortOrder"],
               }))
@@ -126,21 +141,51 @@ export const Filter = ({
             </SelectContent>
           </Select>
         </div>
-
+        {/* Tag Filter */}
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="outline">Tags</Button>
+            <Button variant="outline" className="flex items-center gap-1">
+              <Tag size={13} /> Tags
+            </Button>
           </PopoverTrigger>
           <PopoverContent className="p-0">
             <TagFilter
               availableTags={allTags}
-              selectedTagIds={filters.tagIds ?? []}
+              selectedTagIds={tempFilters.tagIds ?? []}
               onChange={(ids) =>
-                setFilters((prev) => ({ ...prev, tagIds: ids }))
+                setTempFilters((prev) => ({ ...prev, tagIds: ids }))
               }
             />
           </PopoverContent>
         </Popover>
+        {/* Selected Tags Preview */}
+        <div className={styles.tags}>
+          {allTags
+            .filter((tag) => tempFilters.tagIds?.includes(tag.id))
+            .map((tag) => (
+              <p
+                style={{ backgroundColor: `${tag.color}` }}
+                className="border-r"
+              >
+                <span key={tag.id}>{tag.name}</span>
+                <X className="hover:cursor-pointer" size={15} />
+              </p>
+            ))}
+        </div>
+        {/* Action Buttons */}
+        <div className={styles.actionBtn}>
+          <Button
+            variant="ghost"
+            size="md"
+            onClick={handleClear}
+            className="text-red-500"
+          >
+            Clear
+          </Button>
+          <Button size="md" onClick={handleApply}>
+            Apply
+          </Button>
+        </div>
       </PopoverContent>
     </Popover>
   );

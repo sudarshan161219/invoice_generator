@@ -62,6 +62,7 @@ export const AddNoteModal = () => {
       clientId: clientId,
       invoiceId: undefined,
     };
+
     mutate({
       noteId: noteEdit ? noteId : null,
       data,

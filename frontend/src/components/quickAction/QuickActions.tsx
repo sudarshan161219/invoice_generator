@@ -1,15 +1,20 @@
 import type { FC, ReactElement } from "react";
+import { useNavigate } from "react-router-dom";
 import { useTheme } from "@/hooks/useTheme";
 import { Sun, Moon, Bell, UserCog } from "lucide-react";
 import styles from "./index.module.css";
 
 export const QuickActions: FC = (): ReactElement | null => {
   const { theme, toggleTheme } = useTheme();
+  const navigate = useNavigate();
+  const notification = () => {
+    navigate("/notifications");
+  };
 
   return (
     <div className={styles.container}>
       <div className={styles.notification}>
-        <Bell className={styles.bellIcon} size={19} />
+        <Bell onClick={notification} className={styles.bellIcon} size={19} />
         <span className={styles.notificationBubble}></span>
       </div>
 

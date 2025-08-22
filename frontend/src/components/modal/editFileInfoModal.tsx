@@ -71,10 +71,10 @@ export const EditFileInfoModal = ({
         />
 
         <div className={styles.editButtonContainer}>
-          <Button onClick={closeModal} variant="outline" size="smMd">
+          <Button onClick={closeModal} variant="outline" size="md">
             Cancel
           </Button>
-          <Button onClick={onSave} size="smMd" disabled={isPending}>
+          <Button onClick={onSave} size="md" disabled={isPending}>
             {isPending ? "Saving..." : "Save"}
           </Button>
         </div>

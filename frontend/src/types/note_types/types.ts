@@ -22,3 +22,5 @@ export type ExtendedNoteDTO = noteDTO & {
   id: number;
   createdAt: string;
 };
+
+export type NoteId = number;

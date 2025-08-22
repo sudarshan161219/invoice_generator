@@ -10,14 +10,7 @@ import {
 } from "../infoComponents/export";
 import styles from "./index.module.css";
 import { useEffect, useState } from "react";
-
-const dummyNotes = [
-  {
-    id: 1,
-    content: "Client prefers bank transfer...",
-    createdAt: "2025-07-08T12:34:56Z",
-  },
-];
+import { useGetAllNotes } from "@/hooks/note/useGetAllNotes";
 
 const getRandomColor = () =>
   "#" +
@@ -34,7 +27,7 @@ export const ClientInfo = () => {
   const { id } = useParams<{ id: string }>();
   const clientId = Number(id);
   const { client, clientName, setClient, setClientName } = useInvoiceClient();
-
+  const { data: notes, isLoading, error } = useGetAllNotes({ clientId });
   const {
     data: clientData,
     isLoading: isClientLoading,
@@ -49,7 +42,7 @@ export const ClientInfo = () => {
 
   const attachments = data?.attachments || [];
   const [bgGradient] = useState(getRandomGradient());
-  const note = dummyNotes[0];
+  const note = notes ? notes[0] : [];
 
   // Sync client state to global context
   useEffect(() => {
@@ -79,10 +72,12 @@ export const ClientInfo = () => {
         bgGradient={bgGradient}
       />
       <div className={styles.clientDetails}>
-        <ClientNotes note={note} />
+        {isLoading ? "loading notes..." : <ClientNotes note={note} />}
         {client.address && <ClientAddress address={client.address || ""} />}
         <ClientAttachments attachments={attachments || []} />
       </div>
+
+      {/* {isOpen && <AddNoteModal />} */}
     </div>
   );
 };

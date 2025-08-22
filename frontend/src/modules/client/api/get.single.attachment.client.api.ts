@@ -1,5 +1,3 @@
-// /getSignedUrl/:id
-
 import api from "@/lib/api/api";
 
 export const handleOpenFile = async (id: number) => {

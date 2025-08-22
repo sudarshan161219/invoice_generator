@@ -1,6 +1,7 @@
 .noteContent {
   margin: 0 0 0.3rem 0;
   font-size: 0.85rem;
+  color: var(--secondary-foreground);
 }
 
 .readMore {

@@ -17,3 +17,37 @@
   background-color: #0046ff;
   color: #fff;
 }
+
+.statusContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.actionBtn {
+  display: flex;
+  justify-content: end;
+  gap: 5px;
+  border-top: 1px solid var(--input);
+  padding-top: 0.5rem;
+  margin-top: 1rem;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 0.5rem;
+}
+
+.tags > p {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 3px;
+  padding: 2px;
+}
+
+.tags > p > span {
+  font-size: 13px;
+}

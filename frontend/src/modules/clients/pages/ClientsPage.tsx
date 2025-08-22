@@ -1,16 +1,7 @@
-import {
-  type FC,
-  type ReactElement,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
-import { FilterSort } from "@/components/FilterSort/FilterSort";
-import { Tabs } from "../components/Tabs/Tabs";
+import { type FC, type ReactElement, useMemo, useState } from "react";
+
 import { Filter } from "@/components/Filter/Filter";
-import { Client } from "@/types/clients_types/types";
 import { SearchInput } from "@/components/searchInput/SearchInput";
-import type { SortOption } from "@/types/sortOptions";
 import { Table } from "@/components/table/Table";
 import type { Column } from "@/types/table.types";
 import { MoreVertical, Copy } from "lucide-react";
@@ -20,7 +11,6 @@ import { Button } from "@/components/button/Button";
 import { Link } from "react-router-dom";
 import styles from "./index.module.css";
 import { CreateClientModal } from "@/components/createClientModal/CreateClientModal";
-import { TagFilter } from "@/components/Filter/TagFilter";
 import {
   Pagination,
   PaginationContent,
@@ -60,6 +50,7 @@ type FilterState = {
   sortBy?: "createdAt" | "name" | "email" | "company" | "status";
   sortOrder?: "asc" | "desc";
   tagIds?: number[];
+  search?: string;
 };
 
 export const ClientsPage: FC = (): ReactElement => {
@@ -68,10 +59,9 @@ export const ClientsPage: FC = (): ReactElement => {
     sortBy: "createdAt",
     sortOrder: "desc",
     tagIds: undefined,
+    search: "",
   });
 
-  const [search, setSearch] = useState("");
-  const [sortBy, setSortBy] = useState("name-asc");
   const { isOpen, toggleModal } = useModal();
   const { data, isLoading, isError, error } = useGetAllClients({
     page: 1,
@@ -135,12 +125,20 @@ export const ClientsPage: FC = (): ReactElement => {
       render: (client) => new Date(client.createdAt).toLocaleDateString(),
     },
 
-    { key: "invoices", title: "Invoices" },
+    {
+      key: "invoices",
+      title: "Invoices",
+      render: () => (
+        <div className="flex items-center">
+          <span className="text-center w-full">0</span>
+        </div>
+      ),
+    },
 
     {
       key: "actions",
       title: "Actions",
-      render: (client) => (
+      render: () => (
         <div className=" ml-2">
           <button className=" hover:text-gray-800">
             <MoreVertical size={18} />
@@ -151,14 +149,7 @@ export const ClientsPage: FC = (): ReactElement => {
   ];
 
   const handleSearch = (value: string) => {
-    console.log("Searching clients for:", value);
-    // Make API call or filter data here
-  };
-
-  const handleSortChange = (value: string) => {
-    setSortBy(value);
-    // trigger sorting logic here
-    console.log("Sort by:", value);
+    setFilters((prev) => ({ ...prev, search: value }));
   };
 
   if (clients?.data.length === 0) {
@@ -175,13 +166,11 @@ export const ClientsPage: FC = (): ReactElement => {
     );
   }
 
-  if (isLoading) return <p>Loading clients...</p>;
   if (isError) return <p>Error: {error.message}</p>;
 
   return (
     <div className="space-y-6">
       <div className="w-full flex flex-row justify-between">
-        {/* <Tabs /> */}
         <div className={styles.inputSearchContainer}>
           <SearchInput
             placeholder="Search client"
@@ -202,13 +191,17 @@ export const ClientsPage: FC = (): ReactElement => {
         </Button>
       </div>
 
-      <Table
-        data={clients?.data ?? []}
-        columns={clientColumns}
-        rowKey={(c) => c.id}
-      />
+      {isLoading ? (
+        <p>Loading clients...</p>
+      ) : (
+        <Table
+          data={clients?.data ?? []}
+          columns={clientColumns}
+          rowKey={(c) => c.id}
+        />
+      )}
 
-      {clients?.meta.page >= 10 && (
+      {clients && clients.meta.page >= 10 && (
         <Pagination>
           <PaginationContent>
             <PaginationItem>

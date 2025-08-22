@@ -1,13 +1,14 @@
 import {
   useState,
-  useEffect,
   useMemo,
+  useEffect,
   type FC,
   type ReactElement,
 } from "react";
 import { debounce } from "lodash";
 import type { SearchInputProps } from "@/types/search-input";
 import { Input } from "@/components/input/Input";
+import styles from "./index.module.css";
 
 export const SearchInput: FC<SearchInputProps> = ({
   placeholder = "Search...",
@@ -16,25 +17,35 @@ export const SearchInput: FC<SearchInputProps> = ({
 }): ReactElement => {
   const [value, setValue] = useState("");
 
-  const debouncedChangeHandler = useMemo(() => {
-    return debounce(onDebouncedChange, delay);
-  }, [onDebouncedChange, delay]);
+  // Create debounced function ONCE
+  const debouncedChangeHandler = useMemo(
+    () =>
+      debounce((val: string) => {
+        onDebouncedChange(val);
+      }, delay),
+    [onDebouncedChange, delay]
+  );
 
+  // Cleanup debounce on unmount
   useEffect(() => {
-    debouncedChangeHandler(value);
-    // Cleanup on unmount
     return () => {
       debouncedChangeHandler.cancel();
     };
-  }, [value, debouncedChangeHandler]);
+  }, [debouncedChangeHandler]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setValue(val);
+    debouncedChangeHandler(val); // debounce here instead of in effect
+  };
 
   return (
     <Input
       type="text"
       value={value}
-      onChange={(e) => setValue(e.target.value)}
+      onChange={handleChange}
       placeholder={placeholder}
-      className="placeholder:text-muted-foreground"
+      className={`placeholder:text-muted-foreground ${styles.input}`}
     />
   );
 };
