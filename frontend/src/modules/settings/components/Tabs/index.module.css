@@ -1,0 +1,19 @@
+.TabHeaders {
+  display: flex;
+  gap: 5px;
+}
+
+.tabs {
+  padding: 0.5rem 1rem;
+  color: var(--label);
+}
+
+.button:hover {
+  border-bottom: 2px solid var(--primary);
+  color: var(--primary);
+  cursor: pointer;
+}
+
+.tabs:hover {
+  color: var(--primary);
+}

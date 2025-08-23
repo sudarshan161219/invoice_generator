@@ -4,7 +4,7 @@ import { PreferencesTab } from "../components/Preferences/PreferencesForm";
 import { PaymentTab } from "../components/Payments/PaymentsIntegration";
 import { SubscriptionTab } from "../components/Subscription/SubscriptionPanel";
 import { NotificationsTab } from "../components/Notifications/NotificationsForm";
-import { Tabs } from "@/components/tab/Tab";
+import { Tabs } from "../components/Tabs/Tabs";
 
 const tabData = [
   {
@@ -41,18 +41,13 @@ const tabData = [
 
 export const SettingsPage = () => {
   return (
-    <div className="mx-auto max-w-5xl p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Settings</h1>
-          <p className="text-sm text-muted-foreground">
-            Configure your account, invoice defaults, payments, and
-            notifications.
-          </p>
-        </div>
-      </div>
-
-      <Tabs tabs={tabData} variant="outline" />
+    <div className="px-6">
+      <Tabs
+        tabs={tabData}
+        defaultTabId={1}
+        variant="default"
+        persistPath="/settings"
+      />
     </div>
   );
 };
