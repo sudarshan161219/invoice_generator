@@ -1,28 +1,18 @@
-import { CardContent } from "@/components/ui/card";
-import { ChevronRight, KeyRound } from "lucide-react";
-import styles from "./index.module.css"; // 👈 custom styles for rows
+import { ChevronRight } from "lucide-react";
+import styles from "./index.module.css";
 import { useAuth } from "@/hooks/useAuth";
 import { SectionHeader } from "@/components/SectionHeader/SectionHeader";
 import { Button } from "@/components/button/Button";
 
-type ProfileProps = {
-  user: {
-    id: number;
-    name: string;
-    email: string;
-    profileImage?: string;
-    phone?: string;
-    companyName?: string;
-    role?: string;
-  };
-  openModal: (type: string) => void; // 👈 "name" | "email" | "password" | etc.
-};
-
-export const ProfileTab = ({ openModal }: ProfileProps) => {
+export const ProfileTab = () => {
   const { user } = useAuth();
+
+  const openModal = () => {
+    console.log("Hello, World");
+  };
+
   return (
     <div className={styles.card}>
-      <CardContent></CardContent>
       <div className={styles.sectionContainer}>
         {/* General Section */}
         <div className={styles.section}>

@@ -29,7 +29,14 @@ export interface NoteModalContextType {
   isOpen: boolean;
   tags: Tag[];
   activeModal: ModalType;
-  mode: "add" | "edit" | "viewAll" | "addFile" | "viewAllFiles" | "warning";
+  mode:
+    | "add"
+    | "edit"
+    | "viewAll"
+    | "addFile"
+    | "viewAllFiles"
+    | "warning"
+    | "clientEdit";
   currentEditedValue: string;
   currentEditingId: number | null;
   setEditedValue: (
@@ -49,6 +56,7 @@ export interface NoteModalContextType {
   openAddFile: () => void;
   openViewAllFiles: () => void;
   openWarning: () => void;
+  openClientEdit: () => void;
   setNotes: (note: Note) => void;
   setEditingFileId: (id: number | null) => void;
   setEditingFileInfoId: (id: number | null) => void;

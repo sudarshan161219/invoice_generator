@@ -1,10 +1,13 @@
 import { useState, useEffect, type FC, type ReactElement } from "react";
 import { useLocation } from "react-router-dom";
+import { useInvoiceClient } from "@/hooks/useInvoiceClient";
 import "./index.css";
 
 export const MainHeading: FC = (): ReactElement => {
   const location = useLocation();
   const [heading, setHeading] = useState("Overview");
+  const { clientName } = useInvoiceClient();
+
   // Attachments
   useEffect(() => {
     const path = location.pathname;
@@ -25,6 +28,14 @@ export const MainHeading: FC = (): ReactElement => {
       }
     }
 
+    if (path.startsWith("/edit/")) {
+      const id = path.split("/edit/")[1]; // e.g., "123"
+      if (id && /^\d+$/.test(id)) {
+        setHeading(`Edit ${clientName || "Client"}`);
+        return;
+      }
+    }
+
     const pathToHeadingMap: Record<string, string> = {
       "/": "Overview",
       "/clients": "Clients",
@@ -37,7 +48,7 @@ export const MainHeading: FC = (): ReactElement => {
 
     const title = pathToHeadingMap[location.pathname] || "Overview";
     setHeading(title);
-  }, [location.pathname]);
+  }, [clientName, location.pathname]);
 
   return (
     <div className="hidden md:inline">

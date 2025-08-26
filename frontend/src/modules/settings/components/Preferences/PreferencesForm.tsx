@@ -2,12 +2,15 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { CardHeader } from "@/components/ui/card";
 import { toast } from "sonner";
-import { FileText, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { Input } from "@/components/input/Input";
 import { Button } from "@/components/button/Button";
 import { Label } from "@/components/ui/label";
+import { SectionHeader } from "@/components/SectionHeader/SectionHeader";
+import styles from "./index.module.css";
+
 import {
   Select,
   SelectTrigger,
@@ -73,48 +76,15 @@ export const PreferencesTab = () => {
     toast.success("Invoice defaults saved");
   };
 
-  function SectionHeader({
-    icon: Icon,
-    title,
-    desc,
-  }: {
-    icon: React.ComponentType<any>;
-    title: string;
-    desc?: string;
-  }) {
-    return (
-      <div className="flex items-start gap-3 mb-4">
-        <div className="p-2 rounded-2xl bg-muted">
-          <Icon className="h-5 w-5" />
-        </div>
-        <div>
-          <h3 className="font-semibold text-lg">{title}</h3>
-          {desc && <p className="text-sm text-muted-foreground">{desc}</p>}
-        </div>
-      </div>
-    );
-  }
-
-  function Loading() {
-    return (
-      <div className="flex items-center gap-2 text-muted-foreground">
-        <Loader2 className="h-4 w-4 animate-spin" /> Loading...
-      </div>
-    );
-  }
-
-  if (isLoading) return <Loading />;
-
   return (
-    <Card>
+    <div className={styles.card}>
       <CardHeader>
         <SectionHeader
-          icon={FileText}
           title="Invoice Defaults"
           desc="Defaults applied when creating new invoices."
         />
       </CardHeader>
-      <CardContent>
+      <div className={styles.sectionContainer}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           className="grid gap-4 sm:grid-cols-2"
@@ -128,7 +98,7 @@ export const PreferencesTab = () => {
           </div>
 
           <div className="space-y-2">
-            <Label>Default Currency</Label>
+            <Label className={styles.label}>Default Currency</Label>
             <Select
               onValueChange={(v) => form.setValue("defaultCurrency", v)}
               value={form.watch("defaultCurrency")}
@@ -151,26 +121,26 @@ export const PreferencesTab = () => {
           </div>
 
           <div className="space-y-2">
-            <Label>Tax Rate (%)</Label>
             <Input
               type="number"
               step="0.01"
               placeholder="18"
+              label="Tax Rate (%)"
               {...form.register("taxRate")}
             />
           </div>
 
           <div className="space-y-2">
-            <Label>Default Due (days)</Label>
             <Input
               type="number"
               placeholder="30"
+              label="Default Due (days)"
               {...form.register("defaultDueDays")}
             />
           </div>
 
           <div className="space-y-2">
-            <Label>Date Format</Label>
+            <Label className={styles.label}>Date Format</Label>
             <Select
               onValueChange={(v) => form.setValue("dateFormat", v as any)}
               value={form.watch("dateFormat")}
@@ -187,7 +157,7 @@ export const PreferencesTab = () => {
           </div>
 
           <div className="space-y-2 sm:col-span-2">
-            <Label>Default Invoice Footer / Terms</Label>
+            <Label className={styles.label}>Default Invoice Footer / Terms</Label>
             <Textarea
               rows={4}
               placeholder="Thank you for your business..."
@@ -202,7 +172,7 @@ export const PreferencesTab = () => {
             </Button>
           </div>
         </form>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };

@@ -73,11 +73,9 @@ export const ClientInfo = () => {
       />
       <div className={styles.clientDetails}>
         {isLoading ? "loading notes..." : <ClientNotes note={note} />}
-        {client.address && <ClientAddress address={client.address || ""} />}
+        {/* {client.address && <ClientAddress address={client.address || ""} />} */}
         <ClientAttachments attachments={attachments || []} />
       </div>
-
-      {/* {isOpen && <AddNoteModal />} */}
     </div>
   );
 };

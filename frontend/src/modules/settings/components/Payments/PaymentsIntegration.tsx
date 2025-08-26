@@ -1,8 +1,10 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { CardHeader } from "@/components/ui/card";
 import { Loader2, PlugZap } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/button/Button";
+import { SectionHeader } from "@/components/SectionHeader/SectionHeader";
+import styles from "./index.module.css";
 
 async function api<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(path, {
@@ -54,53 +56,20 @@ function useConnectRazorpay() {
   });
 }
 
-function SectionHeader({
-  icon: Icon,
-  title,
-  desc,
-}: {
-  icon: React.ComponentType<any>;
-  title: string;
-  desc?: string;
-}) {
-  return (
-    <div className="flex items-start gap-3 mb-4">
-      <div className="p-2 rounded-2xl bg-muted">
-        <Icon className="h-5 w-5" />
-      </div>
-      <div>
-        <h3 className="font-semibold text-lg">{title}</h3>
-        {desc && <p className="text-sm text-muted-foreground">{desc}</p>}
-      </div>
-    </div>
-  );
-}
-
-function Loading() {
-  return (
-    <div className="flex items-center gap-2 text-muted-foreground">
-      <Loader2 className="h-4 w-4 animate-spin" /> Loading...
-    </div>
-  );
-}
-
 export const PaymentTab = () => {
   const { data, isLoading, refetch } = usePaymentConnections();
   const connectStripe = useConnectStripe();
   const connectRazorpay = useConnectRazorpay();
 
-  if (isLoading) return <Loading />;
-
   return (
-    <Card>
+    <div className={styles.card}>
       <CardHeader>
         <SectionHeader
-          icon={PlugZap}
           title="Payment Integrations"
           desc="Connect Stripe or Razorpay to receive payments from invoices."
         />
       </CardHeader>
-      <CardContent className="grid gap-6 sm:grid-cols-2">
+      <div className={styles.sectionContainer}>
         <motion.div whileHover={{ y: -2 }} className="border rounded-2xl p-4">
           <div className="flex items-center justify-between mb-2">
             <h4 className="font-semibold">Stripe</h4>
@@ -181,7 +150,7 @@ export const PaymentTab = () => {
             </p>
           )}
         </motion.div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };

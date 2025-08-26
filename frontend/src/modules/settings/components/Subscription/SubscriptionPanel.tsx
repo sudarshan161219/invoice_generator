@@ -2,7 +2,9 @@ import { Button } from "@/components/button/Button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Separator } from "@/components/ui/separator";
-import { CreditCard, Loader2 } from "lucide-react";
+import { CreditCard } from "lucide-react";
+import { SectionHeader } from "@/components/SectionHeader/SectionHeader";
+import styles from "./index.module.css";
 
 type Subscription = {
   plan: "free" | "pro" | "enterprise";
@@ -56,48 +58,15 @@ export const SubscriptionTab = () => {
   const checkout = useCreateCheckout();
   const portal = useBillingPortal();
 
-  function SectionHeader({
-    icon: Icon,
-    title,
-    desc,
-  }: {
-    icon: React.ComponentType<any>;
-    title: string;
-    desc?: string;
-  }) {
-    return (
-      <div className="flex items-start gap-3 mb-4">
-        <div className="p-2 rounded-2xl bg-muted">
-          <Icon className="h-5 w-5" />
-        </div>
-        <div>
-          <h3 className="font-semibold text-lg">{title}</h3>
-          {desc && <p className="text-sm text-muted-foreground">{desc}</p>}
-        </div>
-      </div>
-    );
-  }
-
-  function Loading() {
-    return (
-      <div className="flex items-center gap-2 text-muted-foreground">
-        <Loader2 className="h-4 w-4 animate-spin" /> Loading...
-      </div>
-    );
-  }
-
-  if (isLoading) return <Loading />;
-
   return (
-    <Card>
+    <div className={styles.card}>
       <CardHeader>
         <SectionHeader
-          icon={CreditCard}
           title="Subscription"
           desc="Manage your plan, payments and invoices."
         />
       </CardHeader>
-      <CardContent className="space-y-4">
+      <div className={styles.sectionContainer}>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <div className="text-sm text-muted-foreground">Current Plan</div>
@@ -134,7 +103,7 @@ export const SubscriptionTab = () => {
             Enterprise: SSO, priority support, team roles & audit logs.
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };

@@ -15,6 +15,7 @@ import { HelpPage } from "./help/pages/HelpPage";
 import { ClientNotes } from "@/modules/clientNotes/page/ClientNotes";
 import { InvoicePaymentPage } from "@/modules/InvoicePaymentPage/InvoicePaymentPage";
 import { NotificationsPage } from "@/modules/Notifications/NotificationsPage";
+import { EditClient } from "@/modules/editClient/pages/EditClient";
 
 export {
   AuthPage,
@@ -34,4 +35,5 @@ export {
   HelpPage,
   InvoicePaymentPage,
   NotificationsPage,
+  EditClient,
 };

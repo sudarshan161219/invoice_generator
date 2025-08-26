@@ -17,6 +17,7 @@ import {
   HelpPage,
   InvoicePaymentPage,
   NotificationsPage,
+  EditClient,
 } from "@/modules/export.ts";
 import { OAuthGitHub } from "@/modules/auth/pages/OAuthGitHub";
 import { PrivateRoutes } from "./PrivateRoutes";
@@ -36,6 +37,8 @@ export default function AppRoutes() {
         <Route path="clients/new" element={<CreateClient />} />
         <Route path="clients" element={<ClientsPage />} />
         <Route path="client/:id" element={<ClientPage />} />
+        <Route path="edit/:id" element={<EditClient />} />
+
         <Route path="attachments/:id" element={<AttachmentsPage />} />
         <Route path="notes/:id" element={<ClientNotes />} />
         <Route path="payments" element={<PaymentsPage />} />

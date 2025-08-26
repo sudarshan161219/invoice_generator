@@ -1,5 +1,7 @@
 import { Button } from "@/components/button/Button";
+import { useNavigate } from "react-router-dom";
 import { Pencil, FilePlus, UserX, Copy } from "lucide-react";
+// import { useModal } from "@/hooks/useModal";
 import type { Client } from "@/types/client";
 import styles from "./index.module.css";
 
@@ -12,6 +14,13 @@ export const ClientHeader = ({
   clientName: string;
   bgGradient: string;
 }) => {
+  // const { openClientEdit } = useModal();
+  const navigate = useNavigate();
+
+  const openEditClient = () => {
+    navigate(`/edit/${client.id}`);
+  };
+
   return (
     <div className={styles.infoCard}>
       <div className={styles.imgConatiner}>
@@ -43,7 +52,12 @@ export const ClientHeader = ({
 
         <ul className={styles.actionsContainer}>
           <li>
-            <Button variant="outline" size="md" className={styles.button}>
+            <Button
+              onClick={openEditClient}
+              variant="outline"
+              size="md"
+              className={styles.button}
+            >
               <Pencil size={13} /> Edit
             </Button>
           </li>

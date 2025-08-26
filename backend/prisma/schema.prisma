@@ -157,7 +157,6 @@ model Client {
   email           String @unique
   phone           String?
   company         String?
-  address         String?
   billingAddress  String?
   shippingAddress String?
   website         String?

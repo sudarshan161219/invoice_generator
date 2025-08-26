@@ -19,7 +19,13 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
     null
   );
   const [mode, setMode] = useState<
-    "add" | "edit" | "viewAll" | "addFile" | "viewAllFiles" | "warning"
+    | "add"
+    | "edit"
+    | "viewAll"
+    | "addFile"
+    | "viewAllFiles"
+    | "warning"
+    | "clientEdit"
   >("viewAll");
   const [note, setNote] = useState<Note>("");
   const [editedName, setEditName] = useState<EditedName>("");
@@ -91,6 +97,11 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
     setIsOpen(true);
   };
 
+  const openClientEdit = () => {
+    setMode("clientEdit");
+    setIsOpen(true);
+  };
+
   const currentEditedValue =
     activeModal === ModalType.EditFileName
       ? editedName
@@ -129,6 +140,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
         openAddFile,
         openViewAllFiles,
         openWarning,
+        openClientEdit,
         fileID,
         fileId,
         setEditingFileId,
