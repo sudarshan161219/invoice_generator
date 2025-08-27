@@ -47,7 +47,7 @@ export const DesktopSidebar = () => {
   ];
 
   return (
-    <div className="flex">
+    <div className="flex h-screen overflow-hidden">
       {/* Sidebar */}
       <div
         className={`${styles.sideBar} ${
@@ -107,7 +107,7 @@ export const DesktopSidebar = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex flex-col flex-1 h-screen">
+      <div className="flex flex-col flex-1">
         {/* Topbar */}
         <Header />
 

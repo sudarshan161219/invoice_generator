@@ -198,13 +198,13 @@ model Client {
 model ClientCategory {
   id        Int       @id @default(autoincrement())
   name      String
-  color     String?   // optional, for UI
+  color     String?   
   isDefault Boolean   @default(false)
-  userId    Int       // so each user has their own list
+  userId    Int       
   clients   Client[]
 
   User User[]
-  
+  @@unique([name, userId])
 }
 
 model ClientTag {
