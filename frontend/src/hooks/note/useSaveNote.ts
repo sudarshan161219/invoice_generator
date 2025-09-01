@@ -1,6 +1,7 @@
 import { useCreateNote } from "./useCreateNote";
 import { useUpdateNote } from "./useUpdateNote";
 import type { noteDTO, NoteId } from "@/types/note_types/types";
+import { toast } from "sonner";
 
 type SaveNoteParams =
   | { noteId: NoteId; data: noteDTO } // update
@@ -16,8 +17,10 @@ export const useSaveNote = () => {
         noteId: params.noteId,
         data: params.data,
       });
+      toast.success("Note updated successfully!");
     } else {
       createMutation.mutate(params.data);
+      toast.success("Note added successfully!");
     }
   };
 

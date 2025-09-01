@@ -4,7 +4,6 @@ import { MoreHorizontal, Pencil, Trash, Dot, Plus } from "lucide-react";
 import { useParams } from "react-router-dom";
 import { Button } from "@/components/button/Button";
 import { useModal } from "@/hooks/useModal";
-import { AddNoteModal } from "@/components/addNoteModal/AddNoteModal";
 import { useGetAllNotes } from "@/hooks/note/useGetAllNotes";
 import type { ExtendedNoteDTO } from "@/types/note_types/types";
 import {
@@ -12,10 +11,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { ModalType } from "@/types/ModalType";
 
 export const ClientNotes = () => {
-  const { openAddNote, openEditNote, isOpen, setNoteEdit, setNoteId } =
-    useModal();
+  const { setNoteEdit, setNoteId, editNote, addNote, openModal } = useModal();
   const [openPopoverId, setOpenPopoverId] = useState<number | null>(null);
   const { id } = useParams<{ id: string }>();
   const clientId = Number(id);
@@ -37,13 +36,14 @@ export const ClientNotes = () => {
     };
     setNoteId(noteId);
     setNoteEdit(noteEdit);
-    openEditNote();
+    openModal("addNote", ModalType.AddNote);
     setOpenPopoverId(null);
   };
 
   const onCreate = () => {
     setNoteEdit(null);
-    openAddNote();
+    addNote();
+    openModal("addNote", ModalType.AddNote);
   };
 
   if (isLoading) return <div>Loading...</div>;
@@ -132,8 +132,6 @@ export const ClientNotes = () => {
           );
         })}
       </div>
-
-      {isOpen && <AddNoteModal />}
     </div>
   );
 };

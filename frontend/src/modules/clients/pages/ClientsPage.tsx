@@ -8,9 +8,10 @@ import { MoreVertical, Copy } from "lucide-react";
 import type { Clients } from "../types/clients";
 import { EmptyState } from "@/components/EmptyState/EmptyState";
 import { Button } from "@/components/button/Button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import styles from "./index.module.css";
 import { CreateClientModal } from "@/components/createClientModal/CreateClientModal";
+
 import {
   Pagination,
   PaginationContent,
@@ -54,6 +55,8 @@ type FilterState = {
 };
 
 export const ClientsPage: FC = (): ReactElement => {
+  const navigate = useNavigate();
+
   const [filters, setFilters] = useState<FilterState>({
     status: undefined,
     sortBy: "createdAt",
@@ -81,21 +84,27 @@ export const ClientsPage: FC = (): ReactElement => {
     );
   }, [clients]);
 
+  const handleClientClick = (id: number) => {
+    sessionStorage.setItem("clientId", String(id));
+    navigate(`/client/${id}`);
+  };
+
   const clientColumns: Column<Clients>[] = [
     {
       key: "name",
       title: "Name",
       render: (client) => (
-        <Link className=" hover:underline " to={`/client/${client.id}`}>
-          <div className="flex flex-row gap-2 items-center  ">
-            <img
-              src={`https://api.dicebear.com/7.x/lorelei/svg?seed=John%20Doe`}
-              alt={"Skibiddi"}
-              className="w-10 h-10 rounded-full"
-            />
-            <h1>{client.name}</h1>
-          </div>
-        </Link>
+        <button
+          onClick={() => handleClientClick(client.id)}
+          className="flex flex-row gap-2 items-center hover:underline hover:cursor-pointer"
+        >
+          <img
+            src={`https://api.dicebear.com/7.x/lorelei/svg?seed=${client.name}`}
+            alt={client.name}
+            className="w-10 h-10 rounded-full"
+          />
+          <h1>{client.name}</h1>
+        </button>
       ),
     },
     { key: "company", title: "Company" },

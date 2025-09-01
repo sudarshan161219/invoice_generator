@@ -2,16 +2,15 @@ import { useState, useRef } from "react";
 import { UploadCloud, Trash2, Pencil } from "lucide-react";
 import styles from "./index.module.css";
 import { Button } from "@/components/button/Button";
-import { useInvoiceClient } from "@/hooks/useInvoiceClient";
 import { toast } from "sonner";
-import { ModalType } from "@/types/ModalType";
 import { useModal } from "@/hooks/useModal";
 import { stripExtension } from "@/lib/stripExtension";
 import { truncateFileName } from "@/lib/truncate";
-import { EditFileInfoModal } from "./editFileInfoModal";
 import { useUploadAttachments } from "@/hooks/attachment/useUploadAttachments";
 import { isAllowedFile } from "@/lib/FileValidation/isAllowedFile";
 import { getFileIcon } from "@/lib/ConditionalIcons/getFileIcon";
+import { FileNameInput } from "./FileNameInput";
+import { usePersistentClientId } from "@/hooks/PersistValues/usePersistentClientId";
 
 type FileType = {
   id: number;
@@ -31,8 +30,17 @@ export const UploadFileButton = ({
   onUploadStart?: () => void;
   onUploadEnd?: () => void;
 }) => {
-  const { editedName, activeModal, openModal, setEditedValue, setEditingId } =
-    useModal();
+  const {
+    setUploadFileName,
+    setUploadFileId,
+    addFiles,
+    uploadedFiles,
+    deleteFile,
+    closeModal,
+    clearUploads,
+    isEditFileOpen,
+    toggleEditFile,
+  } = useModal();
   const [uploadControllers, setUploadControllers] = useState<
     Record<string, AbortController>
   >({});
@@ -46,12 +54,9 @@ export const UploadFileButton = ({
       total: number;
     }[]
   >([]);
-  const [uploadedFiles, setUploadedFiles] = useState<FileType[]>([]);
-  const { client } = useInvoiceClient();
 
-  const { mutateAsync: uploadAttachment } = useUploadAttachments(
-    client?.id ?? 0
-  );
+  const clientId = usePersistentClientId();
+  const { mutateAsync: uploadAttachment } = useUploadAttachments(clientId);
   const controllerRef = useRef<AbortController | null>(null);
 
   const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
@@ -85,7 +90,8 @@ export const UploadFileButton = ({
         size: file.size,
         file,
       };
-      setUploadedFiles((prev) => [...prev, newFile]);
+      // setUploadedFiles((prev) => [...prev, newFile]);
+      addFiles([newFile]);
     });
   };
 
@@ -115,7 +121,7 @@ export const UploadFileButton = ({
       formData.append("type", file.type);
       formData.append("originalname", file.name);
       formData.append("filename", filename);
-      if (client?.id) formData.append("clientId", client.id.toString());
+      if (clientId) formData.append("clientId", clientId.toString());
 
       try {
         await uploadAttachment({
@@ -143,7 +149,7 @@ export const UploadFileButton = ({
         }
       } finally {
         setUploadQueue((prev) => prev.filter((f) => f.id !== file.id));
-        setUploadedFiles((prev) => prev.filter((f) => f.id !== file.id));
+        deleteFile(file.id);
         setUploadControllers((prev) => {
           const copy = { ...prev };
           delete copy[file.id];
@@ -151,31 +157,26 @@ export const UploadFileButton = ({
         });
       }
     }
-    setUploadedFiles([]);
+    addFiles([]);
     onUploadEnd?.();
+    closeModal();
   };
 
   const editButtonFun = (fileName: string, fileId: number) => {
     const striptedExtension = stripExtension(fileName);
-    setEditingId("fileName", fileId);
-    setEditedValue("fileName", striptedExtension);
-    openModal(ModalType.EditFileName);
+    setUploadFileId(fileId);
+    setUploadFileName(striptedExtension);
+    toggleEditFile();
   };
 
   const handleDelete = (id: number) => {
-    setUploadedFiles((prev) => prev.filter((f) => f.id !== id));
-  };
-
-  const handleRename = (id: number) => {
-    if (!editedName) return;
-    setUploadedFiles((prev) =>
-      prev.map((f) => (f.id === id ? { ...f, name: editedName } : f))
-    );
+    deleteFile(id);
   };
 
   const handleCancel = () => {
-    setUploadedFiles([]);
+    clearUploads();
     setUploadQueue([]);
+    closeModal();
   };
 
   return (
@@ -310,10 +311,7 @@ export const UploadFileButton = ({
           </Button>
         </div>
       )}
-
-      {activeModal === ModalType.EditFileName && (
-        <EditFileInfoModal type="fileName" handleRename={handleRename} />
-      )}
+      {isEditFileOpen && <FileNameInput />}
     </div>
   );
 };

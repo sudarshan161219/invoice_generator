@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
-import { useInvoiceClient } from "@/hooks/useInvoiceClient";
+import { useClient } from "@/hooks/useClient";
 import { useParams } from "react-router-dom";
 import styles from "./index.module.css";
 
@@ -23,7 +23,7 @@ export const Breadcrumbs = () => {
   const location = useLocation();
   const { id } = useParams<{ id: string }>();
   const clientId = Number(id);
-  const { clientName } = useInvoiceClient();
+  const { clientName } = useClient();
   const pathnames = location.pathname.split("/").filter(Boolean);
 
   if (pathnames.length === 0) return null;

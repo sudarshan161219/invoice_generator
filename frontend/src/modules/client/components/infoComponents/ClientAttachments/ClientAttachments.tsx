@@ -11,11 +11,11 @@ import {
 import { Ellipsis, Upload, Pencil, ArrowDownToLine, Trash } from "lucide-react";
 import { useModal } from "@/hooks/useModal";
 import styles from "./index.module.css";
-import { EditFileInfoModal } from "@/components/modal/editFileInfoModal";
 import { handleOpenFile } from "../../../api/get.single.attachment.client.api";
 import { handleDownloadFile } from "@/lib/api/attachment/get.single.attachment.client.api";
-import { ModalType } from "@/types/ModalType";
 import { stripExtension } from "@/lib/stripExtension";
+import { ModalType } from "@/types/ModalType";
+import { useClient } from "@/hooks/useClient";
 
 type Attachment = {
   id: number;
@@ -31,24 +31,18 @@ interface ClientAttachmentsProps {
 
 export const ClientAttachments = ({ attachments }: ClientAttachmentsProps) => {
   const navigate = useNavigate();
-  const {
-    openAddFile,
-    activeModal,
-    openModal,
-    setEditedValue,
-    setEditingId,
-    fileID,
-    openWarning,
-  } = useModal();
+  const { setEditFileName, setEditFileId, fileID, openModal } = useModal();
+  const { setClientId } = useClient();
   const [openPopoverId, setOpenPopoverId] = useState<number | null>(null);
   const { id } = useParams<{ id: string }>();
   const clientId = Number(id);
 
   const editButtonFun = (fileName: string, fileId: number) => {
     const striptedExtension = stripExtension(fileName);
-    setEditingId("fileInfo", fileId);
-    setEditedValue("fileInfo", striptedExtension);
-    openModal(ModalType.EditFileInfo);
+    setEditFileId(fileId);
+    setClientId(clientId);
+    setEditFileName(striptedExtension);
+    openModal("editFile", ModalType.EditFile);
     setOpenPopoverId(null);
   };
 
@@ -57,13 +51,13 @@ export const ClientAttachments = ({ attachments }: ClientAttachmentsProps) => {
   };
   const handleDeleteFile = (fileId: number) => {
     fileID(fileId);
-    openWarning();
+    setClientId(clientId);
+    openModal("warning", ModalType.Warning);
     setOpenPopoverId(null);
   };
 
   const handle_Open_File = (fileId: number) => {
     handleOpenFile(fileId);
-    // handleDownloadFile(fileId, fileName);
     setOpenPopoverId(null);
   };
 
@@ -77,7 +71,7 @@ export const ClientAttachments = ({ attachments }: ClientAttachmentsProps) => {
               variant="default"
               size="md"
               className={styles.actionbtn}
-              onClick={openAddFile}
+              onClick={() => openModal("addFile", ModalType.AddFile)}
             >
               <Upload size={12} />
               Add file
@@ -107,7 +101,7 @@ export const ClientAttachments = ({ attachments }: ClientAttachmentsProps) => {
             variant="default"
             size="md"
             className={styles.actionbtn}
-            onClick={openAddFile}
+            onClick={() => openModal("addFile", ModalType.AddFile)}
           >
             <Upload size={12} />
             Upload File
@@ -192,10 +186,6 @@ export const ClientAttachments = ({ attachments }: ClientAttachmentsProps) => {
           })}
         </ul>
       </div>
-
-      {activeModal === ModalType.EditFileInfo && (
-        <EditFileInfoModal type="fileInfo" />
-      )}
     </div>
   );
 };

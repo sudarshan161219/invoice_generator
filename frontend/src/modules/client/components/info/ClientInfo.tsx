@@ -1,7 +1,8 @@
 import { useParams } from "react-router-dom";
-import { useInvoiceClient } from "@/hooks/useInvoiceClient";
-import { useClient } from "../../hooks/useClient";
-import { useClientAttachments } from "../../hooks/useClientAttachments";
+import { useClient } from "@/hooks/useClient";
+import { useGetClient } from "@/hooks/client/useGetClient";
+import { useClientAttachments } from "@/hooks/attachment/useClientAttachments";
+
 import {
   ClientHeader,
   ClientNotes,
@@ -26,13 +27,14 @@ const getRandomGradient = () =>
 export const ClientInfo = () => {
   const { id } = useParams<{ id: string }>();
   const clientId = Number(id);
-  const { client, clientName, setClient, setClientName } = useInvoiceClient();
-  const { data: notes, isLoading, error } = useGetAllNotes({ clientId });
+  const { client, clientName, setClient, setClientName, setClientId } =
+    useClient();
+  const { data: notes, isLoading } = useGetAllNotes({ clientId });
   const {
     data: clientData,
     isLoading: isClientLoading,
     error: clientError,
-  } = useClient(clientId);
+  } = useGetClient(clientId);
 
   const {
     data,
@@ -47,10 +49,11 @@ export const ClientInfo = () => {
   // Sync client state to global context
   useEffect(() => {
     if (clientData) {
+      setClientId(clientData?.data.id);
       setClient(clientData?.data);
       setClientName(clientData?.data.name);
     }
-  }, [clientData, setClient, setClientName]);
+  }, [clientData, setClient, setClientId, setClientName]);
 
   if (isClientLoading || isAttachmentsLoading)
     return <div className="p-4 text-gray-600">Loading client data...</div>;
@@ -73,7 +76,7 @@ export const ClientInfo = () => {
       />
       <div className={styles.clientDetails}>
         {isLoading ? "loading notes..." : <ClientNotes note={note} />}
-        {/* {client.address && <ClientAddress address={client.address || ""} />} */}
+        {client.address && <ClientAddress address={client.address || ""} />}
         <ClientAttachments attachments={attachments || []} />
       </div>
     </div>

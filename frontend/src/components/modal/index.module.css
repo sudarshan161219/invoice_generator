@@ -17,6 +17,7 @@
 }
 
 .modalCard {
+  position: absolute;
   z-index: 150;
   background: var(--card);
   border-radius: 8px;

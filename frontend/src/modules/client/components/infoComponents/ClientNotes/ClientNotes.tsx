@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import styles from "./index.module.css";
 import { ReadMore } from "../../readMore/ReadMore";
 import { useModal } from "@/hooks/useModal";
+import { ModalType } from "@/types/ModalType";
 
 type Note = {
   id: number;
@@ -21,7 +22,7 @@ type Note = {
 
 export const ClientNotes = ({ note }: { note: Note }) => {
   const navigate = useNavigate();
-  const { openAddNote, setNoteEdit } = useModal();
+  const { setNoteEdit, openModal } = useModal();
   const { id } = useParams<{ id: string }>();
   const clientId = Number(id);
   if (!note) {
@@ -39,7 +40,7 @@ export const ClientNotes = ({ note }: { note: Note }) => {
 
   const onCreate = () => {
     setNoteEdit(null);
-    openAddNote();
+    openModal("addNote", ModalType.AddNote);
   };
 
   return (

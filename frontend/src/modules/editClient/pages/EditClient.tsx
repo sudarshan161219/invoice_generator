@@ -1,6 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { Label } from "@/components/input/Label";
+import { CategorySelect } from "@/components/categorySelect/CategorySelect";
 import {
   type ClientFormValues,
   clientSchema,
@@ -35,7 +36,7 @@ export const EditClient = () => {
   } = useForm<ClientFormValues>({
     resolver: zodResolver(clientSchema),
     defaultValues: {
-      status: "active", // 👈 set a default
+      status: "active",
     },
   });
 
@@ -175,7 +176,8 @@ export const EditClient = () => {
 
             <div>
               <Label htmlFor={"category"} text="Category" required={false} />
-              <Controller
+              <CategorySelect name="category" control={control} />
+              {/* <Controller
                 name="category"
                 control={control}
                 render={({ field }) => (
@@ -187,20 +189,26 @@ export const EditClient = () => {
                       <SelectItem value="vip">VIP</SelectItem>
                       <SelectItem value="regular">Regular</SelectItem>
                       <SelectItem value="one-time">One-time</SelectItem>
+
+                      <div className="p-2 border-t mt-1">
+                        <Button
+                          size="md"
+                          type="button"
+                          onClick={() => console.log("Custom Action")}
+                        >
+                          + Add New Category
+                        </Button>
+                      </div>
                     </SelectContent>
                   </Select>
                 )}
-              />
+              /> */}
             </div>
           </div>
 
           {/* Social Links (basic JSON handling for now) */}
           <div className="mt-4">
-            <Label
-              htmlFor={"social"}
-              text="Social Links"
-              required={false}
-            />
+            <Label htmlFor={"social"} text="Social Links" required={false} />
             <Controller
               control={control}
               name="socialLinks"

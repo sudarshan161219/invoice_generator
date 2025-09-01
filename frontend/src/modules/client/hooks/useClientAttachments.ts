@@ -1,4 +1,3 @@
-// hooks/useClientAttachments.ts
 import { useQuery } from "@tanstack/react-query";
 import { getClientAttachments } from "@/modules/client/api/getAttachments.client.api";
 

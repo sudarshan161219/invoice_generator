@@ -10,6 +10,7 @@ export const uploadMultipleAttachments = async (
     total: number;
   }) => void
 ): Promise<UploadAttachmentResponse[]> => {
+  
   const res = await api.post<UploadAttachmentResponse[]>(
     "/attachments/upload",
     formData,

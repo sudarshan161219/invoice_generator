@@ -1,43 +1,45 @@
 import { Input } from "@/components/input/Input";
 import { Button } from "@/components/button/Button";
 import { useModal } from "@/hooks/useModal";
+import { toast } from "sonner";
 import styles from "./index.module.css";
 
-export const EditFileModal = ({
-  handleRename,
-}: {
-  handleRename: (id: string) => void;
-}) => {
+export const FileNameInput = () => {
   const {
-    closeModal,
-    editedName,
-    editingFileId,
-    setEditFileName,
-    setEditingFileId,
+    uploadFileId,
+    setUploadFileName,
+    renameFile,
+    uploadFileName,
+    toggleEditFile,
   } = useModal();
 
-  const onSave = () => {
-    if (!editingFileId) return;
-    // handleRename(editingFileId);
-    setEditingFileId(null);
-    closeModal();
-  };
+  const onSave = async () => {
+    try {
+      if (uploadFileId != null) {
+        renameFile(uploadFileId, uploadFileName);
+        toggleEditFile();
+      }
 
-  console.log(setEditFileName);
+      toast.success("File renamed");
+    } catch (error) {
+      console.error("Failed to save changes:", error);
+      toast.error("Failed to save changes");
+    }
+  };
 
   return (
     <div className={styles.editFileContainer}>
       <div className={styles.inputContainer}>
         <h3>Edit file name</h3>
         <Input
-          value={editedName}
+          value={uploadFileName}
           type="text"
           placeholder="Enter new file name"
-          onChange={(e) => setEditFileName(e.target.value)}
+          onChange={(e) => setUploadFileName(e.target.value)}
         />
 
         <div className={styles.editButtonContainer}>
-          <Button onClick={closeModal} variant="outline" size="md">
+          <Button onClick={toggleEditFile} variant="outline" size="md">
             Cancel
           </Button>
           <Button onClick={onSave} size="md">

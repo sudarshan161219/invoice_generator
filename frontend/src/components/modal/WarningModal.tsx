@@ -2,26 +2,27 @@ import { useModal } from "@/hooks/useModal";
 import styles from "./index.module.css";
 import { Button } from "@/components/button/Button";
 import { useDeleteAttachment } from "@/hooks/attachment/useDeleteAttachment";
-import { useInvoiceClient } from "@/hooks/useInvoiceClient";
+import { useClient } from "@/hooks/useClient";
 import { toast } from "sonner";
 
 export const Warning = () => {
-  const { client } = useInvoiceClient();
-  const { fileId, toggleModal } = useModal();
+  const {  clientId } = useClient();
+  const { fileId, closeModal } = useModal();
   const isBulk = Array.isArray(fileId) && fileId.length > 1;
 
   const {
     mutateAsync: deleteAttachment,
     isPending: isLoading,
     error,
-  } = useDeleteAttachment(client?.id ?? 0);
+  } = useDeleteAttachment();
 
   const handleDelete = async () => {
     try {
       if (fileId !== null) {
-        await deleteAttachment(fileId);
+        console.log("Deleting with clientId:", clientId, "fileId:", fileId);
+        await deleteAttachment({ ids: fileId, clientId });
       }
-      toggleModal();
+      closeModal();
       toast.success("File deleted successfully");
     } catch (err) {
       toast.error("Failed to delete file");
@@ -46,7 +47,7 @@ export const Warning = () => {
 
       <div className="flex justify-end gap-1 mt-2">
         <Button
-          onClick={toggleModal}
+          onClick={closeModal}
           variant="outline"
           size="md"
           disabled={isLoading}

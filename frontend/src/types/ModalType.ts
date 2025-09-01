@@ -1,7 +1,10 @@
 export const ModalType = {
-  None: "none",
-  EditFileName: "editFileName",
-  EditFileInfo: "editFileInfo",
+  AddNote: "addNote",
+  EditNote: "editNote",
+  AddFile: "addFile",
+  EditFile: "editFile",
+  Warning: "warning",
+  ManageCategories: "manageCategories",
 } as const;
 
 export type ModalType = (typeof ModalType)[keyof typeof ModalType];

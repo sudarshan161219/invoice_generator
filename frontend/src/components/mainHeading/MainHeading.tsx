@@ -1,12 +1,12 @@
 import { useState, useEffect, type FC, type ReactElement } from "react";
 import { useLocation } from "react-router-dom";
-import { useInvoiceClient } from "@/hooks/useInvoiceClient";
+import { useClient } from "@/hooks/useClient";
 import "./index.css";
 
 export const MainHeading: FC = (): ReactElement => {
   const location = useLocation();
   const [heading, setHeading] = useState("Overview");
-  const { clientName } = useInvoiceClient();
+  const { clientName } = useClient();
 
   // Attachments
   useEffect(() => {

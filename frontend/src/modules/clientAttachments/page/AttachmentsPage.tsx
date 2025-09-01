@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { useParams } from "react-router-dom";
 import { Ellipsis, Pencil, ArrowDownToLine, Trash } from "lucide-react";
 import { stripExtension } from "@/lib/stripExtension";
 import { truncateFileName } from "@/lib/truncate";
+import { ModalType } from "@/types/ModalType";
+import { usePersistentClientId } from "@/hooks/PersistValues/usePersistentClientId";
 import {
   Tooltip,
   TooltipContent,
@@ -17,10 +18,6 @@ import { formatBytes } from "../lib/utils/formatBytes";
 import { formatDate } from "../lib/utils/formatDate";
 import { Checkbox } from "@/components/checkboxs/checkbox";
 import { Button } from "@/components/button/Button";
-import { Modal } from "@/components/modal/Modal";
-import { EditFileInfoModal } from "@/components/modal/editFileInfoModal";
-import { ModalType } from "@/types/ModalType";
-import { UploadFileButton } from "@/components/modal/UploadFileButton";
 import { handleDownloadFile } from "@/lib/api/attachment/get.single.attachment.client.api";
 import {
   Table,
@@ -31,9 +28,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useModal } from "@/hooks/useModal";
-import { useClientAttachments } from "../hooks/useClientAttachments";
+import { useClientAttachments } from "@/hooks/attachment/useClientAttachments";
 import styles from "./index.module.css";
 import { getFileIcon } from "@/lib/ConditionalIcons/getFileIcon";
+import { useClient } from "@/hooks/useClient";
 
 type Attachment = {
   id: string;
@@ -47,25 +45,22 @@ type Attachment = {
 };
 
 export const AttachmentsPage = () => {
+  const clientId = usePersistentClientId();
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
-  const [isUploading, setIsUploading] = useState(false);
   const [openPopoverId, setOpenPopoverId] = useState<number | null>(null);
   const {
     fileID,
-    openWarning,
-    openAddFile,
-    activeModal,
-    setEditedValue,
-    setEditingId,
+    warning,
+    addFile,
+    setEditFileId,
+    setEditFileName,
     openModal,
   } = useModal();
-  const { id } = useParams<{ id: string }>();
-  const clientId = Number(id);
+  const { setClientId } = useClient();
 
   const { data, isLoading, error } = useClientAttachments(clientId);
 
   const attachments = data?.attachments || [];
-  // const clientName = data?.clientName || "";
   const isAllSelected = selectedIds.length === attachments.length;
 
   // Selection handlers
@@ -81,22 +76,26 @@ export const AttachmentsPage = () => {
 
   const handleDeleteFile = (fileId: number) => {
     fileID(fileId);
-    openWarning();
+    setClientId(clientId);
+    warning();
     setOpenPopoverId(null);
   };
 
   const handleBulkDelete = () => {
     if (selectedIds.length > 0) {
       fileID(selectedIds);
-      openWarning();
+      setClientId(clientId);
+      warning();
+      setSelectedIds([]);
     }
   };
 
   const editButtonFun = (fileName: string, fileId: number) => {
     const striptedExtension = stripExtension(fileName);
-    setEditingId("fileInfo", fileId);
-    setEditedValue("fileInfo", striptedExtension);
-    openModal(ModalType.EditFileInfo);
+    setEditFileId(fileId);
+    setClientId(clientId);
+    setEditFileName(striptedExtension);
+    openModal("editFile", ModalType.EditFile);
     setOpenPopoverId(null);
   };
 
@@ -114,19 +113,24 @@ export const AttachmentsPage = () => {
     );
   }
 
-  if (!isLoading && !error && (attachments.length === 0 || isUploading)) {
+  if (attachments.length === 0) {
     return (
       <div className={styles.uploadAttachmentsContainer}>
-        {attachments.length === 0 && !isUploading && (
-          <h3 className="mb-4 font-semibold text-lg">
-            No attachments found. Upload new files:
+        <div className="flex flex-col items-center justify-center p-6 border border-dashed rounded-2xl text-center bg-[var(--card)]">
+          <h3 className="text-lg font-semibold text-[var(--primary)] mb-2">
+            No attachments found
           </h3>
-        )}
-        <div className={styles.UploadFileButton}>
-          <UploadFileButton
-            onUploadStart={() => setIsUploading(true)}
-            onUploadEnd={() => setIsUploading(false)}
-          />
+          <p className="text-sm text-[var(--label)] mb-4">
+            You haven’t uploaded any files yet. Click the button below to add
+            your first attachment.
+          </p>
+          <Button
+            size="md"
+            onClick={() => openModal("addFile", ModalType.AddFile)}
+            className="px-6"
+          >
+            Upload Files
+          </Button>
         </div>
       </div>
     );
@@ -138,17 +142,12 @@ export const AttachmentsPage = () => {
         {/* <h3>{`Client Attachments: ${clientName}`}</h3> */}
         <div className="flex gap-2">
           {selectedIds.length === 0 && (
-            <Button onClick={openAddFile} size="md" variant="outline">
+            <Button onClick={addFile} size="md" variant="outline">
               Upload File
             </Button>
           )}
           {selectedIds.length !== 0 && (
-            <Button
-              size="md"
-              variant="danger"
-              onClick={handleBulkDelete}
-              disabled={selectedIds.length === 0}
-            >
+            <Button size="md" variant="danger" onClick={handleBulkDelete}>
               Delete Selected
             </Button>
           )}
@@ -274,12 +273,6 @@ export const AttachmentsPage = () => {
           </TableBody>
         </Table>
       </div>
-
-      <Modal />
-
-      {activeModal === ModalType.EditFileInfo && (
-        <EditFileInfoModal type="fileInfo" />
-      )}
     </div>
   );
 };

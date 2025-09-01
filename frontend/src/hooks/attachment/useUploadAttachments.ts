@@ -3,7 +3,6 @@ import { uploadMultipleAttachments } from "@/lib/api/attachment/uploadFile.clien
 
 export const useUploadAttachments = (clientId: number) => {
   const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: ({
       formData,

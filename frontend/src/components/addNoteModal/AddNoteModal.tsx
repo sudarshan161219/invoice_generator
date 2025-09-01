@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
 import { useModal } from "@/hooks/useModal";
 import { Button } from "@/components/button/Button";
 import { Input } from "../input/Input";
@@ -8,17 +7,17 @@ import type { noteDTO } from "@/types/note_types/types";
 import { Dot } from "lucide-react";
 import styles from "./index.module.css";
 import { useSaveNote } from "@/hooks/note/useSaveNote";
+import { usePersistentClientId } from "@/hooks/PersistValues/usePersistentClientId";
 import { toast } from "sonner";
 
 export const AddNoteModal = () => {
-  const { toggleModal, noteEdit, noteId } = useModal();
+  const { openModal, noteEdit, noteId, closeModal } = useModal();
   const { mutate, isPending, isSuccess, isError, error } = useSaveNote();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [labelName, setLabelName] = useState("");
   const [labelColor, setLabelColor] = useState("#f97316");
-  const { id } = useParams<{ id: string }>();
-  const clientId = Number(id);
+  const clientId = usePersistentClientId();
 
   useEffect(() => {
     if (noteEdit) {
@@ -42,10 +41,9 @@ export const AddNoteModal = () => {
 
   useEffect(() => {
     if (isSuccess) {
-      toast.success("Note added successfully!");
-      toggleModal();
+      closeModal();
     }
-  }, [isSuccess, toggleModal]);
+  }, [closeModal, isSuccess, openModal]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,73 +68,62 @@ export const AddNoteModal = () => {
   };
 
   return (
-    <div className={styles.modalOverlay}>
-      <div className={styles.modalCard}>
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <div>
-            <label className="block text-sm font-medium mb-1">Title</label>
-            <Input
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder={"Enter note title"}
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1">Content</label>
-            <textarea
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder="Write your note..."
-              rows={4}
-              className="w-full border rounded-md p-2 border-[var(--input)] text-[var(--foreground)] focus:outline-none focus:ring-[var(--ring)] focus:ring-1"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1">Label</label>
-            <div className="flex items-center gap-2">
-              <Input
-                value={labelName}
-                onChange={(e) => setLabelName(e.target.value)}
-                placeholder={"e.g. Important"}
-              />
-
-              <ColorDropdown
-                selectedColor={labelColor}
-                onChange={(color) => setLabelColor(color)}
-              />
-            </div>
-            {labelName && (
-              <span className={styles.label} style={{ color: labelColor }}>
-                <Dot size={20} /> {labelName}
-              </span>
-            )}
-          </div>
-
-          <div className={styles.btnContainer}>
-            <Button
-              size="md"
-              variant="outline"
-              type="button"
-              onClick={toggleModal}
-              disabled={isPending}
-            >
-              Cancel
-            </Button>
-            <Button
-              size="md"
-              variant="default"
-              type="submit"
-              disabled={isPending}
-            >
-              {isPending ? "Adding note..." : "Add Note"}
-            </Button>
-          </div>
-        </form>
+    <form onSubmit={handleSubmit} className={styles.form}>
+      <div>
+        <label className="block text-sm font-medium mb-1">Title</label>
+        <Input
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder={"Enter note title"}
+        />
       </div>
 
-      <div onClick={toggleModal} className={styles.modalBg}></div>
-    </div>
+      <div>
+        <label className="block text-sm font-medium mb-1">Content</label>
+        <textarea
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          placeholder="Write your note..."
+          rows={4}
+          className="w-full border rounded-md p-2 border-[var(--input)] text-[var(--foreground)] focus:outline-none focus:ring-[var(--ring)] focus:ring-1"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-1">Label</label>
+        <div className="flex items-center gap-2">
+          <Input
+            value={labelName}
+            onChange={(e) => setLabelName(e.target.value)}
+            placeholder={"e.g. Important"}
+          />
+
+          <ColorDropdown
+            selectedColor={labelColor}
+            onChange={(color) => setLabelColor(color)}
+          />
+        </div>
+        {labelName && (
+          <span className={styles.label} style={{ color: labelColor }}>
+            <Dot size={20} /> {labelName}
+          </span>
+        )}
+      </div>
+
+      <div className={styles.btnContainer}>
+        <Button
+          size="md"
+          variant="outline"
+          type="button"
+          onClick={closeModal}
+          disabled={isPending}
+        >
+          Cancel
+        </Button>
+        <Button size="md" variant="default" type="submit" disabled={isPending}>
+          {isPending ? "Adding note..." : "Add Note"}
+        </Button>
+      </div>
+    </form>
   );
 };
