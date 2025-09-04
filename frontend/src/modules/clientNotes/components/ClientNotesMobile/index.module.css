@@ -1,0 +1,27 @@
+.addBtn {
+  position: absolute;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  background-color: var(--card);
+  padding: 0.5rem;
+  border-radius: 5px;
+  right: 0;
+  border: 1px solid var(--border);
+}
+
+.checkBox {
+  display: flex;
+  border-radius: 3px;
+  cursor: pointer;
+  width: 15px;
+  height: 15px;
+}
+
+.selectAllBtn {
+  border: none;
+  font-size: 0.75rem;
+  color: var(--primary);
+  font-weight: 500;
+}
