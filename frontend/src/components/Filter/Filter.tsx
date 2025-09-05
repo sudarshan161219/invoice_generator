@@ -164,6 +164,7 @@ export const Filter = ({
             .filter((tag) => tempFilters.tagIds?.includes(tag.id))
             .map((tag) => (
               <p
+                key={tag.id}
                 style={{ backgroundColor: `${tag.color}` }}
                 className="border-r"
               >

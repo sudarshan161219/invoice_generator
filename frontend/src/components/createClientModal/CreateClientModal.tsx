@@ -4,7 +4,7 @@ import { X } from "lucide-react";
 import styles from "./index.module.css";
 
 export const CreateClientModal = () => {
-  const { toggleModal } = useModal();
+  const { closeModal } = useModal();
   return (
     <div className={styles.modalOverlay}>
       <div className={styles.modalCard}>
@@ -14,12 +14,12 @@ export const CreateClientModal = () => {
             <p>Fill in the details to create and save a new client profile.</p>
           </div>
 
-          <X onClick={toggleModal} className={styles.closeIcon} size={25} />
+          <X onClick={closeModal} className={styles.closeIcon} size={25} />
         </div>
         <ClientForm />
       </div>
 
-      <div onClick={toggleModal} className={styles.modalBg}></div>
+      <div onClick={closeModal} className={styles.modalBg}></div>
     </div>
   );
 };

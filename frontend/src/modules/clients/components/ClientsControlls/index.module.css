@@ -1,0 +1,52 @@
+/* absolute top-0 left-0 w-full bg-[var(--card)] rounded-b-xl shadow-lg p-4 animate-slideDown */
+/* fixed inset-0 z-50 bg-black/40 */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 1rem;
+}
+
+.searchModal {
+  position: absolute;
+  background-color: var(--card);
+  padding: 1rem;
+  border-radius: 5px;
+  border: 1px solid var(--border);
+  width: 100%;
+  z-index: 100;
+}
+
+.modalBg {
+  position: fixed;
+  width: 100%;
+  height: 100vh;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(0.9px);
+  z-index: 50;
+}
+
+.inputContainer {
+  display: flex;
+  gap: 10px;
+}
+
+.input {
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  letter-spacing: normal;
+  color: var(--primary);
+}
+
+.xIcon {
+  cursor: pointer;
+  color: var(--label);
+}
+
+.xIcon:hover {
+  color: var(--primary);
+}

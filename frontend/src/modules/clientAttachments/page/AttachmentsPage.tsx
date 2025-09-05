@@ -55,6 +55,7 @@ export const AttachmentsPage = () => {
     setEditFileId,
     setEditFileName,
     openModal,
+    editFileName,
   } = useModal();
   const { setClientId } = useClient();
 
@@ -95,7 +96,7 @@ export const AttachmentsPage = () => {
     setEditFileId(fileId);
     setClientId(clientId);
     setEditFileName(striptedExtension);
-    openModal("editFile", ModalType.EditFile);
+    openModal("editFileName", ModalType.EditFileName);
     setOpenPopoverId(null);
   };
 

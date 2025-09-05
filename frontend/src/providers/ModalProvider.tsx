@@ -19,7 +19,8 @@ type Mode =
   | "addFile"
   | "warning"
   | "manageCategories"
-  | "editFile";
+  | "editFileName"
+  | "addClient";
 
 type State = {
   isOpen: boolean;

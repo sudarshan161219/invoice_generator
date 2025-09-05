@@ -42,7 +42,7 @@ export const ClientAttachments = ({ attachments }: ClientAttachmentsProps) => {
     setEditFileId(fileId);
     setClientId(clientId);
     setEditFileName(striptedExtension);
-    openModal("editFile", ModalType.EditFile);
+    openModal("editFileName", ModalType.EditFileName);
     setOpenPopoverId(null);
   };
 

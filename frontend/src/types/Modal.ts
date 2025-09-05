@@ -43,7 +43,8 @@ export type Mode =
   | "addFile"
   | "warning"
   | "manageCategories"
-  | "editFile";
+  | "editFileName"
+  | "addClient";
 
 export interface ModalContextType {
   // ---- State ----
@@ -115,7 +116,7 @@ export const modalShortcuts = {
   editNote: { modal: ModalType.EditNote, mode: "editNote" as Mode },
   addFile: { modal: ModalType.AddFile, mode: "addFile" as Mode },
   warning: { modal: ModalType.Warning, mode: "warning" as Mode },
-  editFileInfo: { modal: ModalType.EditFile, mode: "editFileInfo" as Mode },
+  // editFileName: { modal: ModalType.EditFileName, mode: "editFileName" as Mode },
   manageCategories: {
     modal: ModalType.ManageCategories,
     mode: "manageCategories" as Mode,

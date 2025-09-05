@@ -1,0 +1,19 @@
+.infoContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem;
+  background-color: var(--card);
+  border-radius: 5px;
+  border: 1px solid var(--border);
+}
+
+.clientInfo > h2 {
+  font-size: 0.85rem;
+  color: var(--primary);
+}
+
+.clientInfo > p {
+  font-size: 0.75rem;
+  color: var(--label);
+}
