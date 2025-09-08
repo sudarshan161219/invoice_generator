@@ -24,6 +24,7 @@ import { Tabs } from "@/components/tab/Tab";
 import { type Tab } from "@/components/tab/types/tab.types";
 import { Sun } from "lucide-react";
 import { Moon } from "lucide-react";
+import { Breadcrumbs } from "@/components/breadCrumbs/Breadcrumbs";
 
 export const MobileSidebar = () => {
   const location = useLocation();
@@ -200,6 +201,7 @@ export const MobileSidebar = () => {
         <Header />
 
         <main className="flex-1 p-4 overflow-y-auto bg-background">
+          <Breadcrumbs />
           <Outlet />
         </main>
       </div>

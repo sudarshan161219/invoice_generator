@@ -1,216 +1,302 @@
 import { useState } from "react";
-import { X } from "lucide-react";
+import { z } from "zod";
+import { ListFilter, Tag, X } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/input/Input";
+import { Button } from "@/components/button/Button";
+import { SearchInput } from "@/components/searchInput/SearchInput";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from "@/components/ui/select";
 import styles from "./index.module.css";
 
-export const ClientsControls = () => {
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [filterOpen, setFilterOpen] = useState(false);
-  const [filters, setFilters] = useState({
-    status: "",
-    sortBy: "createdAt",
-    sortOrder: "desc",
-    tagIds: [] as number[],
-    category: "",
-    currency: "",
-    hasInvoices: "",
-  });
+interface AllTags {
+  id: number;
+  name: string;
+  color: string;
+  userId: number | undefined;
+}
 
-  const handleChange = (key: string, value: any) => {
-    setFilters((prev) => ({ ...prev, [key]: value }));
+// ✅ Define schema
+const FilterSchema = z.object({
+  status: z.enum(["active", "inactive", "prospect"]).optional(),
+  sortBy: z
+    .enum(["createdAt", "name", "email", "company", "status"])
+    .default("createdAt"), // ✅ always defined
+  sortOrder: z.enum(["asc", "desc"]).default("desc"), // ✅ always defined
+  category: z.string().default(""),
+  currency: z.string().default(""),
+  hasInvoices: z.enum(["All", "yes", "no"]).default("All"), // ✅ always defined
+  search: z.string().optional(),
+  tagIds: z.array(z.number()).default([]),
+});
+
+// ✅ ensures defaults are applied in the type
+export type FilterState = z.infer<typeof FilterSchema>;
+
+type ClientsControlsProps = {
+  filters: FilterState;
+  onFiltersChange: (newFilters: FilterState) => void;
+  allTags: AllTags[];
+};
+
+export const ClientsControls = ({
+  filters,
+  onFiltersChange,
+  allTags,
+}: ClientsControlsProps) => {
+  const [tempFilters, setTempFilters] = useState<FilterState>(filters);
+
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [tagsOpen, setTagsOpen] = useState(false);
+
+  // ✅ Generic handler
+  const handleChange = <K extends keyof FilterState>(
+    key: K,
+    value: FilterState[K]
+  ) => {
+    setTempFilters((prev) => ({ ...prev, [key]: value }));
   };
 
   const handleSearch = (value: string) => {
-    setFilters((prev) => ({ ...prev, search: value }));
+    onFiltersChange({ ...filters, search: value });
+  };
+
+  const applyFilters = () => {
+    const parsed = FilterSchema.safeParse(tempFilters);
+    if (parsed.success) {
+      onFiltersChange(parsed.data); // ✅ send back to parent
+      setFilterOpen(false);
+    } else {
+      console.error("Invalid filter state", parsed.error.format());
+    }
+  };
+
+  const resetFilters = () => {
+    const defaults = FilterSchema.parse({});
+    setTempFilters(defaults);
+    onFiltersChange(defaults); // ✅ reset parent too
   };
 
   return (
-    <div className="flex gap-2 items-center">
-      {/* Search Button */}
-      <button
-        onClick={() => setSearchOpen(true)}
-        className="p-2 rounded-lg border hover:bg-gray-100"
-      >
-        🔍
-      </button>
+    <div className="mb-3">
+      {/* Search + Filter button */}
+      <div className={styles.searchFilterContainer}>
+        <SearchInput
+          placeholder="Search client"
+          onDebouncedChange={handleSearch}
+        />
 
-      {/* Filter Button */}
-      <button
-        onClick={() => setFilterOpen(true)}
-        className="p-2 rounded-lg border hover:bg-gray-100"
-      >
-        🧩
-      </button>
-
-      {/* Search Drawer (top) */}
-      {searchOpen && (
-        <div
-          className={styles.modalOverlay}
-          onClick={() => setSearchOpen(false)}
+        <Button
+          onClick={() => setFilterOpen(true)}
+          variant="outline"
+          className="flex items-center gap-1"
         >
-          <div
-            className={styles.searchModal}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className={styles.inputContainer}>
-              <input
-                className={styles.input}
-                type="text"
-                placeholder="Search client"
-              />
-              <X
-                onClick={() => setSearchOpen(false)}
-                className={styles.xIcon}
-                size={20}
-              />
-            </div>
-          </div>
+          <ListFilter size={14} />
+          <span className="hidden md:block">Filters</span>
+        </Button>
 
-          <div
-            onClick={() => setSearchOpen(false)}
-            className={styles.modalBg}
-          ></div>
-        </div>
-      )}
+        <Button
+          onClick={() => setTagsOpen(true)}
+          variant="outline"
+          className="flex items-center gap-1"
+        >
+          <Tag size={14} />
+          <span className="hidden md:block">Tags</span>
+        </Button>
+      </div>
 
-      {/* Filter Drawer (right) */}
+      {/* Filter Drawer */}
       {filterOpen && (
         <div
           className="fixed inset-0 z-50 bg-black/40"
           onClick={() => setFilterOpen(false)}
         >
           <div
-            className="absolute top-0 right-0 h-full w-80 max-w-[90%] bg-[var(--card)] shadow-lg p-4 animate-slideIn overflow-y-auto"
+            className={styles.drawerContainer}
             onClick={(e) => e.stopPropagation()}
           >
+            {/* Header */}
             <div className="flex justify-between items-center mb-3">
               <h2 className="text-lg font-medium">Filters</h2>
-              <button onClick={() => setFilterOpen(false)}>✖</button>
+              <X
+                onClick={() => setFilterOpen(false)}
+                className={styles.xIcon}
+                size={20}
+              />
             </div>
 
             {/* Status */}
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-1">Status</label>
-              <select
-                value={filters.status}
-                onChange={(e) => handleChange("status", e.target.value)}
-                className="w-full border rounded px-2 py-1"
+            <div className="space-y-2">
+              <Label>Status</Label>
+              <Select
+                value={tempFilters.status ?? ""}
+                onValueChange={(val) =>
+                  handleChange("status", val as FilterState["status"])
+                }
               >
-                <option value="">All</option>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-                <option value="prospect">Prospect</option>
-              </select>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="inactive">Inactive</SelectItem>
+                  <SelectItem value="prospect">Prospect</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             {/* Sort By */}
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-1">Sort By</label>
-              <select
-                value={filters.sortBy}
-                onChange={(e) => handleChange("sortBy", e.target.value)}
-                className="w-full border rounded px-2 py-1"
+            <div className="space-y-2">
+              <Label>Sort By</Label>
+              <Select
+                value={tempFilters.sortBy}
+                onValueChange={(val) =>
+                  handleChange("sortBy", val as FilterState["sortBy"])
+                }
               >
-                <option value="createdAt">Created Date</option>
-                <option value="name">Name</option>
-                <option value="email">Email</option>
-                <option value="company">Company</option>
-                <option value="status">Status</option>
-              </select>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select sort" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="createdAt">Created At</SelectItem>
+                  <SelectItem value="name">Name</SelectItem>
+                  <SelectItem value="email">Email</SelectItem>
+                  <SelectItem value="company">Company</SelectItem>
+                  <SelectItem value="status">Status</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             {/* Sort Order */}
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-1">
-                Sort Order
-              </label>
-              <select
-                value={filters.sortOrder}
-                onChange={(e) => handleChange("sortOrder", e.target.value)}
-                className="w-full border rounded px-2 py-1"
+            <div className="space-y-2">
+              <Label>Sort Order</Label>
+              <Select
+                value={tempFilters.sortOrder}
+                onValueChange={(val) =>
+                  handleChange("sortOrder", val as FilterState["sortOrder"])
+                }
               >
-                <option value="asc">Ascending</option>
-                <option value="desc">Descending</option>
-              </select>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select order" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="asc">Ascending</SelectItem>
+                  <SelectItem value="desc">Descending</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             {/* Category */}
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-1">Category</label>
-              <input
+            <div>
+              <Label className="mb-1">Category</Label>
+              <Input
                 type="text"
                 placeholder="Category"
-                className="w-full border rounded px-2 py-1"
-                value={filters.category}
+                value={tempFilters.category}
                 onChange={(e) => handleChange("category", e.target.value)}
               />
             </div>
 
             {/* Currency */}
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-1">Currency</label>
-              <input
+            <div>
+              <Label className="mb-1">Currency</Label>
+              <Input
                 type="text"
                 placeholder="Currency (e.g. USD, INR)"
-                className="w-full border rounded px-2 py-1"
-                value={filters.currency}
+                value={tempFilters.currency}
                 onChange={(e) => handleChange("currency", e.target.value)}
               />
             </div>
 
             {/* Has Invoices */}
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-1">Invoices</label>
-              <select
-                value={filters.hasInvoices}
-                onChange={(e) => handleChange("hasInvoices", e.target.value)}
-                className="w-full border rounded px-2 py-1"
+            <div className="space-y-2">
+              <Label className="mb-1">Invoices</Label>
+              <Select
+                value={tempFilters.hasInvoices}
+                onValueChange={(val) =>
+                  handleChange("hasInvoices", val as FilterState["hasInvoices"])
+                }
               >
-                <option value="">All</option>
-                <option value="yes">Has Invoices</option>
-                <option value="no">No Invoices</option>
-              </select>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="All">All</SelectItem>
+                  <SelectItem value="yes">Has Invoices</SelectItem>
+                  <SelectItem value="no">No Invoices</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
-            {/* Tags */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium mb-1">Tags</label>
-              <input
-                type="text"
-                placeholder="Tag IDs (comma separated)"
-                className="w-full border rounded px-2 py-1"
-                onChange={(e) =>
-                  handleChange(
-                    "tagIds",
-                    e.target.value.split(",").map((id) => parseInt(id.trim()))
-                  )
-                }
+            {/* Footer */}
+            <div className="flex gap-2 mt-6">
+              <Button
+                variant="default"
+                size="md"
+                className="flex-1"
+                onClick={applyFilters}
+              >
+                Apply
+              </Button>
+              <Button
+                variant="outline"
+                size="md"
+                className="flex-1"
+                onClick={resetFilters}
+              >
+                Reset
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Tags Drawer */}
+      {tagsOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-black/40"
+          onClick={() => setTagsOpen(false)}
+        >
+          <div
+            className={styles.tagsContainer}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center mb-3">
+              <h2 className="text-lg font-medium">Tags</h2>
+              <X
+                onClick={() => setTagsOpen(false)}
+                className={styles.xIcon}
+                size={20}
               />
             </div>
 
-            {/* Apply & Reset */}
-            <div className="flex gap-2">
-              <button
-                className="flex-1 bg-blue-600 text-white py-2 rounded"
-                onClick={() => setFilterOpen(false)}
-              >
-                Apply
-              </button>
-              <button
-                className="flex-1 bg-gray-200 text-gray-800 py-2 rounded"
-                onClick={() =>
-                  setFilters({
-                    status: "",
-                    sortBy: "createdAt",
-                    sortOrder: "desc",
-                    tagIds: [],
-                    category: "",
-                    currency: "",
-                    hasInvoices: "",
-                  })
-                }
-              >
-                Reset
-              </button>
+            <div className={styles.allTagsContainer}>
+              {allTags.map((tag) => {
+                const active = filters.tagIds?.includes(tag.id);
+                return (
+                  <button
+                    key={tag.id}
+                    onClick={() =>
+                      onFiltersChange({
+                        ...filters,
+                        tagIds: active
+                          ? filters.tagIds.filter((id) => id !== tag.id)
+                          : [...(filters.tagIds ?? []), tag.id],
+                      })
+                    }
+                    className={`${styles.tag} ${
+                      active ? styles.active : styles.inactive
+                    }`}
+                  >
+                    {tag.name}
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>

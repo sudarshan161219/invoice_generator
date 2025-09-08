@@ -6,11 +6,11 @@ import {
 import { type ClientsApiResponse } from "@/types/clients_types/types";
 
 export const useGetAllClients = (options: GetAllClientsOptions = {}) => {
+  const { ...queryKeyOptions } = options;
   return useQuery<ClientsApiResponse, Error>({
-    queryKey: ["clients", options],
+    queryKey: ["clients", queryKeyOptions],
     queryFn: () => getAllClients(options),
     staleTime: 1000 * 60 * 5,
     retry: 1,
-    // keepPreviousData: true
   });
 };

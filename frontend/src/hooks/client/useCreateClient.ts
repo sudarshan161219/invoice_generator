@@ -7,71 +7,40 @@ import { useModal } from "@/hooks/useModal";
 import {
   type Client,
   type ClientCreateForm,
-  type ClientTag,
 } from "@/types/clients_types/types";
-
-type MutationContext = {
-  previousClients?: Client[];
-  tempId?: number;
-};
+import { getAllClients } from "@/lib/api/clients/getAll.client";
 
 export const useCreateClient = () => {
   const queryClient = useQueryClient();
-  const { toggleModal } = useModal();
-  return useMutation<Client, unknown, ClientCreateForm, MutationContext>({
+  const { closeModal } = useModal();
+
+  return useMutation<Client, unknown, ClientCreateForm>({
     mutationFn: createClient,
-    onMutate: async (newClientData) => {
-      await queryClient.cancelQueries({ queryKey: ["clients"] });
 
-      const previousClients = queryClient.getQueryData<Client[]>(["clients"]);
-      const tempId = Math.random();
-
-      // Add temporary IDs to tags if they exist
-      const tempTags: ClientTag[] | undefined = newClientData.tags?.map(
-        (tagName) => ({
-          id: Math.random(),
-          name: tagName.name,
-          color: tagName.color || "#3b82f6",
-        })
-      );
-
-      const tempClient: Client = {
-        id: tempId,
-        name: newClientData.name,
-        email: newClientData.email ?? "",
-        phone: newClientData.phone,
-        company: newClientData.company,
-        tags: tempTags,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-
-      queryClient.setQueryData<Client[]>(["clients"], (old = []) => [
-        ...old,
-        tempClient,
-      ]);
-
-      return { previousClients, tempId };
+    onError: (err) => {
+      const axiosError = err as AxiosError<{ message: string }>;
+      toast.error(axiosError.response?.data.message ?? "Failed to add client");
     },
-    onError: (_err, _newClientData, context) => {
-      if (context?.previousClients) {
-        queryClient.setQueryData(["clients"], context.previousClients);
-      }
-      const axiosError = _err as AxiosError<{ message: string }>;
-      toast.error(axiosError.response?.data.message);
-    },
-    onSuccess: (createdClient, _variables, context) => {
-      // Replace temporary client with real server response
-      queryClient.setQueryData<Client[]>(["clients"], (old = []) =>
-        old.map((client) =>
-          client.id === context?.tempId ? createdClient : client
-        )
-      );
+
+    onSuccess: () => {
       toast.success("Client added successfully!");
-      toggleModal();
+      closeModal();
+
+      queryClient.refetchQueries({
+        queryKey: ["clients"],
+        type: "all",
+        exact: false,
+      });
+
+      queryClient.fetchQuery({
+        queryKey: ["clients", { page: 1, limit: 10, noCache: true }],
+        queryFn: () => getAllClients({ page: 1, limit: 10, noCache: true }),
+      });
     },
+
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["clients"] });
+      // mark as stale to ensure fresh data everywhere
+      queryClient.invalidateQueries({ queryKey: ["clients"], exact: false });
     },
   });
 };

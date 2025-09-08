@@ -56,85 +56,6 @@ export class ClientService {
     }
   }
 
-  // async getAll(options: {
-  //   userId: number;
-  //   page?: number;
-  //   limit?: number;
-  //   search?: string;
-  //   sortBy?: "createdAt" | "name" | "email";
-  //   sortOrder?: "asc" | "desc";
-  //   noCache?: boolean;
-  // }) {
-  //   const {
-  //     userId,
-  //     page = 1,
-  //     limit = 10,
-  //     search = "",
-  //     sortBy = "createdAt",
-  //     sortOrder = "desc",
-  //     noCache = false,
-  //   } = options;
-
-  //   const offSet = (page - 1) * limit;
-  //   const cacheKey = `clients:${userId}:page:${page}:limit:${limit}:search:${search}:sort:${sortBy}:${sortOrder}`;
-
-  //   // 🔄 Bypass Redis cache if explicitly requested
-  //   if (!noCache) {
-  //     const cached = await redisClient.get(cacheKey);
-  //     if (cached) return JSON.parse(cached);
-  //   }
-
-  //   // 🔍 Search condition
-  //   const where: Prisma.ClientWhereInput = {
-  //     userId,
-  //     ...(search
-  //       ? {
-  //           OR: [
-  //             { name: { contains: search, mode: "insensitive" } },
-  //             { email: { contains: search, mode: "insensitive" } },
-  //             { company: { contains: search, mode: "insensitive" } },
-  //           ],
-  //         }
-  //       : {}),
-  //   };
-
-  //   // 📦 Fetch matching clients
-  //   const clients = await prisma.client.findMany({
-  //     where,
-  //     orderBy: { [sortBy]: sortOrder },
-  //     skip: offSet,
-  //     take: limit,
-  //   });
-
-  //   // Count total clients for this user
-  //   const total = await prisma.client.count({
-  //     where,
-  //   });
-
-  //   // Meta info
-  //   const response = {
-  //     data: clients,
-  //     meta: {
-  //       total,
-  //       page,
-  //       limit,
-  //       totalPages: Math.ceil(total / limit),
-  //     },
-  //     message: `${
-  //       clients.length === 0
-  //         ? "You don't have any clients yet. Start by adding your first one!"
-  //         : null
-  //     }`,
-  //   };
-
-  //   // Cache the result in Redis for 60 seconds
-  //   if (!noCache) {
-  //     await redisClient.setEx(cacheKey, 60, JSON.stringify(response));
-  //   }
-
-  //   return response;
-  // }
-
   async getAll(options: {
     userId: number;
     page?: number;
@@ -147,6 +68,7 @@ export class ClientService {
     status?: "active" | "inactive" | "prospect"; // active/inactive/prospect
     paymentTermIds?: number[]; // filter by payment terms
     currencyIds?: number[]; // filter by currency
+    hasInvoices?: "All" | "yes" | "no";
     noCache?: boolean;
   }) {
     const {
@@ -161,6 +83,7 @@ export class ClientService {
       status,
       paymentTermIds,
       currencyIds,
+      hasInvoices = "All",
       noCache = false,
     } = options;
 
@@ -172,6 +95,7 @@ export class ClientService {
         status,
         paymentTermIds,
         currencyIds,
+        hasInvoices,
       }
     )}`;
 
@@ -182,37 +106,6 @@ export class ClientService {
     }
 
     // 🔍 Search condition
-    // const where: Prisma.ClientWhereInput = {
-    //   userId,
-    //   ...(search
-    //     ? {
-    //         OR: [
-    //           { name: { contains: search, mode: "insensitive" } },
-    //           { email: { contains: search, mode: "insensitive" } },
-    //           { company: { contains: search, mode: "insensitive" } },
-    //         ],
-    //       }
-    //     : {}),
-    //   ...(status ? { status } : {}),
-    //   ...(categoryIds && categoryIds.length > 0
-    //     ? { categoryId: { in: categoryIds } }
-    //     : {}),
-    //   ...(paymentTermIds && paymentTermIds.length > 0
-    //     ? { paymentTermId: { in: paymentTermIds } }
-    //     : {}),
-    //   ...(currencyIds && currencyIds.length > 0
-    //     ? { currencyId: { in: currencyIds } }
-    //     : {}),
-    //   ...(tagIds && tagIds.length > 0
-    //     ? {
-    //         tags: {
-    //           some: {
-    //             id: { in: tagIds },
-    //           },
-    //         },
-    //       }
-    //     : {}),
-    // };
 
     const where: Prisma.ClientWhereInput = {
       userId,
@@ -255,6 +148,13 @@ export class ClientService {
               },
             },
           }
+        : {}),
+
+      // 👇 Handle hasInvoices
+      ...(hasInvoices === "yes"
+        ? { invoices: { some: {} } } // client must have at least one invoice
+        : hasInvoices === "no"
+        ? { invoices: { none: {} } } // client must have no invoices
         : {}),
     };
 

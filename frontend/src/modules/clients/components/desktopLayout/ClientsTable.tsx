@@ -3,9 +3,6 @@ import type { Column } from "@/types/table.types";
 import { MoreVertical, Copy } from "lucide-react";
 import type { Clients } from "../../types/clients";
 import { useNavigate } from "react-router-dom";
-import { SearchInput } from "@/components/searchInput/SearchInput";
-import { Filter } from "@/components/Filter/Filter";
-import styles from "./index.module.css";
 
 function CopyButton({ value }: { value: string }) {
   const handleCopy = async () => {
@@ -49,6 +46,7 @@ export const ClientsTable = ({ clients }: { clients: Clients[] }) => {
       ),
     },
     { key: "company", title: "Company" },
+
     {
       key: "email",
       title: "Email",
@@ -70,10 +68,24 @@ export const ClientsTable = ({ clients }: { clients: Clients[] }) => {
       ),
     },
     {
-      key: "createdAt",
-      title: "Created",
-      render: (client) => new Date(client.createdAt).toLocaleDateString(),
+      key: "invoice",
+      title: "Invoices",
+      render: (client) => (
+        <div className="flex items-center justify-center">
+          <span className="text-center">
+            {client.invoices && client.invoices.length > 0
+              ? client.invoices.length
+              : "—"}
+          </span>
+        </div>
+      ),
     },
+
+    // {
+    //   key: "createdAt",
+    //   title: "Created",
+    //   render: (client) => new Date(client.createdAt).toLocaleDateString(),
+    // },
     {
       key: "actions",
       title: "Actions",

@@ -1,5 +1,4 @@
 import { useState } from "react";
-import styles from "./index.module.css";
 
 export const TagsInput = ({
   value,

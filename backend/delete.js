@@ -13,7 +13,7 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 async function resetDB() {
-  await prisma.clientNote.deleteMany();
+  await prisma.client.deleteMany();
   console.log("✅ Data deleted from all tables.");
   await prisma.$disconnect();
 }

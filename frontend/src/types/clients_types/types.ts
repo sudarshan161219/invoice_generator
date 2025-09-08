@@ -4,7 +4,7 @@ export interface ClientTag {
   id: number;
   name: string;
   color: string;
-  userId: number;
+  userId: number | undefined;
 }
 
 export interface Client {
@@ -19,7 +19,7 @@ export interface Client {
   createdAt: string;
   updatedAt: string;
   tags?: ClientTag[];
-  userId: number;
+  userId: number | undefined;
 }
 
 export interface PaginationMeta {

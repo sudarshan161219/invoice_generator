@@ -14,13 +14,29 @@ export const Table = <T,>({ data, columns, rowKey }: TableProps<T>) => {
       <table className="min-w-full text-sm text-left">
         <thead className="bg-[var(--card)] text-[var(--primary)]">
           <tr>
+            {/* {columns.map((col) => (
+              <th
+                key={String(col.key)}
+                className={cn(
+                  `px-2 py-2 not-first:font-medium ${
+                    col.title === "invoices" ? "text-center" : ""
+                  }`,
+                  col.className,
+                  styles.th
+                )}
+              >
+                {col.title}
+              </th>
+            ))} */}
+
             {columns.map((col) => (
               <th
                 key={String(col.key)}
                 className={cn(
-                  "px-2 py-2 not-first:font-medium",
-                  col.className,
-                  styles.th
+                  "px-2 py-2 not-first:font-medium", // base styles
+                  col.title === "Invoices" && "text-center", // conditional
+                  col.className, // custom per-column class
+                  styles.th // CSS module
                 )}
               >
                 {col.title}

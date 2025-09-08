@@ -160,7 +160,7 @@ model Client {
   billingAddress  String?
   shippingAddress String?
   website         String?
-  status          ClientStatus?       // Enum
+  status          ClientStatus  @default(active)     
   paymentTermId   Int?
   paymentTerm     PaymentTerm?    @relation(fields: [paymentTermId], references: [id])
   currencyId      Int?

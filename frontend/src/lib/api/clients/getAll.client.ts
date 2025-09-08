@@ -2,7 +2,6 @@ import api from "@/lib/api/api";
 import { type ClientsApiResponse } from "@/types/clients_types/types";
 import qs from "qs";
 
-
 // Define filter/sort options type
 export interface GetAllClientsOptions {
   page?: number;

@@ -9,7 +9,8 @@ export interface Clients {
   imageUrl?: string;
   createdAt: string;
   updatedAt: string;
-  userId: number;
+  userId: number | undefined;
+  invoices?: [];
 }
 
 export interface PaginationMeta {
@@ -29,5 +30,3 @@ export interface ClientsApiResponse {
   page: number;
   success: boolean;
 }
-
-
