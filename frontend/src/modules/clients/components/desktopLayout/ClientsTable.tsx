@@ -1,8 +1,15 @@
+import { useState } from "react";
 import { Table } from "@/components/table/Table";
 import type { Column } from "@/types/table.types";
 import { MoreVertical, Copy } from "lucide-react";
 import type { Clients } from "../../types/clients";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { useNavigate } from "react-router-dom";
+import styles from "./index.module.css";
 
 function CopyButton({ value }: { value: string }) {
   const handleCopy = async () => {
@@ -22,6 +29,7 @@ function CopyButton({ value }: { value: string }) {
 
 export const ClientsTable = ({ clients }: { clients: Clients[] }) => {
   const navigate = useNavigate();
+  const [openPopoverId, setOpenPopoverId] = useState<number | null>(null);
   const handleClientClick = (id: number) => {
     sessionStorage.setItem("clientId", String(id));
     navigate(`/client/${id}`);
@@ -89,10 +97,27 @@ export const ClientsTable = ({ clients }: { clients: Clients[] }) => {
     {
       key: "actions",
       title: "Actions",
-      render: () => (
-        <button className="ml-2 hover:text-gray-800">
-          <MoreVertical size={18} />
-        </button>
+      render: (client) => (
+        <Popover
+          open={openPopoverId === Number(client.id)}
+          onOpenChange={(open) => {
+            setOpenPopoverId(open ? Number(client.id) : null);
+          }}
+        >
+          <PopoverTrigger asChild>
+            <button className="ml-2 hover:text-[var(--label)] cursor-pointer">
+              <MoreVertical size={18} />
+            </button>
+          </PopoverTrigger>
+
+          <PopoverContent side="bottom" align="end" className="w-40 p-0">
+            <ul className={styles.moreMenu}>
+              <li>Create Invoice</li>
+              <li>Archive</li>
+              <li>Send Email</li>
+            </ul>
+          </PopoverContent>
+        </Popover>
       ),
     },
   ];

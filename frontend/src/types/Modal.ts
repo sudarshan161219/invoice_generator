@@ -44,7 +44,20 @@ export type Mode =
   | "warning"
   | "manageCategories"
   | "editFileName"
-  | "addClient";
+  | "addClient"
+  | "name"
+  | "email"
+  | "phone"
+  | "companyName"
+  | "profileImage"
+  | "status"
+  | "socialLinks"
+  | "category"
+  | "website"
+  | "taxId"
+  | "taxIdType"
+  | "billingAddress"
+  | "shippingAddress";
 
 export interface ModalContextType {
   // ---- State ----
@@ -84,7 +97,7 @@ export interface ModalContextType {
   addNote: () => void;
   editNote: () => void;
   addFile: () => void;
-  editFile: () => void;
+  // editFile: () => void;
   warning: () => void;
   manageCategories: () => void;
 
@@ -116,7 +129,6 @@ export const modalShortcuts = {
   editNote: { modal: ModalType.EditNote, mode: "editNote" as Mode },
   addFile: { modal: ModalType.AddFile, mode: "addFile" as Mode },
   warning: { modal: ModalType.Warning, mode: "warning" as Mode },
-  // editFileName: { modal: ModalType.EditFileName, mode: "editFileName" as Mode },
   manageCategories: {
     modal: ModalType.ManageCategories,
     mode: "manageCategories" as Mode,

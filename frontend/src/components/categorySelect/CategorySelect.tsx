@@ -8,8 +8,6 @@ import {
 import { Button } from "../button/Button";
 import { Input } from "../input/Input";
 import { ColorDropdown } from "../ColorDropdown/ColorDropdown";
-import { ManageCategoriesModal } from "../ManageCategoriesModal/ManageCategoriesModal";
-import { useModal } from "@/hooks/useModal";
 import {
   Select,
   SelectTrigger,
@@ -18,6 +16,7 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { X } from "lucide-react";
+
 
 type Category = {
   id: number;
@@ -37,7 +36,7 @@ export const CategorySelect = <T extends FieldValues>({
   control,
   name,
 }: CategorySelectProps<T>) => {
-  const { openManageCategories } = useModal();
+
   const [categories, setCategories] = useState<Category[]>([
     { id: 1, name: "VIP", color: "#ef4444", isDefault: true },
     { id: 2, name: "Regular", color: "#3b82f6", isDefault: true },
@@ -46,7 +45,6 @@ export const CategorySelect = <T extends FieldValues>({
 
   const [labelColor, setLabelColor] = useState("#f97316");
   const [labelName, setLabelName] = useState("");
-  const [openModal, setOpenModal] = useState(false);
 
   const handleAddCategory = () => {
     if (!labelName.trim()) return;
@@ -81,16 +79,35 @@ export const CategorySelect = <T extends FieldValues>({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="none">— No Category —</SelectItem>
+
               {categories.map((cat) => (
-                <SelectItem key={cat.id} value={cat.id.toString()}>
-                  <div className="flex items-center gap-2">
-                    <span
-                      className="w-3 h-3 rounded-full"
-                      style={{ backgroundColor: cat.color }}
-                    />
-                    {cat.name}
-                  </div>
-                </SelectItem>
+                <div
+                  key={cat.id}
+                  className="flex items-center justify-between pr-2"
+                >
+                  <SelectItem value={cat.id.toString()} className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className="w-3 h-3 rounded-full"
+                        style={{ backgroundColor: cat.color }}
+                      />
+                      {cat.name}
+                    </div>
+                  </SelectItem>
+
+                  {!cat.isDefault && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation(); // prevent select from closing
+                        handleRemoveCategory(cat.id);
+                      }}
+                      className="ml-2 text-gray-400 hover:text-red-500"
+                    >
+                      <X size={14} />
+                    </button>
+                  )}
+                </div>
               ))}
 
               {/* Divider */}
@@ -122,26 +139,19 @@ export const CategorySelect = <T extends FieldValues>({
               </div>
 
               <div className="border-t my-1" />
-              <Button
+              {/* <Button
                 variant="ghost"
                 className="w-full justify-start text-sm"
-                onClick={openManageCategories}
+                onClick={() =>
+                  openModal("manageCategories", ModalType.ManageCategories)
+                }
               >
                 ⚙ Manage Categories
-              </Button>
+              </Button> */}
             </SelectContent>
           </Select>
         )}
       />
-
-      {/* {openModal && (
-        <ManageCategoriesModal
-          open={openModal}
-          onClose={() => setOpenModal(false)}
-          onUpdated={onCategoriesUpdated}
-          categories={categories}
-        />
-      )} */}
     </>
   );
 };

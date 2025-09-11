@@ -1,9 +1,9 @@
 import { Button } from "@/components/button/Button";
 import { useNavigate } from "react-router-dom";
-import { Pencil, FilePlus, UserX, Copy } from "lucide-react";
-// import { useModal } from "@/hooks/useModal";
+import { Pencil, FilePlus, Archive, Copy } from "lucide-react";
 import type { Client } from "@/types/client";
 import styles from "./index.module.css";
+import { useState } from "react";
 
 export const ClientHeader = ({
   client,
@@ -14,11 +14,18 @@ export const ClientHeader = ({
   clientName: string;
   bgGradient: string;
 }) => {
-  // const { openClientEdit } = useModal();
   const navigate = useNavigate();
-
+  const [copied, setCopied] = useState(false);
   const openEditClient = () => {
     navigate(`/edit/${client.id}`);
+  };
+
+  const handleCopyInfo = async () => {
+    await navigator.clipboard.writeText(
+      `${clientName}\n${client.email}\n${client.phone}`
+    );
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000); // hide after 2s
   };
 
   return (
@@ -61,14 +68,32 @@ export const ClientHeader = ({
               <Pencil size={13} /> Edit
             </Button>
           </li>
+
           <li>
-            <Button variant="outline" size="md" className={styles.button}>
-              <FilePlus size={14} /> New invoice
+            <Button
+              onClick={() => navigate(`/invoices/new?clientId=${client.id}`)}
+              variant="outline"
+              size="md"
+              className={styles.button}
+            >
+              <FilePlus size={14} /> New Invoice
             </Button>
           </li>
+
+          <li>
+            <Button
+              variant="outline"
+              size="md"
+              className={styles.button}
+              onClick={handleCopyInfo}
+            >
+              <Copy size={14} /> {copied ? "Copied!" : "Copy Info"}
+            </Button>
+          </li>
+
           <li>
             <Button variant="danger" size="md" className={styles.button}>
-              <UserX size={14} /> Delete
+              <Archive size={14} /> Archive
             </Button>
           </li>
         </ul>

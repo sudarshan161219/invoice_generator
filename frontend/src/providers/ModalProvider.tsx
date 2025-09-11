@@ -20,7 +20,20 @@ type Mode =
   | "warning"
   | "manageCategories"
   | "editFileName"
-  | "addClient";
+  | "addClient"
+  | "name"
+  | "email"
+  | "phone"
+  | "companyName"
+  | "profileImage"
+  | "status"
+  | "socialLinks"
+  | "category"
+  | "website"
+  | "taxId"
+  | "taxIdType"
+  | "billingAddress"
+  | "shippingAddress";
 
 type State = {
   isOpen: boolean;
@@ -48,7 +61,6 @@ const initialState: State = {
   noteEdit: null,
   noteId: null,
   fileId: null,
-
   uploadFileName: "",
   editFileName: "",
   uploadFileId: null,
