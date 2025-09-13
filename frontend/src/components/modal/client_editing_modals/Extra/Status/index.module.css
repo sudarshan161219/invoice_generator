@@ -1,0 +1,33 @@
+.listContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.2rem;
+}
+
+.listItem {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  background: var(--card);
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s ease;
+}
+
+.listItem:hover {
+  /* background: #f9fafb; */
+  opacity: 0.6;
+}
+
+.active {
+  border-color: var(--border);
+  background: var(--input);
+  font-weight: 500;
+}
+
+.error {
+  font-size: 0.875rem;
+  color: #ef4444;
+  margin-top: 0.25rem;
+}

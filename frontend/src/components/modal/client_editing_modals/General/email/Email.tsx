@@ -1,33 +1,48 @@
-import { useState } from "react";
+import { Button } from "@/components/button/Button";
+import { Input } from "@/components/input/Input";
+import { useModal } from "@/hooks/useModal";
+import { useClientForm } from "@/hooks/useClientForm";
 
 export const General = () => {
-  const [email, setEmail] = useState("");
+  const { closeModal } = useModal();
+  const { formData, handleChange, setFormData } = useClientForm();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Updated General Info:", { email });
+    console.log("Updated General Info:", formData.email);
     // Here you would call your API to save changes
+  };
+
+  const cancel = () => {
+    setFormData((prev) => ({ ...prev, name: "" }));
+    closeModal();
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="block text-sm font-medium">Email</label>
-        <input
+        <label htmlFor="email" className="block text-sm font-medium">
+          Email
+        </label>
+
+        <Input
+          id="email"
           type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Enter client's email"
-          className="mt-1 w-full rounded border p-2"
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
+          placeholder="client@example.com"
         />
       </div>
 
-      <button
-        type="submit"
-        className="rounded bg-blue-600 px-4 py-2 text-white"
-      >
-        Save
-      </button>
+      <div className="flex gap-1.5 justify-end">
+        <Button type="button" onClick={cancel} variant="outline" size="md">
+          cancel
+        </Button>
+        <Button type="submit" variant="default" size="md">
+          Save
+        </Button>
+      </div>
     </form>
   );
 };
