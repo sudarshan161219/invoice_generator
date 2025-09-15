@@ -1,6 +1,7 @@
 import { Label } from "@/components/input/Label";
 import { useModal } from "@/hooks/useModal";
 import { useClientForm } from "@/hooks/useClientForm";
+import { Check } from "lucide-react";
 import styles from "./index.module.css";
 import { type ClientFormState } from "@/hooks/useClientForm";
 import { Button } from "@/components/button/Button";
@@ -47,6 +48,7 @@ export const Status = () => {
             }
           >
             {option.label}
+            {formData.status === option.value && <Check size={17} />}
           </button>
         ))}
       </div>

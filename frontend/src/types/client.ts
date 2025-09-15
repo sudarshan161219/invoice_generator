@@ -12,6 +12,13 @@
 //   userId: number;
 // }
 
+type Category = {
+  id: number;
+  name: string;
+  color: string;
+  isDefault?: boolean;
+};
+
 export interface Client {
   id: number;
   name: string;
@@ -30,7 +37,7 @@ export interface Client {
 
   // Status / categorization
   status: "active" | "inactive" | "prospect";
-  category?: string; // could also be number if you link to Category model
+  category?: Category; // could also be number if you link to Category model
 
   // Extra info
   socialLinks?: Record<string, string>; // e.g. { twitter: "url", linkedin: "url" }

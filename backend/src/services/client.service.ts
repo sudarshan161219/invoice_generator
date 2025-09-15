@@ -217,6 +217,7 @@ export class ClientService {
     const client = await prisma.client.findFirst({
       where: { id, userId },
       include: {
+        category: true,
         invoices: {
           orderBy: { createdAt: "desc" }, // Optional: newest first
         },

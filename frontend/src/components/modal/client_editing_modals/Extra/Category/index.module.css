@@ -1,0 +1,12 @@
+.categoryActive {
+  background-color: var(--border);
+}
+
+.category {
+  background-color: var(--card);
+}
+
+.categoryName {
+  font-size: 0.85rem;
+  color: var(--primary);
+}

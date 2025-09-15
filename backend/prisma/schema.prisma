@@ -145,12 +145,6 @@ enum ClientStatus {
   prospect
 }
 
-enum ClientCategoryEnum {
-  retail
-  wholesale
-  corporate
-}
-
 model Client {
   id              Int           @id @default(autoincrement())
   name            String
@@ -187,7 +181,6 @@ model Client {
   // Categories (custom + predefined enum)
   categoryId      Int?
   category        ClientCategory? @relation(fields: [categoryId], references: [id])
-  categoryType    ClientCategoryEnum? // Enum for quick classification
 
   @@index([userId])
   @@unique([email, userId])

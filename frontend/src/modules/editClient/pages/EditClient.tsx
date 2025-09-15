@@ -31,26 +31,39 @@ export const EditClient = () => {
             desc="Basic details to identify this client."
           />
 
-          <div className={styles.infoRow}>
+          <div
+            className={styles.infoRow}
+            onClick={() => openModal("name", ModalType.Name)}
+          >
             <div className={styles.infoContainer}>
               <h1>Display Name</h1>
               <p>{client?.name || "Add the client's full name"}</p>
             </div>
-            <ChevronRight
-              className={styles.rightIcon}
-              onClick={() => openModal("name", ModalType.Name)}
-            />
+            <div className={styles.iconContainer}>
+              <ChevronRight
+                size={20}
+                className={styles.rightIcon}
+                onClick={() => openModal("name", ModalType.Name)}
+              />
+            </div>
           </div>
 
-          <div className={styles.infoRow}>
+          <div
+            className={styles.infoRow}
+            onClick={() => openModal("email", ModalType.Email)}
+          >
             <div className={styles.infoContainer}>
               <h1>Email</h1>
               <p>{client?.email || "Add a valid email address"}</p>
             </div>
-            <ChevronRight
-              className={styles.rightIcon}
-              onClick={() => openModal("email", ModalType.Email)}
-            />
+
+            <div className={styles.iconContainer}>
+              <ChevronRight
+                size={20}
+                className={styles.rightIcon}
+                onClick={() => openModal("email", ModalType.Email)}
+              />
+            </div>
           </div>
         </div>
 
@@ -61,26 +74,38 @@ export const EditClient = () => {
             desc="Ways to get in touch with this client."
           />
 
-          <div className={styles.infoRow}>
+          <div
+            className={styles.infoRow}
+            onClick={() => openModal("phone", ModalType.Phone)}
+          >
             <div className={styles.infoContainer}>
               <h1>Phone</h1>
               <p>{client?.phone || "Add a phone number"}</p>
             </div>
-            <ChevronRight
-              className={styles.rightIcon}
-              onClick={() => openModal("phone", ModalType.Phone)}
-            />
+            <div className={styles.iconContainer}>
+              <ChevronRight
+                size={20}
+                className={styles.rightIcon}
+                onClick={() => openModal("phone", ModalType.Phone)}
+              />
+            </div>
           </div>
 
-          <div className={styles.infoRow}>
+          <div
+            className={styles.infoRow}
+            onClick={() => openModal("companyName", ModalType.CompanyName)}
+          >
             <div className={styles.infoContainer}>
               <h1>Company</h1>
               <p>{client?.company || "Add the company name (if any)"}</p>
             </div>
-            <ChevronRight
-              className={styles.rightIcon}
-              onClick={() => openModal("companyName", ModalType.CompanyName)}
-            />
+            <div className={styles.iconContainer}>
+              <ChevronRight
+                size={20}
+                className={styles.rightIcon}
+                onClick={() => openModal("companyName", ModalType.CompanyName)}
+              />
+            </div>
           </div>
         </div>
 
@@ -91,7 +116,10 @@ export const EditClient = () => {
             desc="Upload a recognizable avatar for this client."
           />
 
-          <div className={styles.infoRow}>
+          <div
+            className={styles.infoRow}
+            onClick={() => openModal("profileImage", ModalType.ProfileImage)}
+          >
             <div className={styles.infoContainer}>
               <h1>Avatar</h1>
               <p>
@@ -100,10 +128,15 @@ export const EditClient = () => {
                   : "Add a profile image"}
               </p>
             </div>
-            <ChevronRight
-              className={styles.rightIcon}
-              onClick={() => openModal("profileImage", ModalType.ProfileImage)}
-            />
+            <div className={styles.iconContainer}>
+              <ChevronRight
+                size={20}
+                className={styles.rightIcon}
+                onClick={() =>
+                  openModal("profileImage", ModalType.ProfileImage)
+                }
+              />
+            </div>
           </div>
         </div>
 
@@ -115,39 +148,58 @@ export const EditClient = () => {
               desc="Key business-related details for this client."
             />
 
-            <div className={styles.infoRow}>
+            <div
+              className={styles.infoRow}
+              onClick={() => openModal("website", ModalType.Website)}
+            >
               <div className={styles.infoContainer}>
                 <h1>Website</h1>
                 <p>{client?.website || "Add the client's business website"}</p>
               </div>
-              <ChevronRight
-                className={styles.rightIcon}
-                onClick={() => openModal("website", ModalType.Website)}
-              />
+              <div className={styles.iconContainer}>
+                <ChevronRight
+                  size={20}
+                  className={styles.rightIcon}
+                  onClick={() => openModal("website", ModalType.Website)}
+                />
+              </div>
             </div>
 
-            <div className={styles.infoRow}>
+            <div
+              className={styles.infoRow}
+              onClick={() => openModal("taxId", ModalType.TaxId)}
+            >
               <div className={styles.infoContainer}>
                 <h1>Tax ID</h1>
                 <p>{client?.taxId || "Enter the client's registered tax ID"}</p>
               </div>
-              <ChevronRight
-                className={styles.rightIcon}
-                onClick={() => openModal("taxId", ModalType.TaxId)}
-              />
+
+              <div className={styles.iconContainer}>
+                <ChevronRight
+                  size={20}
+                  className={styles.rightIcon}
+                  onClick={() => openModal("taxId", ModalType.TaxId)}
+                />
+              </div>
             </div>
 
-            <div className={styles.infoRow}>
+            <div
+              className={styles.infoRow}
+              onClick={() => openModal("taxIdType", ModalType.TaxIdType)}
+            >
               <div className={styles.infoContainer}>
                 <h1>Tax ID Type</h1>
                 <p>
                   {client?.taxIdType || "Specify type (e.g., GST, VAT, PAN)"}
                 </p>
               </div>
-              <ChevronRight
-                className={styles.rightIcon}
-                onClick={() => openModal("taxIdType", ModalType.TaxIdType)}
-              />
+              <div className={styles.iconContainer}>
+                <ChevronRight
+                  size={20}
+                  className={styles.rightIcon}
+                  onClick={() => openModal("taxIdType", ModalType.TaxIdType)}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -160,30 +212,46 @@ export const EditClient = () => {
               desc="Manage billing and shipping addresses for this client."
             />
 
-            <div className={styles.infoRow}>
+            <div
+              className={styles.infoRow}
+              onClick={() =>
+                openModal("billingAddress", ModalType.BillingAddress)
+              }
+            >
               <div className={styles.infoContainer}>
                 <h1>Billing Address</h1>
                 <p>{client?.website || "Add the client's Billing Address"}</p>
               </div>
-              <ChevronRight
-                className={styles.rightIcon}
-                onClick={() =>
-                  openModal("billingAddress", ModalType.BillingAddress)
-                }
-              />
+              <div className={styles.iconContainer}>
+                <ChevronRight
+                  size={20}
+                  className={styles.rightIcon}
+                  onClick={() =>
+                    openModal("billingAddress", ModalType.BillingAddress)
+                  }
+                />
+              </div>
             </div>
 
-            <div className={styles.infoRow}>
+            <div
+              className={styles.infoRow}
+              onClick={() =>
+                openModal("shippingAddress", ModalType.ShippingAddress)
+              }
+            >
               <div className={styles.infoContainer}>
                 <h1>Shipping Address</h1>
                 <p>{client?.website || "Add the client's Shipping Address"}</p>
               </div>
-              <ChevronRight
-                className={styles.rightIcon}
-                onClick={() =>
-                  openModal("shippingAddress", ModalType.ShippingAddress)
-                }
-              />
+              <div className={styles.iconContainer}>
+                <ChevronRight
+                  size={20}
+                  className={styles.rightIcon}
+                  onClick={() =>
+                    openModal("shippingAddress", ModalType.ShippingAddress)
+                  }
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -196,7 +264,10 @@ export const EditClient = () => {
               desc="Additional details to better organize this client."
             />
 
-            <div className={styles.infoRow}>
+            <div
+              className={styles.infoRow}
+              onClick={() => openModal("status", ModalType.Status)}
+            >
               <div className={styles.infoContainer}>
                 <h1>Status</h1>
                 <p>
@@ -204,13 +275,20 @@ export const EditClient = () => {
                     "Set client status (Active, Inactive, etc.)"}
                 </p>
               </div>
-              <ChevronRight
-                className={styles.rightIcon}
-                onClick={() => openModal("status", ModalType.Status)}
-              />
+
+              <div className={styles.iconContainer}>
+                <ChevronRight
+                  size={20}
+                  className={styles.rightIcon}
+                  onClick={() => openModal("status", ModalType.Status)}
+                />
+              </div>
             </div>
 
-            <div className={styles.infoRow}>
+            <div
+              className={styles.infoRow}
+              onClick={() => openModal("socialLinks", ModalType.SocialLinks)}
+            >
               <div className={styles.infoContainer}>
                 <h1>Social Links</h1>
                 <p>
@@ -219,13 +297,22 @@ export const EditClient = () => {
                     : "Add LinkedIn, Twitter, etc."}
                 </p>
               </div>
-              <ChevronRight
-                className={styles.rightIcon}
-                onClick={() => openModal("socialLinks", ModalType.SocialLinks)}
-              />
+
+              <div className={styles.iconContainer}>
+                <ChevronRight
+                  size={20}
+                  className={styles.rightIcon}
+                  onClick={() =>
+                    openModal("socialLinks", ModalType.SocialLinks)
+                  }
+                />
+              </div>
             </div>
 
-            <div className={styles.infoRow}>
+            <div
+              className={styles.infoRow}
+              onClick={() => openModal("category", ModalType.Category)}
+            >
               <div className={styles.infoContainer}>
                 <h1>Category</h1>
                 <p>
@@ -233,10 +320,13 @@ export const EditClient = () => {
                     "Assign a category (e.g., Business, Personal, VIP)"}
                 </p>
               </div>
-              <ChevronRight
-                className={styles.rightIcon}
-                onClick={() => openModal("category", ModalType.Category)}
-              />
+              <div className={styles.iconContainer}>
+                <ChevronRight
+                  size={20}
+                  className={styles.rightIcon}
+                  onClick={() => openModal("category", ModalType.Category)}
+                />
+              </div>
             </div>
           </div>
         </div>

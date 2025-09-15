@@ -1,6 +1,13 @@
 import { useEffect, useState } from "react";
 import { useClient } from "@/hooks/useClient";
 
+type Category = {
+  id: number;
+  name: string;
+  color: string;
+  isDefault?: boolean;
+};
+
 export type ClientFormState = {
   name: string;
   email: string;
@@ -18,7 +25,7 @@ export type ClientFormState = {
 
   // Status / categorization
   status: "active" | "inactive" | "prospect";
-  category?: string; // could also be number if you link to Category model
+  category?: Category; // could also be number if you link to Category model
 
   // Extra info
   socialLinks?: Record<string, string>; // e.g. { twitter: "url", linkedin: "url" }
@@ -48,7 +55,7 @@ export const useClientForm = () => {
     taxIdType: "",
     // Status / categorization
     status: "active",
-    category: "", // could also be number if you link to Category model
+    category: undefined, // could also be number if you link to Category model
 
     // Extra info
     socialLinks: {},
@@ -66,7 +73,7 @@ export const useClientForm = () => {
     if (client) {
       setFormData((prev) => ({
         ...prev,
-        ...client, // safely merge client fields
+        ...client,
       }));
     }
   }, [client]);
@@ -84,5 +91,22 @@ export const useClientForm = () => {
     }));
   };
 
-  return { formData, setFormData, handleChange };
+  // const setFieldValue = (name: keyof ClientFormState, value: string) => {
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     [name]: value,
+  //   }));
+  // };
+
+  const setFieldValue = <K extends keyof ClientFormState>(
+    name: K,
+    value: ClientFormState[K]
+  ) => {
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  return { formData, setFormData, handleChange, setFieldValue };
 };
