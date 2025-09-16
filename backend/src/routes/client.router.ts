@@ -4,6 +4,10 @@ import { TYPES } from "../types/types";
 import { ClientController } from "../controllers/client.controller";
 import { authenticate } from "../middlewares/auth/auth.middleware";
 import { wrapWithAuthRequest } from "../utils/wrapWithAuthRequest";
+import multer from "multer";
+
+const storage = multer.memoryStorage();
+export const upload = multer({ storage });
 
 @injectable()
 export class ClientRouter {
@@ -41,11 +45,20 @@ export class ClientRouter {
       )
     );
 
-    this.router.put(
+    this.router.patch(
       "/update/:id",
       authenticate,
       wrapWithAuthRequest(
         this.clientController.handleUpdate.bind(this.clientController)
+      )
+    );
+
+    this.router.post(
+      "/avatar/:id",
+      authenticate,
+      upload.single("avatar"),
+      wrapWithAuthRequest(
+        this.clientController.handleAvatarUpload.bind(this.clientController)
       )
     );
 

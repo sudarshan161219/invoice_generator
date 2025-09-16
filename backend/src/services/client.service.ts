@@ -5,6 +5,7 @@ import { StatusCodes } from "http-status-codes";
 import { AppError } from "../errors/AppError";
 import redisClient from "../config/redis";
 import { Prisma } from "@prisma/client";
+import cloudinary from "../lib/cloudinary";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 @injectable()
@@ -54,6 +55,71 @@ export class ClientService {
         debugMessage: (err as Error)?.message,
       });
     }
+  }
+
+  async addAvatar(userId: number, id: number, fileBuffer: Buffer) {
+    const client = await prisma.client.findFirst({
+      where: { id, userId },
+    });
+
+    if (!client) {
+      throw new AppError({
+        message: "Client not found or access denied.",
+        statusCode: StatusCodes.NOT_FOUND,
+        code: "CLIENT_UPDATE_NOT_ALLOWED",
+        debugMessage: `Client ID: ${id}, User ID: ${userId}`,
+      });
+    }
+
+    return new Promise((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        {
+          folder: `clients/${userId}`,
+          public_id: `client_${id}_avatar`,
+          overwrite: true,
+        },
+        async (error, result) => {
+          if (error || !result) {
+            return reject(
+              new AppError({
+                message: "Failed to upload avatar.",
+                statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
+                code: "AVATAR_UPLOAD_FAILED",
+                debugMessage: String(error),
+              })
+            );
+          }
+
+          try {
+            // ⚡ Save only the base Cloudinary URL
+            const updatedClient = await prisma.client.update({
+              where: { id },
+              data: { imageUrl: result.secure_url },
+            });
+
+            try {
+              const cacheKey = `client:${userId}:${id}`;
+              await redisClient.del(cacheKey);
+            } catch (redisErr) {
+              console.warn("Failed to clear redis cache for client:", redisErr);
+            }
+
+            resolve(updatedClient);
+          } catch (dbError) {
+            reject(
+              new AppError({
+                message: "Failed to update client with avatar URL.",
+                statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
+                code: "DB_UPDATE_FAILED",
+                debugMessage: String(dbError),
+              })
+            );
+          }
+        }
+      );
+
+      uploadStream.end(fileBuffer);
+    });
   }
 
   async getAll(options: {

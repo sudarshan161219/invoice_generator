@@ -55,7 +55,8 @@
   border-radius: 8px;
   position: relative;
 }
-.avatarImg {
+
+.avatarImgContainer {
   width: 80px;
   height: 80px;
   border-radius: 100%;
@@ -63,6 +64,11 @@
   position: absolute;
   top: 75px;
   left: 15px;
+  overflow: hidden;
+}
+
+.avatarImg {
+  width: 100%;
 }
 
 .actionsContainer {

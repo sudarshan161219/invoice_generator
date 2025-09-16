@@ -35,14 +35,16 @@ export const ClientHeader = ({
           className={styles.imgBanner}
           style={{ background: bgGradient }}
         ></div>
-        <img
-          src={
-            client.imageUrl ||
-            `https://api.dicebear.com/7.x/lorelei/svg?seed=${clientName}`
-          }
-          alt={clientName}
-          className={styles.avatarImg}
-        />
+        <div className={styles.avatarImgContainer}>
+          <img
+            src={
+              client.imageUrl ||
+              `https://api.dicebear.com/7.x/lorelei/svg?seed=${clientName}`
+            }
+            alt={clientName}
+            className={styles.avatarImg}
+          />
+        </div>
       </div>
 
       <div className={styles.info}>

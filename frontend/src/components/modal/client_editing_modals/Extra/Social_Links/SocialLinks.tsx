@@ -5,14 +5,15 @@ import { Label } from "@/components/input/Label";
 import { Trash2, Plus } from "lucide-react";
 import { useModal } from "@/hooks/useModal";
 
-type Entry = { key: string; value: string; error?: string };
+type Entry = { name: string; url: string; error?: string };
 
 export const SocialLinks = () => {
   const [entries, setEntries] = useState<Entry[]>([]);
   const { closeModal } = useModal();
+
   const handleChange = (
     index: number,
-    field: "key" | "value",
+    field: "name" | "url",
     newValue: string
   ) => {
     const updated = [...entries];
@@ -31,10 +32,10 @@ export const SocialLinks = () => {
 
   const handleSave = () => {
     const validated = entries.map((entry) => {
-      if (entry.key.trim() === "" && entry.value.trim() === "") {
+      if (entry.name.trim() === "" && entry.url.trim() === "") {
         return { ...entry, error: "Platform and URL are required" };
       }
-      if (!isValidUrl(entry.value.trim())) {
+      if (!isValidUrl(entry.url.trim())) {
         return { ...entry, error: "Invalid URL" };
       }
       return { ...entry, error: undefined };
@@ -45,8 +46,16 @@ export const SocialLinks = () => {
     setEntries(validated);
 
     if (validEntries.length > 0) {
-      console.log("Saved Social Links:", validEntries);
-      // 🔗 send `validEntries` to backend or parent component
+      // Convert array -> JSON object
+      const socialLinksJson = validEntries.reduce((acc, cur) => {
+        acc[cur.name.trim()] = cur.url.trim();
+        return acc;
+      }, {} as Record<string, string>);
+
+      console.log("Saved Social Links (JSON):", socialLinksJson);
+
+      // TODO: send `socialLinksJson` to backend
+      // await api.updateClient({ socialLinks: socialLinksJson });
     }
   };
 
@@ -65,13 +74,13 @@ export const SocialLinks = () => {
             <div className="flex items-center gap-2">
               <Input
                 placeholder="Platform (e.g. Twitter)"
-                value={entry.key}
-                onChange={(e) => handleChange(index, "key", e.target.value)}
+                value={entry.name}
+                onChange={(e) => handleChange(index, "name", e.target.value)}
               />
               <Input
                 placeholder="https://..."
-                value={entry.value}
-                onChange={(e) => handleChange(index, "value", e.target.value)}
+                value={entry.url}
+                onChange={(e) => handleChange(index, "url", e.target.value)}
               />
               <Button
                 type="button"
@@ -96,7 +105,7 @@ export const SocialLinks = () => {
           variant="outline"
           size="sm"
           id="social"
-          onClick={() => setEntries([...entries, { key: "", value: "" }])}
+          onClick={() => setEntries([...entries, { name: "", url: "" }])}
         >
           <Plus className="w-4 h-4 mr-1" /> Add Link
         </Button>
@@ -118,4 +127,3 @@ export const SocialLinks = () => {
     </div>
   );
 };
-

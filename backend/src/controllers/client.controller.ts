@@ -175,6 +175,48 @@ export class ClientController {
     }
   }
 
+  async handleAvatarUpload(
+    req: AuthRequest,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const userId = req.user?.id;
+      const id = parseInt(req.params.id, 10);
+
+      if (!userId) {
+        throw new AppError({
+          message: "You need to be logged in to update client information.",
+          statusCode: StatusCodes.UNAUTHORIZED,
+          code: "UNAUTHORIZED_ACCESS",
+          debugMessage: "User ID missing in AuthRequest object",
+        });
+      }
+
+      if (!req.file) {
+        throw new AppError({
+          message: "No file uploaded.",
+          statusCode: StatusCodes.BAD_REQUEST,
+          code: "FILE_MISSING",
+          debugMessage: "Expected 'avatar' file in form-data, got none.",
+        });
+      }
+
+      const updatedClient = await this.clientService.addAvatar(
+        userId,
+        id,
+        req.file.buffer
+      );
+
+      res.json({
+        data: updatedClient,
+        meta: { updatedAt: new Date().toISOString() },
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async handleUpdate(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const userId = req.user?.id;

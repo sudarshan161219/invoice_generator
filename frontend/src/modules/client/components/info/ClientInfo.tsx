@@ -67,6 +67,8 @@ export const ClientInfo = () => {
 
   if (!client) return <div className="p-4 text-red-500">Client not found.</div>;
 
+  console.log(clientData);
+
   return (
     <div className={styles.card}>
       <ClientHeader
@@ -76,7 +78,7 @@ export const ClientInfo = () => {
       />
       <div className={styles.clientDetails}>
         {isLoading ? "loading notes..." : <ClientNotes note={note} />}
-        {client.address && <ClientAddress address={client.address || ""} />}
+        {/* {client.address && <ClientAddress address={client.address || ""} />} */}
         <ClientAttachments attachments={attachments || []} />
       </div>
     </div>
