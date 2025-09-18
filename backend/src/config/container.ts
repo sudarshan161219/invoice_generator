@@ -23,6 +23,10 @@ import { NoteService } from "../services/note.service";
 import { NoteController } from "../controllers/note.controller";
 import { NoteRouter } from "../routes/note.router";
 
+import { CategoryService } from "../services/category.service";
+import { CategoryController } from "../controllers/category.controller";
+import { CategoryRouter } from "../routes/category.router";
+
 import { TYPES } from "../types/types";
 
 export const container: Container = new Container();
@@ -62,3 +66,9 @@ container.bind<AttachmentRouter>(TYPES.AttachmentRouter).to(AttachmentRouter);
 container.bind<NoteService>(TYPES.NoteService).to(NoteService);
 container.bind<NoteController>(TYPES.NoteController).to(NoteController);
 container.bind<NoteRouter>(TYPES.NoteRouter).to(NoteRouter);
+
+container.bind<CategoryService>(TYPES.CategoryService).to(CategoryService);
+container
+  .bind<CategoryController>(TYPES.CategoryController)
+  .to(CategoryController);
+container.bind<CategoryRouter>(TYPES.CategoryRouter).to(CategoryRouter);

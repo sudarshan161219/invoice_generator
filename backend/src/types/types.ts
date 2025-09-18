@@ -22,4 +22,8 @@ export const TYPES = {
   NoteService: Symbol.for("NoteService"),
   NoteController: Symbol.for("NoteController"),
   NoteRouter: Symbol.for("NoteRouter"),
+
+  CategoryService: Symbol.for("CategoryService"),
+  CategoryController: Symbol.for("CategoryController"),
+  CategoryRouter: Symbol.for("CategoryRouter"),
 };

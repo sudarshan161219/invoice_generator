@@ -196,7 +196,7 @@ model ClientCategory {
   userId    Int       
   clients   Client[]
 
-  User User[]
+ user   User @relation(fields: [userId], references: [id])
   @@unique([name, userId])
 }
 

@@ -1,15 +1,38 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/button/Button";
 import { Input } from "@/components/input/Input";
 import { Label } from "@/components/input/Label";
 import { Trash2, Plus } from "lucide-react";
 import { useModal } from "@/hooks/useModal";
+import { useUpdateClient } from "@/hooks/client/useUpdateClient";
+import { usePersistentClientId } from "@/hooks/PersistValues/usePersistentClientId";
+import { useClient } from "@/hooks/useClient";
+import { toast } from "sonner";
 
 type Entry = { name: string; url: string; error?: string };
 
 export const SocialLinks = () => {
   const [entries, setEntries] = useState<Entry[]>([]);
   const { closeModal } = useModal();
+  const { client } = useClient();
+  const { mutate: updateClientMutation, isPending } = useUpdateClient();
+  const clientId = usePersistentClientId();
+
+  // 🔹 Prefill from client.socialLinks if available
+  useEffect(() => {
+    if (client?.socialLinks && typeof client.socialLinks === "object") {
+      const prefilled = Object.entries(client.socialLinks).map(
+        ([name, url]) => ({
+          name,
+          url,
+          error: undefined,
+        })
+      );
+      setEntries(prefilled);
+    } else {
+      setEntries([{ name: "", url: "" }]); // at least one empty row
+    }
+  }, [client]);
 
   const handleChange = (
     index: number,
@@ -30,9 +53,67 @@ export const SocialLinks = () => {
     }
   };
 
+  // const handleSave = () => {
+  //   const validated = entries.map((entry) => {
+  //     if (entry.name.trim() === "" || entry.url.trim() === "") {
+  //       return { ...entry, error: "Platform and URL are required" };
+  //     }
+  //     if (!isValidUrl(entry.url.trim())) {
+  //       return { ...entry, error: "Invalid URL" };
+  //     }
+  //     return { ...entry, error: undefined };
+  //   });
+
+  //   const validEntries = validated.filter((e) => !e.error);
+  //   setEntries(validated);
+
+  //   if (validEntries.length > 0) {
+  //     const socialLinksJson = validEntries.reduce((acc, cur) => {
+  //       acc[cur.name.trim()] = cur.url.trim();
+  //       return acc;
+  //     }, {} as Record<string, string>);
+
+  //     updateClientMutation(
+  //       { id: clientId, data: { socialLinks: socialLinksJson } },
+  //       {
+  //         onSuccess: () => {
+  //           toast.success(`Client socials updated successfully!`);
+  //           closeModal();
+  //         },
+  //         onError: (err) => {
+  //           console.error("Failed to update client", err);
+  //           toast.warning("Failed to update client");
+  //         },
+  //       }
+  //     );
+  //   }
+  // };
+
   const handleSave = () => {
+    // If no entries or all blank → save as {}
+    if (
+      entries.length === 0 ||
+      entries.every((e) => !e.name.trim() && !e.url.trim())
+    ) {
+      updateClientMutation(
+        { id: clientId, data: { socialLinks: {} } },
+        {
+          onSuccess: () => {
+            toast.success(`All socials removed successfully!`);
+            closeModal();
+          },
+          onError: (err) => {
+            console.error("Failed to remove socials", err);
+            toast.warning("Failed to remove socials");
+          },
+        }
+      );
+      return;
+    }
+
+    // Otherwise validate
     const validated = entries.map((entry) => {
-      if (entry.name.trim() === "" && entry.url.trim() === "") {
+      if (entry.name.trim() === "" || entry.url.trim() === "") {
         return { ...entry, error: "Platform and URL are required" };
       }
       if (!isValidUrl(entry.url.trim())) {
@@ -42,25 +123,44 @@ export const SocialLinks = () => {
     });
 
     const validEntries = validated.filter((e) => !e.error);
-
     setEntries(validated);
 
     if (validEntries.length > 0) {
-      // Convert array -> JSON object
       const socialLinksJson = validEntries.reduce((acc, cur) => {
         acc[cur.name.trim()] = cur.url.trim();
         return acc;
       }, {} as Record<string, string>);
 
-      console.log("Saved Social Links (JSON):", socialLinksJson);
-
-      // TODO: send `socialLinksJson` to backend
-      // await api.updateClient({ socialLinks: socialLinksJson });
+      updateClientMutation(
+        { id: clientId, data: { socialLinks: socialLinksJson } },
+        {
+          onSuccess: () => {
+            toast.success(`Client socials updated successfully!`);
+            closeModal();
+          },
+          onError: (err) => {
+            console.error("Failed to update client", err);
+            toast.warning("Failed to update client");
+          },
+        }
+      );
     }
   };
 
   const handleCancel = () => {
-    setEntries([]); // reset
+    // Reset to original state
+    if (client?.socialLinks && typeof client.socialLinks === "object") {
+      const prefilled = Object.entries(client.socialLinks).map(
+        ([name, url]) => ({
+          name,
+          url,
+          error: undefined,
+        })
+      );
+      setEntries(prefilled);
+    } else {
+      setEntries([{ name: "", url: "" }]);
+    }
     closeModal();
   };
 
@@ -106,6 +206,7 @@ export const SocialLinks = () => {
           size="sm"
           id="social"
           onClick={() => setEntries([...entries, { name: "", url: "" }])}
+          disabled={isPending}
         >
           <Plus className="w-4 h-4 mr-1" /> Add Link
         </Button>
@@ -117,11 +218,18 @@ export const SocialLinks = () => {
           size="md"
           variant="outline"
           onClick={handleCancel}
+          disabled={isPending}
         >
           Cancel
         </Button>
-        <Button type="button" size="md" variant="default" onClick={handleSave}>
-          Save
+        <Button
+          type="button"
+          size="md"
+          variant="default"
+          onClick={handleSave}
+          disabled={isPending}
+        >
+          {isPending ? "Saving..." : "Save"}
         </Button>
       </div>
     </div>

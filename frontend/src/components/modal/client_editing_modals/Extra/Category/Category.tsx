@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/button/Button";
 import { Input } from "@/components/input/Input";
 import { ColorDropdown } from "@/components/ColorDropdown/ColorDropdown";
-import { X } from "lucide-react";
+import { X, Pen } from "lucide-react";
 import { useClientForm } from "@/hooks/useClientForm";
 import styles from "./index.module.css";
 import { useModal } from "@/hooks/useModal";
@@ -16,6 +16,8 @@ type Category = {
 
 export const Category = () => {
   const { formData, setFieldValue } = useClientForm();
+  const [edit, setEdit] = useState(false);
+  const [editId, setEditId] = useState(formData.category?.id);
   const { closeModal } = useModal();
   const [categories, setCategories] = useState<Category[]>([
     { id: 1, name: "VIP", color: "#ef4444", isDefault: true },
@@ -26,17 +28,17 @@ export const Category = () => {
   const [labelColor, setLabelColor] = useState("#f97316");
   const [labelName, setLabelName] = useState("");
 
-  const handleAddCategory = () => {
-    if (!labelName.trim()) return;
-    const newCat: Category = {
-      id: categories.length + 1,
-      name: labelName,
-      color: labelColor,
-    };
-    setCategories((prev) => [...prev, newCat]);
-    setLabelName("");
-    setLabelColor("#f97316");
-  };
+  // const handleAddCategory = () => {
+  //   if (!labelName.trim()) return;
+  //   const newCat: Category = {
+  //     id: categories.length + 1,
+  //     name: labelName,
+  //     color: labelColor,
+  //   };
+  //   setCategories((prev) => [...prev, newCat]);
+  //   setLabelName("");
+  //   setLabelColor("#f97316");
+  // };
 
   const handleRemoveCategory = (id: number) => {
     setCategories((prev) => prev.filter((cat) => cat.id !== id));
@@ -49,11 +51,48 @@ export const Category = () => {
         color: "",
       });
     }
+
+    setLabelName("");
+    setLabelColor("#f97316");
+    setEdit(false);
+  };
+
+  const handleEditCategory = (id: number, name: string, color: string) => {
+    setLabelName(name);
+    setLabelColor(color);
+    console.log(id);
+    setEditId(id);
+    setEdit(true);
   };
 
   const selectedCategory = categories.find(
     (cat) => cat.id === formData.category?.id
   );
+
+  const handleAddCategory = () => {
+    if (!labelName.trim()) return;
+
+    const newCat: Category = {
+      id: editId || Date.now(), // fallback if adding
+      name: labelName,
+      color: labelColor,
+      isDefault: false,
+    };
+
+    setCategories((prev) => {
+      // If editId exists → update
+      if (editId) {
+        return prev.map((cat) => (cat.id === editId ? newCat : cat));
+      }
+      // Otherwise add new
+      return [...prev, newCat];
+    });
+
+    setLabelName("");
+    setLabelColor("#f97316");
+    setEditId(0);
+    setEdit(false);
+  };
 
   const handleSave = () => {
     console.log(selectedCategory);
@@ -68,6 +107,10 @@ export const Category = () => {
         isDefault: true,
       },
     ]);
+
+    setLabelName("");
+    setLabelColor("");
+    setEdit(false);
     closeModal();
   };
 
@@ -103,16 +146,29 @@ export const Category = () => {
             </div>
 
             {!cat.isDefault && (
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleRemoveCategory(cat.id);
-                }}
-                className="ml-2 text-gray-400 hover:text-red-500"
-              >
-                <X size={14} />
-              </button>
+              <div className="flex">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleEditCategory(cat.id, cat.name, cat.color);
+                  }}
+                  className="ml-2  text-[var(--label)] cursor-pointer"
+                >
+                  <Pen size={14} />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleRemoveCategory(cat.id);
+                  }}
+                  className="ml-2 text-[var(--label)] hover:text-red-500 cursor-pointer"
+                >
+                  <X size={15} />
+                </button>
+              </div>
             )}
           </div>
         ))}
@@ -135,10 +191,29 @@ export const Category = () => {
             type="button"
             size="md"
             onClick={handleAddCategory}
-            className="w-full"
+            className="w-full flex items-center gap-1"
           >
-            + Add Category
+            {edit ? "edit Category" : "+ Add Category"}
           </Button>
+          {/* {edit ? (
+            <Button
+              type="button"
+              size="md"
+              onClick={handleSaveEditCategory}
+              className="w-full flex items-center gap-1"
+            >
+              <Pen size={13} /> edit Category
+            </Button>
+          ) : (
+            <Button
+              type="button"
+              size="md"
+              onClick={handleAddCategory}
+              className="w-full"
+            >
+              + Add Category
+            </Button>
+          )} */}
         </div>
       </div>
 

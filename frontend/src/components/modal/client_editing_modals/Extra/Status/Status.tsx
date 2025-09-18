@@ -3,8 +3,11 @@ import { useModal } from "@/hooks/useModal";
 import { useClientForm } from "@/hooks/useClientForm";
 import { Check } from "lucide-react";
 import styles from "./index.module.css";
-import { type ClientFormState } from "@/hooks/useClientForm";
+import { type ClientFormState } from "@/types/clients_types/ClientFormState";
 import { Button } from "@/components/button/Button";
+import { useUpdateClient } from "@/hooks/client/useUpdateClient";
+import { usePersistentClientId } from "@/hooks/PersistValues/usePersistentClientId";
+import { toast } from "sonner";
 
 const statusOptions: { value: ClientFormState["status"]; label: string }[] = [
   { value: "active", label: "Active" },
@@ -15,6 +18,8 @@ const statusOptions: { value: ClientFormState["status"]; label: string }[] = [
 export const Status = () => {
   const { closeModal } = useModal();
   const { formData, setFormData } = useClientForm();
+  const { mutate: updateClientMutation, isPending } = useUpdateClient();
+  const clientId = usePersistentClientId();
 
   const cancel = () => {
     // reset status or just close modal
@@ -23,9 +28,20 @@ export const Status = () => {
   };
 
   const save = () => {
-    // here you would call API or pass formData up
-    console.log("Saving status:", formData.status);
-    closeModal();
+    console.log("Updated General Info:", formData.status);
+    updateClientMutation(
+      { id: clientId, data: { status: formData.status } },
+      {
+        onSuccess: () => {
+          toast.success(`Client status updated successfully!`);
+          closeModal();
+        },
+        onError: (err) => {
+          console.error("Failed to update client", err);
+          toast.warning("Failed to update client");
+        },
+      }
+    );
   };
 
   return (
@@ -54,11 +70,23 @@ export const Status = () => {
       </div>
 
       <div className="flex gap-1.5 justify-end mt-2">
-        <Button type="button" onClick={cancel} variant="outline" size="md">
+        <Button
+          disabled={isPending}
+          type="button"
+          onClick={cancel}
+          variant="outline"
+          size="md"
+        >
           cancel
         </Button>
-        <Button onClick={save} type="submit" variant="default" size="md">
-          Save
+        <Button
+          disabled={isPending}
+          onClick={save}
+          type="submit"
+          variant="default"
+          size="md"
+        >
+          {isPending ? "Saving..." : "Save"}
         </Button>
       </div>
     </div>

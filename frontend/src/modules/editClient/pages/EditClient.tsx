@@ -220,7 +220,9 @@ export const EditClient = () => {
             >
               <div className={styles.infoContainer}>
                 <h1>Billing Address</h1>
-                <p>{client?.website || "Add the client's Billing Address"}</p>
+                <p>
+                  {client?.billingAddress || "Add the client's Billing Address"}
+                </p>
               </div>
               <div className={styles.iconContainer}>
                 <ChevronRight
@@ -241,7 +243,10 @@ export const EditClient = () => {
             >
               <div className={styles.infoContainer}>
                 <h1>Shipping Address</h1>
-                <p>{client?.website || "Add the client's Shipping Address"}</p>
+                <p>
+                  {client?.shippingAddress ||
+                    "Add the client's Shipping Address"}
+                </p>
               </div>
               <div className={styles.iconContainer}>
                 <ChevronRight

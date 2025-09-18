@@ -6,6 +6,7 @@ import { ClientRouter } from "../routes/client.router";
 import { PaymentRouter } from "../routes/payments.router";
 import { AttachmentRouter } from "../routes/attachment.router";
 import { NoteRouter } from "../routes/note.router";
+import { CategoryRouter } from "../routes/category.router";
 import { TYPES } from "../types/types";
 
 export function addRoutes(app: Application): Application {
@@ -17,6 +18,7 @@ export function addRoutes(app: Application): Application {
     TYPES.AttachmentRouter
   );
   const noteRouter = container.get<NoteRouter>(TYPES.NoteRouter);
+  const categoryRouter = container.get<CategoryRouter>(TYPES.CategoryRouter);
 
   app.use("/api/auth", authRouter.router);
   app.use("/api/invoices", invoiceRouter.router);
@@ -24,6 +26,7 @@ export function addRoutes(app: Application): Application {
   app.use("/api/payment", paymentRouter.router);
   app.use("/api/attachments", attachmentRouter.router);
   app.use("/api/note", noteRouter.router);
+  app.use("/api/categories", categoryRouter.router);
 
   return app;
 }
