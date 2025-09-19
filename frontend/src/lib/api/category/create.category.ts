@@ -3,6 +3,7 @@ import api from "@/lib/api/api";
 export interface CategoryCreateForm {
   name: string;
   color?: string;
+  isDefault?: boolean;
 }
 
 export const createCategory = async (data: CategoryCreateForm) => {

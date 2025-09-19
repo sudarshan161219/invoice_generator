@@ -6,113 +6,89 @@ import { X, Pen } from "lucide-react";
 import { useClientForm } from "@/hooks/useClientForm";
 import styles from "./index.module.css";
 import { useModal } from "@/hooks/useModal";
-
-type Category = {
-  id: number;
-  name: string;
-  color: string;
-  isDefault?: boolean;
-};
+import { useCategories } from "@/hooks/category/useCategories";
+import { toast } from "sonner";
 
 export const Category = () => {
   const { formData, setFieldValue } = useClientForm();
-  const [edit, setEdit] = useState(false);
-  const [editId, setEditId] = useState(formData.category?.id);
   const { closeModal } = useModal();
-  const [categories, setCategories] = useState<Category[]>([
-    { id: 1, name: "VIP", color: "#ef4444", isDefault: true },
-    { id: 2, name: "Regular", color: "#3b82f6", isDefault: true },
-    { id: 3, name: "One-time", color: "#22c55e", isDefault: true },
-  ]);
+  const { categories, addCategory, editCategory, removeCategory, isLoading } =
+    useCategories();
 
+  const [edit, setEdit] = useState(false);
+  const [editId, setEditId] = useState<number | null>(null);
   const [labelColor, setLabelColor] = useState("#f97316");
   const [labelName, setLabelName] = useState("");
 
-  // const handleAddCategory = () => {
-  //   if (!labelName.trim()) return;
-  //   const newCat: Category = {
-  //     id: categories.length + 1,
-  //     name: labelName,
-  //     color: labelColor,
-  //   };
-  //   setCategories((prev) => [...prev, newCat]);
-  //   setLabelName("");
-  //   setLabelColor("#f97316");
-  // };
+  const selectedCategory = categories.find(
+    (cat) => cat.id === formData.category?.id
+  );
 
-  const handleRemoveCategory = (id: number) => {
-    setCategories((prev) => prev.filter((cat) => cat.id !== id));
+  const handleAddOrEditCategory = async () => {
+    if (!labelName.trim()) return;
 
-    // If removed category was selected, clear selection
-    if (formData.category?.id === id) {
-      setFieldValue("category", {
-        id: 0,
-        name: "",
-        color: "",
+    if (editId) {
+      // update category
+      await editCategory.mutateAsync({
+        id: editId,
+        data: { name: labelName, color: labelColor },
+      });
+    } else {
+      // add new custom category
+      await addCategory.mutateAsync({
+        name: labelName,
+        color: labelColor,
+        isDefault: false,
       });
     }
 
+    // reset
     setLabelName("");
     setLabelColor("#f97316");
+    setEditId(null);
     setEdit(false);
   };
 
   const handleEditCategory = (id: number, name: string, color: string) => {
     setLabelName(name);
     setLabelColor(color);
-    console.log(id);
     setEditId(id);
     setEdit(true);
   };
 
-  const selectedCategory = categories.find(
-    (cat) => cat.id === formData.category?.id
-  );
+  const handleRemoveCategory = async (id: number) => {
+    await removeCategory.mutateAsync(id);
 
-  const handleAddCategory = () => {
-    if (!labelName.trim()) return;
-
-    const newCat: Category = {
-      id: editId || Date.now(), // fallback if adding
-      name: labelName,
-      color: labelColor,
-      isDefault: false,
-    };
-
-    setCategories((prev) => {
-      // If editId exists → update
-      if (editId) {
-        return prev.map((cat) => (cat.id === editId ? newCat : cat));
-      }
-      // Otherwise add new
-      return [...prev, newCat];
-    });
-
+    // clear selection if removed
+    if (formData.category?.id === id) {
+      setFieldValue("category", { id: 0, name: "", color: "" });
+    }
     setLabelName("");
     setLabelColor("#f97316");
-    setEditId(0);
+    setEditId(null);
     setEdit(false);
-  };
-
-  const handleSave = () => {
-    console.log(selectedCategory);
   };
 
   const handleCancel = () => {
-    setCategories([
-      {
-        id: 0,
-        name: "",
-        color: "",
-        isDefault: true,
-      },
-    ]);
-
     setLabelName("");
-    setLabelColor("");
+    setLabelColor("#f97316");
     setEdit(false);
+    setEditId(null);
     closeModal();
   };
+
+  const handleSave = () => {
+    if (selectedCategory) {
+      console.log("Selected category:", selectedCategory);
+      closeModal();
+    } else {
+      toast.warning("please select category");
+    }
+  };
+
+  if (isLoading) {
+    return <p>please wait...</p>;
+  }
 
   return (
     <div className="space-y-4">
@@ -121,13 +97,14 @@ export const Category = () => {
         <div className="text-sm font-medium text-gray-600 mb-2">
           Choose Category
         </div>
+
         {categories.map((cat) => (
           <div
             key={cat.id}
             className={`flex items-center justify-between rounded-md px-2 py-1 cursor-pointer ${
               formData.category?.id === cat.id
-                ? `${styles.categoryActive}`
-                : `${styles.category}`
+                ? styles.categoryActive
+                : styles.category
             }`}
             onClick={() =>
               setFieldValue("category", {
@@ -139,7 +116,7 @@ export const Category = () => {
           >
             <div className="flex items-center gap-2">
               <span
-                className="w-3 h-3 rounded-full "
+                className="w-3 h-3 rounded-full"
                 style={{ backgroundColor: cat.color }}
               />
               <span className={styles.categoryName}>{cat.name}</span>
@@ -153,7 +130,7 @@ export const Category = () => {
                     e.stopPropagation();
                     handleEditCategory(cat.id, cat.name, cat.color);
                   }}
-                  className="ml-2  text-[var(--label)] cursor-pointer"
+                  className="ml-2 text-[var(--label)] cursor-pointer"
                 >
                   <Pen size={14} />
                 </button>
@@ -173,7 +150,7 @@ export const Category = () => {
           </div>
         ))}
 
-        {/* Add new category */}
+        {/* Add or Edit Category */}
         <div className="border-t my-2 pt-2 space-y-2">
           <div className="flex items-center gap-3">
             <Input
@@ -190,30 +167,17 @@ export const Category = () => {
           <Button
             type="button"
             size="md"
-            onClick={handleAddCategory}
+            onClick={handleAddOrEditCategory}
             className="w-full flex items-center gap-1"
           >
-            {edit ? "edit Category" : "+ Add Category"}
+            {edit ? (
+              <>
+                <Pen size={13} /> Update Category
+              </>
+            ) : (
+              "+ Add Category"
+            )}
           </Button>
-          {/* {edit ? (
-            <Button
-              type="button"
-              size="md"
-              onClick={handleSaveEditCategory}
-              className="w-full flex items-center gap-1"
-            >
-              <Pen size={13} /> edit Category
-            </Button>
-          ) : (
-            <Button
-              type="button"
-              size="md"
-              onClick={handleAddCategory}
-              className="w-full"
-            >
-              + Add Category
-            </Button>
-          )} */}
         </div>
       </div>
 

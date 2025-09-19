@@ -191,14 +191,19 @@ model Client {
 model ClientCategory {
   id        Int       @id @default(autoincrement())
   name      String
-  color     String?   
+  color     String?
   isDefault Boolean   @default(false)
-  userId    Int       
+
+  // Make userId optional so categories can be "global defaults"
+  userId    Int?      
+  user      User?     @relation(fields: [userId], references: [id])
+
   clients   Client[]
 
- user   User @relation(fields: [userId], references: [id])
+  // Enforce uniqueness only within same user OR global
   @@unique([name, userId])
 }
+
 
 model ClientTag {
   id        Int       @id @default(autoincrement())
